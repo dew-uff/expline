@@ -61,7 +61,23 @@ public class ExpLineEditor extends BasicGraphEditor
 
 	public ExpLineEditor()
 	{
-		this("mxGraph Editor", new CustomGraphComponent(new CustomGraph()));
+		this("ExpLine", new CustomGraphComponent(new CustomGraph()));
+		
+		try
+		{
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		}
+		catch (Exception e1)
+		{
+			e1.printStackTrace();
+		}
+
+		mxSwingConstants.SHADOW_COLOR = Color.LIGHT_GRAY;
+		mxConstants.W3C_SHADOWCOLOR = "#D3D3D3";
+
+		this.createFrame(new EditorMenuBar(this)).setVisible(true);
+		
+		
 	}
 
 	/**
@@ -73,6 +89,7 @@ public class ExpLineEditor extends BasicGraphEditor
 		final mxGraph graph = graphComponent.getGraph();
 
 		// Creates the shapes palette
+		EditorPalette componentsPalette = insertPalette(mxResources.get("components"));
 		EditorPalette shapesPalette = insertPalette(mxResources.get("shapes"));
 		EditorPalette imagesPalette = insertPalette(mxResources.get("images"));
 		EditorPalette symbolsPalette = insertPalette(mxResources.get("symbols"));
@@ -98,6 +115,43 @@ public class ExpLineEditor extends BasicGraphEditor
 			}
 
 		});
+		
+		
+		// Adds experiment line components in the library
+		
+		componentsPalette
+		.addTemplate(
+				"Invariant",
+				new ImageIcon(
+						ExpLineEditor.class
+								.getResource("/images/rounded.png")),
+				"rounded=1;strokeWidth=5;fontSize=24", 160, 120, "");
+		
+		componentsPalette
+		.addTemplate(
+				"Optional",
+				new ImageIcon(
+						ExpLineEditor.class
+								.getResource("/images/rounded.png")),
+				"rounded=1;dashed=1;strokeWidth=5;fontSize=24", 160, 120, "");
+		
+		componentsPalette
+		.addTemplate(
+				"Variation Point",
+				new ImageIcon(
+						ExpLineEditor.class
+								.getResource("/images/rounded.png")),
+				"rectangle;shape=doubleRectangle;rounded=1;strokeWidth=5;fontSize=24", 160, 120, "");
+
+		componentsPalette
+		.addTemplate(
+				"Variant",
+				new ImageIcon(
+						ExpLineEditor.class
+								.getResource("/images/rounded.png")),
+				"rounded=1;strokeWidth=5;fillColor=#FF0033;fontSize=24;cloneable=0", 160, 120, "");
+		
+		
 
 		// Adds some template cells for dropping into the graph
 		shapesPalette
