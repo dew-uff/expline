@@ -25,6 +25,7 @@ import com.mxgraph.model.mxGeometry;
 import com.mxgraph.model.mxICell;
 import com.mxgraph.model.mxIGraphModel;
 import com.mxgraph.swing.mxGraphComponent;
+import com.mxgraph.swing.handler.mxConnectionHandler;
 import com.mxgraph.swing.util.mxGraphTransferable;
 import com.mxgraph.swing.util.mxSwingConstants;
 import com.mxgraph.util.mxConstants;
@@ -89,14 +90,12 @@ public class ExpLineEditor extends BasicGraphEditor
 		final mxGraph graph = graphComponent.getGraph();
 
 		// Creates the shapes palette
-		EditorPalette componentsPalette = insertPalette(mxResources.get("components"));
-		EditorPalette shapesPalette = insertPalette(mxResources.get("shapes"));
-		EditorPalette imagesPalette = insertPalette(mxResources.get("images"));
-		EditorPalette symbolsPalette = insertPalette(mxResources.get("symbols"));
+		EditorPalette activitiesPalette = insertPalette(mxResources.get("activities"));
+		EditorPalette connectionsPalette = insertPalette(mxResources.get("connections"));
 
 		// Sets the edge template to be used for creating new edges if an edge
 		// is clicked in the shape palette
-		shapesPalette.addListener(mxEvent.SELECT, new mxIEventListener()
+		activitiesPalette.addListener(mxEvent.SELECT, new mxIEventListener()
 		{
 			public void invoke(Object sender, mxEventObject evt)
 			{
@@ -117,373 +116,72 @@ public class ExpLineEditor extends BasicGraphEditor
 		});
 		
 		
+		//Setting some parameters
+		
+		mxConnectionHandler handler = graphComponent
+				.getConnectionHandler();
+		handler.setCreateTarget(false);
+		
+		//this.graphComponent.setConnectable(false);
+		
+		
 		// Adds experiment line components in the library
 		
-		componentsPalette
+		activitiesPalette
 		.addTemplate(
 				"Invariant",
 				new ImageIcon(
 						ExpLineEditor.class
 								.getResource("/images/rounded.png")),
-				"rounded=1;strokeWidth=5;fontSize=24", 160, 120, "");
+				"Invariant;rounded=1;strokeWidth=5;fontSize=24", 160, 120, "");
 		
-		componentsPalette
+		activitiesPalette
 		.addTemplate(
 				"Optional",
 				new ImageIcon(
 						ExpLineEditor.class
 								.getResource("/images/rounded.png")),
-				"rounded=1;dashed=1;strokeWidth=5;fontSize=24", 160, 120, "");
+				"Optional;rounded=1;dashed=1;strokeWidth=5;fontSize=24", 160, 120, "");
 		
-		componentsPalette
+		activitiesPalette
 		.addTemplate(
 				"Variation Point",
 				new ImageIcon(
 						ExpLineEditor.class
-								.getResource("/images/rounded.png")),
-				"rectangle;shape=doubleRectangle;rounded=1;strokeWidth=5;fontSize=24", 160, 120, "");
-
-		componentsPalette
+								.getResource("/images/doublerectangle.png")),
+				"VariationPoint;rectangle;shape=doubleRectangle;rounded=1;strokeWidth=5;fontSize=24", 160, 120, "");
+		activitiesPalette
+		.addTemplate(
+				"Optional Variation Point",
+				new ImageIcon(
+						ExpLineEditor.class
+								.getResource("/images/doublerectangle.png")),
+				"OptionalVariationPoint;rectangle;shape=doubleRectangle;dashed=1;rounded=1;strokeWidth=5;fontSize=24", 160, 120, "");
+		activitiesPalette
 		.addTemplate(
 				"Variant",
 				new ImageIcon(
 						ExpLineEditor.class
 								.getResource("/images/rounded.png")),
-				"rounded=1;strokeWidth=5;fillColor=#FF0033;fontSize=24;cloneable=0", 160, 120, "");
+				"Variant;strokeWidth=5;fillColor=#FF0033;fontSize=24;cloneable=0", 160, 120, "");
 		
+
+		connectionsPalette
+		.addEdgeTemplate(
+				"Workflow edge",
+				new ImageIcon(
+						ExpLineEditor.class
+								.getResource("/images/connect.png")),
+				"WorkflowEdge;strokeWidth=8;strokeColor=#000066", 100, 100, "");
+		connectionsPalette
+		.addEdgeTemplate(
+				"Variant relationship",
+				new ImageIcon(
+						ExpLineEditor.class
+								.getResource("/images/arrow.png")),
+				"VariantRelationship;arrow;strokeWidth=5;strokeColor=#000000", 120, 120, "");
 		
 
-		// Adds some template cells for dropping into the graph
-		shapesPalette
-				.addTemplate(
-						"Container",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/swimlane.png")),
-						"swimlane", 280, 280, "Container");
-		shapesPalette
-				.addTemplate(
-						"Icon",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/rounded.png")),
-						"icon;image=/images/wrench.png",
-						70, 70, "Icon");
-		shapesPalette
-				.addTemplate(
-						"Label",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/rounded.png")),
-						"label;image=/images/gear.png",
-						130, 50, "Label");
-		shapesPalette
-				.addTemplate(
-						"Rectangle",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/rectangle.png")),
-						null, 160, 120, "");
-		shapesPalette
-				.addTemplate(
-						"Rounded Rectangle",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/rounded.png")),
-						"rounded=1", 160, 120, "");
-		shapesPalette
-				.addTemplate(
-						"Ellipse",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/ellipse.png")),
-						"ellipse", 160, 160, "");
-		shapesPalette
-				.addTemplate(
-						"Double Ellipse",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/doubleellipse.png")),
-						"ellipse;shape=doubleEllipse", 160, 160, "");
-		shapesPalette
-				.addTemplate(
-						"Triangle",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/triangle.png")),
-						"triangle", 120, 160, "");
-		shapesPalette
-				.addTemplate(
-						"Rhombus",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/rhombus.png")),
-						"rhombus", 160, 160, "");
-		shapesPalette
-				.addTemplate(
-						"Horizontal Line",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/hline.png")),
-						"line", 160, 10, "");
-		shapesPalette
-				.addTemplate(
-						"Hexagon",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/hexagon.png")),
-						"shape=hexagon", 160, 120, "");
-		shapesPalette
-				.addTemplate(
-						"Cylinder",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/cylinder.png")),
-						"shape=cylinder", 120, 160, "");
-		shapesPalette
-				.addTemplate(
-						"Actor",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/actor.png")),
-						"shape=actor", 120, 160, "");
-		shapesPalette
-				.addTemplate(
-						"Cloud",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/cloud.png")),
-						"ellipse;shape=cloud", 160, 120, "");
-
-		shapesPalette
-				.addEdgeTemplate(
-						"Straight",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/straight.png")),
-						"straight", 120, 120, "");
-		shapesPalette
-				.addEdgeTemplate(
-						"Horizontal Connector",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/connect.png")),
-						null, 100, 100, "");
-		shapesPalette
-				.addEdgeTemplate(
-						"Vertical Connector",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/vertical.png")),
-						"vertical", 100, 100, "");
-		shapesPalette
-				.addEdgeTemplate(
-						"Entity Relation",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/entity.png")),
-						"entity", 100, 100, "");
-		shapesPalette
-				.addEdgeTemplate(
-						"Arrow",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/arrow.png")),
-						"arrow", 120, 120, "");
-
-		imagesPalette
-				.addTemplate(
-						"Bell",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/bell.png")),
-						"image;image=/images/bell.png",
-						50, 50, "Bell");
-		imagesPalette
-				.addTemplate(
-						"Box",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/box.png")),
-						"image;image=/images/box.png",
-						50, 50, "Box");
-		imagesPalette
-				.addTemplate(
-						"Cube",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/cube_green.png")),
-						"image;image=/images/cube_green.png",
-						50, 50, "Cube");
-		imagesPalette
-				.addTemplate(
-						"User",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/dude3.png")),
-						"roundImage;image=/images/dude3.png",
-						50, 50, "User");
-		imagesPalette
-				.addTemplate(
-						"Earth",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/earth.png")),
-						"roundImage;image=/images/earth.png",
-						50, 50, "Earth");
-		imagesPalette
-				.addTemplate(
-						"Gear",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/gear.png")),
-						"roundImage;image=/images/gear.png",
-						50, 50, "Gear");
-		imagesPalette
-				.addTemplate(
-						"Home",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/house.png")),
-						"image;image=/images/house.png",
-						50, 50, "Home");
-		imagesPalette
-				.addTemplate(
-						"Package",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/package.png")),
-						"image;image=/images/package.png",
-						50, 50, "Package");
-		imagesPalette
-				.addTemplate(
-						"Printer",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/printer.png")),
-						"image;image=/images/printer.png",
-						50, 50, "Printer");
-		imagesPalette
-				.addTemplate(
-						"Server",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/server.png")),
-						"image;image=/images/server.png",
-						50, 50, "Server");
-		imagesPalette
-				.addTemplate(
-						"Workplace",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/workplace.png")),
-						"image;image=/images/workplace.png",
-						50, 50, "Workplace");
-		imagesPalette
-				.addTemplate(
-						"Wrench",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/wrench.png")),
-						"roundImage;image=/images/wrench.png",
-						50, 50, "Wrench");
-
-		symbolsPalette
-				.addTemplate(
-						"Cancel",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/cancel_end.png")),
-						"roundImage;image=/images/cancel_end.png",
-						80, 80, "Cancel");
-		symbolsPalette
-				.addTemplate(
-						"Error",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/error.png")),
-						"roundImage;image=/images/error.png",
-						80, 80, "Error");
-		symbolsPalette
-				.addTemplate(
-						"Event",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/event.png")),
-						"roundImage;image=/images/event.png",
-						80, 80, "Event");
-		symbolsPalette
-				.addTemplate(
-						"Fork",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/fork.png")),
-						"rhombusImage;image=/images/fork.png",
-						80, 80, "Fork");
-		symbolsPalette
-				.addTemplate(
-						"Inclusive",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/inclusive.png")),
-						"rhombusImage;image=/images/inclusive.png",
-						80, 80, "Inclusive");
-		symbolsPalette
-				.addTemplate(
-						"Link",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/link.png")),
-						"roundImage;image=/images/link.png",
-						80, 80, "Link");
-		symbolsPalette
-				.addTemplate(
-						"Merge",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/merge.png")),
-						"rhombusImage;image=/images/merge.png",
-						80, 80, "Merge");
-		symbolsPalette
-				.addTemplate(
-						"Message",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/message.png")),
-						"roundImage;image=/images/message.png",
-						80, 80, "Message");
-		symbolsPalette
-				.addTemplate(
-						"Multiple",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/multiple.png")),
-						"roundImage;image=/images/multiple.png",
-						80, 80, "Multiple");
-		symbolsPalette
-				.addTemplate(
-						"Rule",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/rule.png")),
-						"roundImage;image=/images/rule.png",
-						80, 80, "Rule");
-		symbolsPalette
-				.addTemplate(
-						"Terminate",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/terminate.png")),
-						"roundImage;image=/images/terminate.png",
-						80, 80, "Terminate");
-		symbolsPalette
-				.addTemplate(
-						"Timer",
-						new ImageIcon(
-								ExpLineEditor.class
-										.getResource("/images/timer.png")),
-						"roundImage;image=/images/timer.png",
-						80, 80, "Timer");
 	}
 
 	/**
@@ -700,27 +398,5 @@ public class ExpLineEditor extends BasicGraphEditor
 			return super.createEdge(parent, id, value, source, target, style);
 		}
 
-	}
-
-	/**
-	 * 
-	 * @param args
-	 */
-	public static void main(String[] args)
-	{
-		try
-		{
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		}
-		catch (Exception e1)
-		{
-			e1.printStackTrace();
-		}
-
-		mxSwingConstants.SHADOW_COLOR = Color.LIGHT_GRAY;
-		mxConstants.W3C_SHADOWCOLOR = "#D3D3D3";
-
-		ExpLineEditor editor = new ExpLineEditor();
-		editor.createFrame(new EditorMenuBar(editor)).setVisible(true);
 	}
 }
