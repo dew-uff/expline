@@ -118,9 +118,15 @@ public class ExpLineEditor extends BasicGraphEditor
 		
 		//Setting some parameters
 		
+		graphComponent.setPageVisible(false);
+		graphComponent.setGridVisible(false);
+		graphComponent.setTripleBuffered(true);
+		graphComponent.setAntiAlias(true);
+		
 		mxConnectionHandler handler = graphComponent
 				.getConnectionHandler();
 		handler.setCreateTarget(false);
+	    graph.setMultigraph(false);
 		
 		//this.graphComponent.setConnectable(false);
 		

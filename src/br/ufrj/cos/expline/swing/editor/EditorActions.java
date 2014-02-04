@@ -29,6 +29,7 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JColorChooser;
@@ -36,6 +37,7 @@ import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
@@ -143,6 +145,39 @@ public class EditorActions
 			});
 		}
 	}
+	
+	//ExpLine-Begin
+	
+	@SuppressWarnings("serial")
+	public static class AlgebraicOperatorOptionItem extends JRadioButtonMenuItem
+	{
+		/**
+		 * 
+		 */
+		public AlgebraicOperatorOptionItem(ButtonGroup group, final BasicGraphEditor editor, String name)
+		{
+			super(name);
+			//setSelected(true);
+			group.add(this);
+
+			addActionListener(new ActionListener()
+			{
+				/**
+				 * 
+				 */
+				public void actionPerformed(ActionEvent e)
+				{
+					mxGraphComponent graphComponent = editor
+							.getGraphComponent();
+					mxGraph graph = graphComponent.getGraph();
+
+					setSelected(true);
+				}
+			});
+		}
+	}
+	
+	//ExpLine-End
 
 	/**
 	 *
@@ -2252,4 +2287,30 @@ public class EditorActions
 			}
 		}
 	}
+	
+	
+	
+	//ExpLine-Begin
+	/**
+	 *
+	 */
+	@SuppressWarnings("serial")
+	public static class AlgbraicOperatorAction extends AbstractAction
+	{
+		/**
+		 * 
+		 */
+		public void actionPerformed(ActionEvent e)
+		{
+			if (e.getSource() instanceof mxGraphComponent)
+			{
+				mxGraphComponent graphComponent = (mxGraphComponent) e
+						.getSource();
+				mxGraph graph = graphComponent.getGraph();
+
+			}
+		}
+	}
+	
+	//ExpLine-End
 }

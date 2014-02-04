@@ -6,6 +6,7 @@ import javax.swing.TransferHandler;
 
 import br.ufrj.cos.expline.swing.editor.EditorActions.HistoryAction;
 
+import com.mxgraph.model.mxCell;
 import com.mxgraph.swing.util.mxGraphActions;
 import com.mxgraph.util.mxResources;
 
@@ -21,7 +22,12 @@ public class EditorPopupMenu extends JPopupMenu
 	{
 		boolean selected = !editor.getGraphComponent().getGraph()
 				.isSelectionEmpty();
-
+		
+		boolean isVertex = false;
+		
+		if (selected && editor.getGraphComponent().getGraph().getSelectionCount() == 1)
+			isVertex = ((mxCell)editor.getGraphComponent().getGraph().getSelectionCell()).isVertex();
+		
 		add(editor.bind(mxResources.get("undo"), new HistoryAction(true),
 				"/images/undo.gif"));
 
@@ -50,31 +56,27 @@ public class EditorPopupMenu extends JPopupMenu
 				.setEnabled(selected);
 
 		addSeparator();
+		
+		
+		//ExpLine-Begin
+		
+		if(selected){
+			add(
+					editor.bind(mxResources.get("editName"), mxGraphActions
+							.getEditAction()));
+			
+			if (isVertex){
+				JMenu menu = (JMenu) add(new JMenu(mxResources.get("albegraicOperator")));
+				EditorMenuBar.populateAlgebraicOperatorMenu(menu, editor);
+			}
+				
+			addSeparator();
+		}
+		
+		
+		
+		//ExpLine-End
 
-		// Creates the format menu
-		JMenu menu = (JMenu) add(new JMenu(mxResources.get("format")));
-
-		EditorMenuBar.populateFormatMenu(menu, editor);
-
-		// Creates the shape menu
-		menu = (JMenu) add(new JMenu(mxResources.get("shape")));
-
-		EditorMenuBar.populateShapeMenu(menu, editor);
-
-		addSeparator();
-
-		add(
-				editor.bind(mxResources.get("edit"), mxGraphActions
-						.getEditAction())).setEnabled(selected);
-
-		addSeparator();
-
-		add(editor.bind(mxResources.get("selectVertices"), mxGraphActions
-				.getSelectVerticesAction()));
-		add(editor.bind(mxResources.get("selectEdges"), mxGraphActions
-				.getSelectEdgesAction()));
-
-		addSeparator();
 
 		add(editor.bind(mxResources.get("selectAll"), mxGraphActions
 				.getSelectAllAction()));

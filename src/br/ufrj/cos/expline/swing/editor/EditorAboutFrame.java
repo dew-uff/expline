@@ -80,7 +80,7 @@ public class EditorAboutFrame extends JDialog
 
 		// Adds optional subtitle
 		JLabel subtitleLabel = new JLabel(
-				"For more information visit http://www.mxgraph.com/");
+				"For more information visit http://www.cos.ufrj.br/");
 		subtitleLabel.setBorder(BorderFactory.createEmptyBorder(4, 18, 0, 0));
 		subtitleLabel.setOpaque(false);
 		panel.add(subtitleLabel, BorderLayout.CENTER);
@@ -91,37 +91,11 @@ public class EditorAboutFrame extends JDialog
 		content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
 		content.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 
-		content.add(new JLabel("JGraph X - The Swing Portion of mxGraph"));
+		content.add(new JLabel("ExpLine - The Experiment Line Editor"));
 		content.add(new JLabel(" "));
 
-		content.add(new JLabel("mxGraph Version " + mxGraph.VERSION));
-		content.add(new JLabel("Copyright (C) 2009 by JGraph Ltd."));
-		content.add(new JLabel("All rights reserved."));
-		content.add(new JLabel(" "));
+		content.add(new JLabel("ExpLine Version 0.1.0"));
 
-		try
-		{
-			content.add(new JLabel("Operating System Name: "
-					+ System.getProperty("os.name")));
-			content.add(new JLabel("Operating System Version: "
-					+ System.getProperty("os.version")));
-			content.add(new JLabel(" "));
-
-			content.add(new JLabel("Java Vendor: "
-					+ System.getProperty("java.vendor", "undefined")));
-			content.add(new JLabel("Java Version: "
-					+ System.getProperty("java.version", "undefined")));
-			content.add(new JLabel(" "));
-
-			content.add(new JLabel("Total Memory: "
-					+ Runtime.getRuntime().totalMemory()));
-			content.add(new JLabel("Free Memory: "
-					+ Runtime.getRuntime().freeMemory()));
-		}
-		catch (Exception e)
-		{
-			// ignore
-		}
 
 		getContentPane().add(content, BorderLayout.CENTER);
 
