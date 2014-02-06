@@ -46,7 +46,7 @@ public class ExpLineEditor extends BasicGraphEditor
 	private static final long serialVersionUID = -4601740824088314699L;
 
 	/**
-	 * Holds the shared number formatter.
+	 * Holds the shared number formatter. 
 	 * 
 	 * @see NumberFormat#getInstance()
 	 */
