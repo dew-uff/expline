@@ -23,7 +23,6 @@ import javax.swing.JRootPane;
 import javax.swing.KeyStroke;
 
 import com.mxgraph.util.mxResources;
-import com.mxgraph.view.mxGraph;
 
 public class EditorAboutFrame extends JDialog
 {

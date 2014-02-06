@@ -212,7 +212,7 @@ public class EditorMenuBar extends JMenuBar
 		// Creates the generate menu
 		menu = add(new JMenu("Generate"));
 		menu.add(editor.bind("Abstract workflow", new AnalyzeGraph(AnalyzeType.IS_CYCLIC_DIRECTED, aGraph)));
-
+		
 		// Creates the help menu
 		menu = add(new JMenu(mxResources.get("help")));
 
@@ -376,6 +376,7 @@ public class EditorMenuBar extends JMenuBar
 			{
 				mxGraphComponent graphComponent = (mxGraphComponent) e.getSource();
 				mxGraph graph = graphComponent.getGraph();
+				aGraph.setGraph(graph);
 
 				if (analyzeType == AnalyzeType.IS_CONNECTED)
 				{
