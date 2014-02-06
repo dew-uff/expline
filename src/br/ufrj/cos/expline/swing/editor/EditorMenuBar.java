@@ -134,7 +134,21 @@ public class EditorMenuBar extends JMenuBar
 		menu.add(editor.bind(mxResources.get("selectAll"), mxGraphActions.getSelectAllAction()));
 		menu.add(editor.bind(mxResources.get("selectNone"), mxGraphActions.getSelectNoneAction()));
 
+		menu.addSeparator();
 
+		JMenuItem item = menu.add(new JMenuItem(mxResources.get("properties")));
+		item.addActionListener(new ActionListener()
+		{
+			/*
+			 * (non-Javadoc)
+			 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+			 */
+			public void actionPerformed(ActionEvent e)
+			{
+				editor.properties();
+			}
+		});
+		
 		// Creates the view menu
 		menu = add(new JMenu(mxResources.get("view")));
 
@@ -216,7 +230,7 @@ public class EditorMenuBar extends JMenuBar
 		// Creates the help menu
 		menu = add(new JMenu(mxResources.get("help")));
 
-		JMenuItem item = menu.add(new JMenuItem(mxResources.get("aboutExpLine")));
+		item = menu.add(new JMenuItem(mxResources.get("aboutExpLine")));
 		item.addActionListener(new ActionListener()
 		{
 			/*
