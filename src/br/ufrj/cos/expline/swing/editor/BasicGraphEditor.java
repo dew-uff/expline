@@ -713,7 +713,7 @@ public class BasicGraphEditor extends JPanel
 
 		if (frame != null)
 		{
-			EditorPropertiesFrame about = new EditorPropertiesFrame(frame);
+			EditorPropertiesFrame about = new EditorPropertiesFrame(frame, this.graphComponent);
 			about.setModal(true);
 
 			// Centers inside the application frame
