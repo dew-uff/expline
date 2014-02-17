@@ -1,13 +1,19 @@
 package br.ufrj.cos.expline.swing.editor;
 
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -15,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -27,7 +32,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
+import javax.swing.plaf.basic.BasicButtonUI;
 import javax.swing.table.AbstractTableModel;
+
+import br.ufrj.cos.expline.swing.editor.EditorActions.AlgebraicOperatorAction;
 
 import com.mxgraph.model.mxCell;
 import com.mxgraph.swing.mxGraphComponent;
@@ -45,9 +53,11 @@ public class EditorPropertiesFrame extends JDialog
 	protected mxGraphComponent graphComponent;
 	protected mxGraph graph;
 	
-	protected RelationalSchemaTableModel InputRelationalSchemaTableModel = null;
+	public JTabbedPane inputRelationtabbedPane = null;
+	protected int inputRelationtNextIndex = 0;
+	
 	protected RelationalSchemaTableModel OutputRelationalSchemaTableModel = null;
-	protected JTable InputRelationalSchemaTable = null;
+	protected ArrayList<JTable> inputRelationalSchemaTables = new ArrayList<JTable>();
 	protected JTable OutputRelationalSchemaTable = null;
 	protected JComboBox<String> algebraicOperatorsJComboBox = null;
 
@@ -107,7 +117,13 @@ public class EditorPropertiesFrame extends JDialog
 		algebraicPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 		algebraicPanel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 		algebraicPanel.add(new JLabel(mxResources.get("albegraicOperator")+":"));
-		String[] algebraicOperators = {"Map", "Split Map", "Reduce", "Filter", "Join"};
+		String[] algebraicOperators = new String[6];
+		algebraicOperators[0] = "";
+		algebraicOperators[1] = mxResources.get("map");
+		algebraicOperators[2] = mxResources.get("select");
+		algebraicOperators[3] = mxResources.get("splitMap");
+		algebraicOperators[4] = mxResources.get("reduce");
+		algebraicOperators[5] = mxResources.get("join");
 		algebraicOperatorsJComboBox = new JComboBox<String>(algebraicOperators);
 		loadAlgebraicOperator();
 		algebraicPanel.add(algebraicOperatorsJComboBox);
@@ -115,8 +131,9 @@ public class EditorPropertiesFrame extends JDialog
         
         //creating the tabbed Panel
         JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.addTab("Input", null, createInputRelationalSchemaPanel(),
+        tabbedPane.addTab("Input", null, createInputPanel(),
                           "");
+        
         tabbedPane.addTab("Output", null, createOutputRelationalSchemaPanel(),
                 "");
         
@@ -154,7 +171,7 @@ public class EditorPropertiesFrame extends JDialog
 			public void actionPerformed(ActionEvent e)
 			{
 				saveAlgebraicOperator();
-			    saveInputRelationAttributes();
+			    saveInputRelations();
 				saveOutputRelationAttributes();
 				setVisible(false);
 			}
@@ -165,21 +182,119 @@ public class EditorPropertiesFrame extends JDialog
 		// Sets default button for enter key
 		getRootPane().setDefaultButton(okButton);
 
-		setResizable(false);
+		setResizable(true);
 		setSize(400, 400);
 	}
 	
-	public JPanel createInputRelationalSchemaPanel(){
+	public JPanel createCloseTabPanel(){
+		
+        JPanel pnlTab = new JPanel(new GridBagLayout());
+        pnlTab.setOpaque(false);
+        JLabel lblTitle = new JLabel("Relation "+inputRelationtNextIndex);
+        JButton btnClose = new TabCloseButton(inputRelationtNextIndex);
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1;
+
+        pnlTab.add(lblTitle, gbc);
+        //lblTitle.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
+       // pnlTab.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 1));
+
+        gbc.gridx++;
+        gbc.weightx = 0;
+        pnlTab.add(btnClose, gbc);
+        lblTitle.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 1));
+
+        
+        return pnlTab;
+		
+	}
+	
+	public JPanel createAddTabPanel(){
+		
+        JPanel pnlTab = new JPanel(new GridBagLayout());
+        pnlTab.setOpaque(false);
+        JButton btnAdd = new TabAddButton();
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0;
+        pnlTab.add(btnAdd, gbc);
+
+        
+        return pnlTab;
+		
+	}
+	
+	public JPanel createInputPanel(){
+		
+		inputRelationtabbedPane = new JTabbedPane();
+		
+		
+		mxCell cell = (mxCell) graph.getSelectionCell();
+		
+		String style = cell.getStyle();
+		
+		inputRelationtNextIndex = 1;
+		
+		while(true){
+			if(style.contains("inRelSchAttr_"+inputRelationtNextIndex)){
+				inputRelationtabbedPane.addTab("Relation "+inputRelationtNextIndex, null, createInputRelationalSchemaPanel(inputRelationtNextIndex-1),
+                        "");
+      
+				inputRelationtabbedPane.setTabComponentAt(inputRelationtNextIndex-1, createCloseTabPanel());
+			}
+			else
+				break;
+			
+			inputRelationtNextIndex++;
+
+		}
+		
+		
+		if(inputRelationtNextIndex == 1){
+			inputRelationtabbedPane.addTab("Relation 1", null, createInputRelationalSchemaPanel(0),
+	                          "");
+	        
+			inputRelationtabbedPane.setTabComponentAt(0, createCloseTabPanel());
+			
+			inputRelationtNextIndex++;
+		}
+		
+        
+        
+		inputRelationtabbedPane.addTab("Add", null, new JPanel(),
+                "");
+
+		inputRelationtabbedPane.setTabComponentAt(inputRelationtNextIndex-1, createAddTabPanel());
+		inputRelationtabbedPane.setEnabledAt(inputRelationtNextIndex-1, false);
+        
+		
+		
+        
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.add(inputRelationtabbedPane);
+		
+		return panel;
+	}
+	
+	public JPanel createInputRelationalSchemaPanel(int index){
 		
 		JPanel tablePanel = new JPanel(new BorderLayout());	
 			
-		InputRelationalSchemaTable = createInputTable();
+		JTable inputTable = createInputTable(index);
+		
+		inputRelationalSchemaTables.add(index, inputTable);
+		
 		
 		// creates panel to contain the table
-		tablePanel.add(new JScrollPane(InputRelationalSchemaTable), BorderLayout.CENTER);
+		tablePanel.add(new JScrollPane(inputTable), BorderLayout.CENTER);
         
         JPanel commandPanel = new JPanel();
-        commandPanel.setLayout(new BoxLayout(commandPanel, BoxLayout.Y_AXIS));
+        commandPanel.setLayout(new GridLayout(2, 1));
 
 		// Adds Add button to create new attribute in the table
 		JButton addButton = new JButton("Add");
@@ -187,7 +302,9 @@ public class EditorPropertiesFrame extends JDialog
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				InputRelationalSchemaTableModel.insertRow(new String[] {"", ""});
+				int selected_index = inputRelationtabbedPane.getSelectedIndex();
+				RelationalSchemaTableModel inputRelationalSchemaTableModel = (RelationalSchemaTableModel) inputRelationalSchemaTables.get(selected_index).getModel();
+				inputRelationalSchemaTableModel.insertRow(new String[] {"", ""});
 			}
 		});
 		
@@ -200,14 +317,19 @@ public class EditorPropertiesFrame extends JDialog
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				InputRelationalSchemaTableModel.removeRow(InputRelationalSchemaTable.getSelectedRow());
+				int selected_index = inputRelationtabbedPane.getSelectedIndex();
+				RelationalSchemaTableModel inputRelationalSchemaTableModel = (RelationalSchemaTableModel) inputRelationalSchemaTables.get(selected_index).getModel();
+				inputRelationalSchemaTableModel.removeRow(inputRelationalSchemaTables.get(selected_index).getSelectedRow());
 			}
 		});
 		
 		commandPanel.add(removeButton);
 		
 		
-		tablePanel.add(commandPanel, BorderLayout.EAST);
+		JPanel east = new JPanel(new GridBagLayout());
+		east.add(commandPanel);
+		
+		tablePanel.add(east, BorderLayout.EAST);
         
 		return tablePanel;
 	}
@@ -223,7 +345,7 @@ public class EditorPropertiesFrame extends JDialog
 				OutputRelationalSchemaTable), BorderLayout.CENTER);
         
         JPanel commandPanel = new JPanel();
-        commandPanel.setLayout(new BoxLayout(commandPanel, BoxLayout.Y_AXIS));
+        commandPanel.setLayout(new GridLayout(2, 1));
 
 		// Adds Add button to create new attribute in the table
 		JButton addButton = new JButton("Add");
@@ -250,19 +372,20 @@ public class EditorPropertiesFrame extends JDialog
 		
 		commandPanel.add(removeButton);
 		
+		JPanel east = new JPanel(new GridBagLayout());
+		east.add(commandPanel);
 		
-		tablePanel.add(commandPanel, BorderLayout.EAST);
+		tablePanel.add(east, BorderLayout.EAST);
     
         
 		return tablePanel;
 	}
 	
-	public JTable createInputTable(){
+	public JTable createInputTable(int index){
 
-		List<RelationalSchemaAttribute> relations = getInputRelationAttributes();
-        
-        InputRelationalSchemaTableModel = new RelationalSchemaTableModel(relations);
-        JTable table = new JTable(InputRelationalSchemaTableModel);
+		List<RelationalSchemaAttribute> relations = getInputRelationAttributes(index);
+
+        JTable table = new JTable(new RelationalSchemaTableModel(relations));
 
 		return table;
 	}
@@ -302,35 +425,41 @@ public class EditorPropertiesFrame extends JDialog
 	}
 	
 	public void saveAlgebraicOperator(){
+		
+		//This is a workaround to perform an Action
+		//The correct is to create an class that contains the logic of saving the algebraic operator and this method and the Action itself should reference to it. 
+		
+		AlgebraicOperatorAction action = new AlgebraicOperatorAction((String)algebraicOperatorsJComboBox.getSelectedItem());
+		
+		action.actionPerformed(new ActionEvent(graphComponent, 1, ""));
 
-		mxCell cell = (mxCell) graph.getSelectionCell();
-		
-		String style = cell.getStyle();
-		
-		String newStyle = "";
-		
-		String[] key_values = style.trim().split(";");
-		
-		for (String key_value : key_values) {
-			if(!key_value.contains("algebraicOperator"))
-				newStyle = newStyle + ";" + key_value;
-		}
-		
-		newStyle = newStyle.substring(1, newStyle.length()) +";algebraicOperator="+algebraicOperatorsJComboBox.getSelectedItem();
-		
-		cell.setStyle(newStyle);
 	}
 	
-	public void saveInputRelationAttributes(){
-
+	public void saveInputRelations(){
+		
 		mxCell cell = (mxCell) graph.getSelectionCell();
 		
 		String newStyle = clearInputRelationFromActivity();
 		
-		List<RelationalSchemaAttribute> relAttrs = InputRelationalSchemaTableModel.getRelationAttributes();
+		cell.setStyle(newStyle);
+		
+		for (int i = 0; i < inputRelationalSchemaTables.size(); i++) {
+			saveInputRelationAttributes(i);
+		}
+	}
+	
+	public void saveInputRelationAttributes(int index){
+
+		mxCell cell = (mxCell) graph.getSelectionCell();
+		
+		String newStyle = cell.getStyle();
+		
+		RelationalSchemaTableModel inputRelationalSchemaTableModel = (RelationalSchemaTableModel) inputRelationalSchemaTables.get(index).getModel();
+		
+		List<RelationalSchemaAttribute> relAttrs = inputRelationalSchemaTableModel.getRelationAttributes();
 		
 		for (RelationalSchemaAttribute relAttr : relAttrs) {
-			newStyle = newStyle + ";inRelSchAttr=" + relAttr.getType() + "@%&"+ relAttr.getName();
+			newStyle = newStyle + ";inRelSchAttr_"+(index+1)+"=" + relAttr.getType() + "@%&"+ relAttr.getName();
 		}
 		
 		cell.setStyle(newStyle);
@@ -387,7 +516,7 @@ public class EditorPropertiesFrame extends JDialog
 		return newStyle.substring(1, newStyle.length());
 	}
 	
-	public List<RelationalSchemaAttribute> getInputRelationAttributes(){
+	public List<RelationalSchemaAttribute> getInputRelationAttributes(int index){
 
 		List<RelationalSchemaAttribute> relationSchemaAttributes = new ArrayList<>();
 		
@@ -398,7 +527,7 @@ public class EditorPropertiesFrame extends JDialog
 		String[] key_values = style.trim().split(";");
 		
 		for (String key_value : key_values) {
-			if(key_value.contains("inRelSchAttr")){
+			if(key_value.contains("inRelSchAttr_"+(index+1))){
 				String value = key_value.split("=")[1];
 				String attributeType = value.split("@%&")[0];
 				String attributeName = value.split("@%&")[1];
@@ -583,5 +712,126 @@ public class EditorPropertiesFrame extends JDialog
 		}
             
     }
+    
+    private class TabCloseButton extends JButton implements ActionListener {
+        private int index;
+    	public TabCloseButton(int index) {
+    		this.index = index;
+            int size = 17;
+            setPreferredSize(new Dimension(size, size));
+            setToolTipText("close this tab");
+            //Make the button looks the same for all Laf's
+            setUI(new BasicButtonUI());
+            //Make it transparent
+            setContentAreaFilled(false);
+            //No need to be focusable
+            setFocusable(false);
+            setBorder(BorderFactory.createEtchedBorder());
+            setBorderPainted(false);
+            //Making nice rollover effect
+            //we use the same listener for all buttons
+            addMouseListener(null);
+            setRolloverEnabled(true);
+            //Close the proper tab by clicking the button
+            addActionListener(this);
+        }
+ 
+        public void actionPerformed(ActionEvent e) {
+        	if(inputRelationtabbedPane.getTabCount()>2){
+	        	int tab_index = inputRelationtabbedPane.indexOfTab("Relation "+index);
+	        	inputRelationtabbedPane.removeTabAt(tab_index);
+	        	inputRelationalSchemaTables.remove(tab_index);
+        	}
+        }
+ 
+        //we don't want to update UI for this button
+        public void updateUI() {
+        }
+ 
+        //paint the cross
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2 = (Graphics2D) g.create();
+            //shift the image for pressed buttons
+            if (getModel().isPressed()) {
+                g2.translate(1, 1);
+            }
+            g2.setStroke(new BasicStroke(2));
+            g2.setColor(Color.BLACK);
+            if (getModel().isRollover()) {
+                g2.setColor(Color.MAGENTA);
+            }
+            int delta = 6;
+            g2.drawLine(delta, delta, getWidth() - delta - 1, getHeight() - delta - 1);
+            g2.drawLine(getWidth() - delta - 1, delta, delta, getHeight() - delta - 1);
+            g2.dispose();
+        }
+    }
+    
+    
+    private class TabAddButton extends JButton implements ActionListener {
+        public TabAddButton() {
+            int size = 17;
+            setPreferredSize(new Dimension(size, size));
+            setToolTipText("create a new tab");
+            //Make the button looks the same for all Laf's
+            setUI(new BasicButtonUI());
+            //Make it transparent
+            setContentAreaFilled(false);
+            //No need to be focusable
+            setFocusable(false);
+            setBorder(BorderFactory.createEtchedBorder());
+            setBorderPainted(false);
+            //Making nice rollover effect
+            //we use the same listener for all buttons
+            addMouseListener(null);
+            setRolloverEnabled(true);
+            //Close the proper tab by clicking the button
+            addActionListener(this);
+        }
+ 
+        public void actionPerformed(ActionEvent e) {
+        	int index = inputRelationtabbedPane.getTabCount() - 1;
+        	inputRelationtabbedPane.removeTabAt(index);
+        	        	
+    		inputRelationtabbedPane.addTab("Relation "+inputRelationtNextIndex, null, createInputRelationalSchemaPanel(index),
+                    "");
+  
+    		inputRelationtabbedPane.setTabComponentAt(index, createCloseTabPanel());
+    		
+    		
+    		inputRelationtabbedPane.addTab("Add", null, new JPanel(),
+                    "");
+
+    		inputRelationtabbedPane.setTabComponentAt(index+1, createAddTabPanel());
+    		inputRelationtabbedPane.setEnabledAt(index+1, false);
+    		
+    		inputRelationtNextIndex++;
+        }
+ 
+        //we don't want to update UI for this button
+        public void updateUI() {
+        }
+ 
+        //paint the cross
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2 = (Graphics2D) g.create();
+            //shift the image for pressed buttons
+            if (getModel().isPressed()) {
+                g2.translate(1, 1);
+            }
+            g2.setStroke(new BasicStroke(2));
+            g2.setColor(Color.BLACK);
+            if (getModel().isRollover()) {
+                g2.setColor(Color.MAGENTA);
+            }
+            int delta = 6;
+            g2.drawLine(delta, getHeight()/2, getWidth() - delta - 1, getHeight()/2);
+            g2.drawLine(getWidth()/2, delta, getWidth()/2, getHeight() - delta - 1);
+            g2.dispose();
+        }
+    }
+
 
 }

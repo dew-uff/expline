@@ -11,6 +11,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
@@ -61,6 +62,7 @@ import com.mxgraph.analysis.mxGraphProperties;
 import com.mxgraph.analysis.mxGraphStructure;
 import com.mxgraph.analysis.mxTraversal;
 import com.mxgraph.costfunction.mxCostFunction;
+import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxIGraphModel;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.swing.util.mxGraphActions;
@@ -145,7 +147,33 @@ public class EditorMenuBar extends JMenuBar
 			 */
 			public void actionPerformed(ActionEvent e)
 			{
-				editor.properties();
+				
+				if (!editor.getGraphComponent().getGraph()
+						.isSelectionEmpty()) {
+					if (editor.getGraphComponent().getGraph().getSelectionCount() == 1){
+						
+						if(((mxCell)editor.getGraphComponent().getGraph().getSelectionCell()).isVertex()){
+							
+							editor.properties();
+							
+						}
+						else{				
+							JOptionPane.showMessageDialog(graphComponent,
+									mxResources.get("noActivitySelected"));	
+						}
+						
+					}
+					else{
+						JOptionPane.showMessageDialog(graphComponent,
+								mxResources.get("moreThanOneSected"));	
+					}
+					
+				}
+				else{
+					JOptionPane.showMessageDialog(graphComponent,
+							mxResources.get("noActivitySelected"));	
+				}
+				
 			}
 		});
 		
@@ -243,23 +271,6 @@ public class EditorMenuBar extends JMenuBar
 			}
 		});
 	}
-
-	
-	//ExpLine-Begin
-	
-	public static void populateAlgebraicOperatorMenu(JMenu menu, BasicGraphEditor editor)
-	{
-		
-		ButtonGroup algebraicOperatorGroup = new ButtonGroup();
-		menu.add(new AlgebraicOperatorOptionItem(algebraicOperatorGroup, editor, mxResources.get("map")));
-		menu.add(new AlgebraicOperatorOptionItem(algebraicOperatorGroup, editor, mxResources.get("splitMap")));
-		menu.add(new AlgebraicOperatorOptionItem(algebraicOperatorGroup, editor, mxResources.get("reduce")));
-		menu.add(new AlgebraicOperatorOptionItem(algebraicOperatorGroup, editor, mxResources.get("filter")));
-		menu.add(new AlgebraicOperatorOptionItem(algebraicOperatorGroup, editor, mxResources.get("join")));
-		
-	}
-	
-	//ExpLine-End
 
 	/**
 	 *

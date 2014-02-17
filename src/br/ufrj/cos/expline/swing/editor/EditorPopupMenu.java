@@ -1,14 +1,18 @@
 package br.ufrj.cos.expline.swing.editor;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 import javax.swing.TransferHandler;
 
+import br.ufrj.cos.expline.swing.editor.EditorActions.AlgebraicOperatorOptionItem;
 import br.ufrj.cos.expline.swing.editor.EditorActions.HistoryAction;
 
 import com.mxgraph.model.mxCell;
+import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.swing.util.mxGraphActions;
 import com.mxgraph.util.mxResources;
+import com.mxgraph.view.mxGraph;
 
 public class EditorPopupMenu extends JPopupMenu
 {
@@ -67,7 +71,7 @@ public class EditorPopupMenu extends JPopupMenu
 			
 			if (isVertex){
 				JMenu menu = (JMenu) add(new JMenu(mxResources.get("albegraicOperator")));
-				EditorMenuBar.populateAlgebraicOperatorMenu(menu, editor);
+				EditorPopupMenu.populateAlgebraicOperatorMenu(menu, editor);
 			}
 				
 			addSeparator();
@@ -81,5 +85,63 @@ public class EditorPopupMenu extends JPopupMenu
 		add(editor.bind(mxResources.get("selectAll"), mxGraphActions
 				.getSelectAllAction()));
 	}
+	
+	//ExpLine-Begin
+	
+	public static void populateAlgebraicOperatorMenu(JMenu menu, BasicGraphEditor editor)
+	{
+		
+		ButtonGroup algebraicOperatorGroup = new ButtonGroup();
+		
+		mxGraphComponent graphComponent = editor
+				.getGraphComponent();
+		mxGraph graph = graphComponent.getGraph();
+		
+		mxCell cell = (mxCell) graph.getSelectionCell();
+		
+		String style = cell.getStyle();
+		
+		String newStyle = "";
+		
+		String[] key_values = style.trim().split(";");
+		
+		String algebraicOperator = "";
+		
+		for (String key_value : key_values) {
+			if(key_value.contains("algebraicOperator")) {
+				newStyle = newStyle + ";" + key_value;
+				algebraicOperator = key_value.split("=")[1];
+				break;
+			}
+		}
+		
+		if(algebraicOperator.equals(mxResources.get("map")))
+			menu.add(new AlgebraicOperatorOptionItem(algebraicOperatorGroup, editor, mxResources.get("map"), true));
+		else
+			menu.add(new AlgebraicOperatorOptionItem(algebraicOperatorGroup, editor, mxResources.get("map"), false));
+		
+		if(algebraicOperator.equals(mxResources.get("select")))
+			menu.add(new AlgebraicOperatorOptionItem(algebraicOperatorGroup, editor, mxResources.get("select"), true));
+		else
+			menu.add(new AlgebraicOperatorOptionItem(algebraicOperatorGroup, editor, mxResources.get("select"), false));
+		
+		if(algebraicOperator.equals(mxResources.get("splitMap")))
+			menu.add(new AlgebraicOperatorOptionItem(algebraicOperatorGroup, editor, mxResources.get("splitMap"), true));
+		else
+			menu.add(new AlgebraicOperatorOptionItem(algebraicOperatorGroup, editor, mxResources.get("splitMap"), false));
+		
+		if(algebraicOperator.equals(mxResources.get("reduce")))
+			menu.add(new AlgebraicOperatorOptionItem(algebraicOperatorGroup, editor, mxResources.get("reduce"), true));
+		else
+			menu.add(new AlgebraicOperatorOptionItem(algebraicOperatorGroup, editor, mxResources.get("reduce"), false));
+		
+		if(algebraicOperator.equals(mxResources.get("join")))
+			menu.add(new AlgebraicOperatorOptionItem(algebraicOperatorGroup, editor, mxResources.get("join"), true));
+		else
+			menu.add(new AlgebraicOperatorOptionItem(algebraicOperatorGroup, editor, mxResources.get("join"), false));
+		
+	}
+	
+	//ExpLine-End
 
 }

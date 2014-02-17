@@ -7,8 +7,6 @@ import java.awt.Color;
 import java.awt.Point;
 import java.net.URL;
 import java.text.NumberFormat;
-import java.util.Iterator;
-import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.UIManager;
@@ -21,10 +19,10 @@ import br.ufrj.cos.expline.swing.editor.EditorPalette;
 
 import com.mxgraph.io.mxCodec;
 import com.mxgraph.model.mxCell;
-import com.mxgraph.model.mxGeometry;
 import com.mxgraph.model.mxICell;
 import com.mxgraph.model.mxIGraphModel;
 import com.mxgraph.swing.mxGraphComponent;
+import com.mxgraph.swing.handler.mxCellHandler;
 import com.mxgraph.swing.handler.mxConnectionHandler;
 import com.mxgraph.swing.util.mxGraphTransferable;
 import com.mxgraph.swing.util.mxSwingConstants;
@@ -32,7 +30,6 @@ import com.mxgraph.util.mxConstants;
 import com.mxgraph.util.mxEvent;
 import com.mxgraph.util.mxEventObject;
 import com.mxgraph.util.mxEventSource.mxIEventListener;
-import com.mxgraph.util.mxPoint;
 import com.mxgraph.util.mxResources;
 import com.mxgraph.util.mxUtils;
 import com.mxgraph.view.mxCellState;
@@ -62,7 +59,7 @@ public class ExpLineEditor extends BasicGraphEditor
 
 	public ExpLineEditor()
 	{
-		this("ExpLine", new CustomGraphComponent(new CustomGraph()));
+		this("ExpLine", new ExpLineGraphComponent(new ExpLineGraph()));
 		
 		try
 		{
@@ -108,27 +105,12 @@ public class ExpLineEditor extends BasicGraphEditor
 
 					if (graph.getModel().isEdge(cell))
 					{
-						((CustomGraph) graph).setEdgeTemplate(cell);
+						((ExpLineGraph) graph).setEdgeTemplate(cell);
 					}
 				}
 			}
 
 		});
-		
-		
-		//Setting some parameters
-		
-		graphComponent.setPageVisible(false);
-		graphComponent.setGridVisible(false);
-		graphComponent.setTripleBuffered(true);
-		graphComponent.setAntiAlias(true);
-		
-		mxConnectionHandler handler = graphComponent
-				.getConnectionHandler();
-		handler.setCreateTarget(false);
-	    graph.setMultigraph(false);
-		
-		//this.graphComponent.setConnectable(false);
 		
 		
 		// Adds experiment line components in the library
@@ -193,7 +175,7 @@ public class ExpLineEditor extends BasicGraphEditor
 	/**
 	 * 
 	 */
-	public static class CustomGraphComponent extends mxGraphComponent
+	public static class ExpLineGraphComponent extends mxGraphComponent
 	{
 
 		/**
@@ -205,16 +187,18 @@ public class ExpLineEditor extends BasicGraphEditor
 		 * 
 		 * @param graph
 		 */
-		public CustomGraphComponent(mxGraph graph)
+		public ExpLineGraphComponent(mxGraph graph)
 		{
 			super(graph);
 
 			// Sets switches typically used in an editor
-			setPageVisible(true);
-			setGridVisible(true);
+			setPageVisible(false);
+			setGridVisible(false);
+			setTripleBuffered(true);super.createHandlers();
+			setAntiAlias(true);
 			setToolTips(true);
-			getConnectionHandler().setCreateTarget(true);
-
+			
+			getConnectionHandler().setCreateTarget(false);
 			// Loads the defalt stylesheet from an external file
 			mxCodec codec = new mxCodec();
 			Document doc = mxUtils.loadDocument(ExpLineEditor.class.getResource(
@@ -259,12 +243,25 @@ public class ExpLineEditor extends BasicGraphEditor
 			return super.importCells(cells, dx, dy, target, location);
 		}
 
+		@Override
+		protected mxConnectionHandler createConnectionHandler() {
+			// TODO Auto-generated method stub
+			return super.createConnectionHandler();
+		}
+
+		@Override
+		public mxCellHandler createHandler(mxCellState state) {
+			// TODO Auto-generated method stub
+			return super.createHandler(state);
+		}
+		
+
 	}
 
 	/**
 	 * A graph that creates new edges from a given template edge.
 	 */
-	public static class CustomGraph extends mxGraph
+	public static class ExpLineGraph extends mxGraph
 	{
 		/**
 		 * Holds the edge to be used as a template for inserting new edges.
@@ -272,12 +269,12 @@ public class ExpLineEditor extends BasicGraphEditor
 		protected Object edgeTemplate;
 
 		/**
-		 * Custom graph that defines the alternate edge style to be used when
-		 * the middle control point of edges is double clicked (flipped).
+		 * 
+		 * 
 		 */
-		public CustomGraph()
+		public ExpLineGraph()
 		{
-			setAlternateEdgeStyle("edgeStyle=mxEdgeStyle.ElbowConnector;elbow=vertical");
+			setMultigraph(false);
 		}
 
 		/**
@@ -293,86 +290,28 @@ public class ExpLineEditor extends BasicGraphEditor
 		 */
 		public String getToolTipForCell(Object cell)
 		{
-			String tip = "<html>";
-			mxGeometry geo = getModel().getGeometry(cell);
-			mxCellState state = getView().getState(cell);
+			String tip = "";
 
-			if (getModel().isEdge(cell))
+			if (getModel().isVertex(cell))
 			{
-				tip += "points={";
 
-				if (geo != null)
-				{
-					List<mxPoint> points = geo.getPoints();
-
-					if (points != null)
-					{
-						Iterator<mxPoint> it = points.iterator();
-
-						while (it.hasNext())
-						{
-							mxPoint point = it.next();
-							tip += "[x=" + numberFormat.format(point.getX())
-									+ ",y=" + numberFormat.format(point.getY())
-									+ "],";
-						}
-
-						tip = tip.substring(0, tip.length() - 1);
+				mxCell cell_ = (mxCell) cell;
+				String style = cell_.getStyle();
+				
+				String[] key_values = style.trim().split(";");
+				
+				for (String key_value : key_values) {
+					if(key_value.contains("algebraicOperator")){
+						String albebraicOperator = key_value.split("=")[1];
+						
+						tip += "Algebraic Operator = " + albebraicOperator;
+						
+						break;
 					}
 				}
-
-				tip += "}<br>";
-				tip += "absPoints={";
-
-				if (state != null)
-				{
-
-					for (int i = 0; i < state.getAbsolutePointCount(); i++)
-					{
-						mxPoint point = state.getAbsolutePoint(i);
-						tip += "[x=" + numberFormat.format(point.getX())
-								+ ",y=" + numberFormat.format(point.getY())
-								+ "],";
-					}
-
-					tip = tip.substring(0, tip.length() - 1);
-				}
-
-				tip += "}";
-			}
-			else
-			{
-				tip += "geo=[";
-
-				if (geo != null)
-				{
-					tip += "x=" + numberFormat.format(geo.getX()) + ",y="
-							+ numberFormat.format(geo.getY()) + ",width="
-							+ numberFormat.format(geo.getWidth()) + ",height="
-							+ numberFormat.format(geo.getHeight());
-				}
-
-				tip += "]<br>";
-				tip += "state=[";
-
-				if (state != null)
-				{
-					tip += "x=" + numberFormat.format(state.getX()) + ",y="
-							+ numberFormat.format(state.getY()) + ",width="
-							+ numberFormat.format(state.getWidth())
-							+ ",height="
-							+ numberFormat.format(state.getHeight());
-				}
-
-				tip += "]";
+				
 			}
 
-			mxPoint trans = getView().getTranslate();
-
-			tip += "<br>scale=" + numberFormat.format(getView().getScale())
-					+ ", translate=[x=" + numberFormat.format(trans.getX())
-					+ ",y=" + numberFormat.format(trans.getY()) + "]";
-			tip += "</html>";
 
 			return tip;
 		}
@@ -403,6 +342,34 @@ public class ExpLineEditor extends BasicGraphEditor
 
 			return super.createEdge(parent, id, value, source, target, style);
 		}
+
+		@Override
+		public Object createVertex(Object parent, String id, Object value,
+				double x, double y, double width, double height, String style) {
+			// TODO Auto-generated method stub
+			return super.createVertex(parent, id, value, x, y, width, height, style);
+		}
+
+		@Override
+		public Object createVertex(Object parent, String id, Object value,
+				double x, double y, double width, double height, String style,
+				boolean relative) {
+			// TODO Auto-generated method stub
+			return super.createVertex(parent, id, value, x, y, width, height, style,
+					relative);
+		}
+
+		@Override
+		public boolean isCellEditable(Object cell) {
+			
+			mxCell cell_ = (mxCell) cell;
+			if(cell != null && cell_.isVertex())
+				return super.isCellEditable(cell);
+			else
+				return false;
+		}
+		
+		
 
 	}
 }

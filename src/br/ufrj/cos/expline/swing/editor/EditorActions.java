@@ -148,32 +148,71 @@ public class EditorActions
 	
 	//ExpLine-Begin
 	
+	/**
+	 *
+	 */
 	@SuppressWarnings("serial")
-	public static class AlgebraicOperatorOptionItem extends JRadioButtonMenuItem
+	public static class AlgebraicOperatorAction extends AbstractAction
 	{
+		
 		/**
 		 * 
 		 */
-		public AlgebraicOperatorOptionItem(ButtonGroup group, final BasicGraphEditor editor, String name)
+		protected String algebraicOperator;
+
+		/**
+		 * 
+		 */
+		public AlgebraicOperatorAction(String algebraicOperator)
+		{
+			this.algebraicOperator = algebraicOperator;
+		}
+		
+		/**
+		 * 
+		 */
+		public void actionPerformed(ActionEvent e)
+		{
+			
+			BasicGraphEditor editor = getEditor(e);
+			
+			mxGraphComponent graphComponent = editor
+					.getGraphComponent();
+			mxGraph graph = graphComponent.getGraph();
+			
+			mxCell cell = (mxCell) graph.getSelectionCell();
+			
+			String style = cell.getStyle();
+			
+			String newStyle = "";
+			
+			String[] key_values = style.trim().split(";");
+			
+			for (String key_value : key_values) {
+				if(!key_value.contains("algebraicOperator"))
+					newStyle = newStyle + ";" + key_value;
+			}
+			
+			newStyle = newStyle.substring(1, newStyle.length()) +";algebraicOperator="+algebraicOperator;
+			
+			cell.setStyle(newStyle);
+		}
+	}
+	
+	@SuppressWarnings("serial")
+	public static class AlgebraicOperatorOptionItem extends JRadioButtonMenuItem
+	{
+		
+		/**
+		 * 
+		 */
+		public AlgebraicOperatorOptionItem(ButtonGroup group, final BasicGraphEditor editor, String name, boolean selected)
 		{
 			super(name);
-			//setSelected(true);
+			setSelected(selected);
 			group.add(this);
 
-			addActionListener(new ActionListener()
-			{
-				/**
-				 * 
-				 */
-				public void actionPerformed(ActionEvent e)
-				{
-					mxGraphComponent graphComponent = editor
-							.getGraphComponent();
-					mxGraph graph = graphComponent.getGraph();
-
-					setSelected(true);
-				}
-			});
+			addActionListener(editor.bind(mxResources.get("albegraicOperator"), new AlgebraicOperatorAction(name)));
 		}
 	}
 	
