@@ -27,6 +27,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.TransferHandler;
 
+import br.ufrj.cos.expline.model.Activity;
+
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
 import com.mxgraph.swing.util.mxGraphTransferable;
@@ -247,7 +249,7 @@ public class EditorPalette extends JPanel
 	public void addTemplate(final String name, ImageIcon icon, String style,
 			int width, int height, Object value)
 	{
-		mxCell cell = new mxCell(value, new mxGeometry(0, 0, width, height),
+		mxCell cell = new Activity(value, new mxGeometry(0, 0, width, height),
 				style);
 		cell.setVertex(true);
 

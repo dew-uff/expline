@@ -387,7 +387,7 @@ public class EditorMenuBar extends JMenuBar
 		protected AnalyzeType analyzeType;
 
 		/**
-		 * Examples for calling analysis methods from mxGraphStructure 
+		 * Examples for calling analysis methods from GraphStructure 
 		 */
 		public AnalyzeGraph(AnalyzeType analyzeType, mxAnalysisGraph aGraph)
 		{

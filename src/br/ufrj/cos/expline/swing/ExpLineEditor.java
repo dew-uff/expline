@@ -13,17 +13,24 @@ import javax.swing.UIManager;
 
 import org.w3c.dom.Document;
 
+import br.ufrj.cos.expline.io.ActivityCodec;
+import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.swing.editor.BasicGraphEditor;
 import br.ufrj.cos.expline.swing.editor.EditorMenuBar;
 import br.ufrj.cos.expline.swing.editor.EditorPalette;
+import br.ufrj.cos.expline.swing.handler.ConnectionHandler;
+import br.ufrj.cos.expline.swing.handler.EdgeHandler;
+import br.ufrj.cos.expline.swing.handler.ElbowEdgeHandler;
 
 import com.mxgraph.io.mxCodec;
+import com.mxgraph.io.mxCodecRegistry;
 import com.mxgraph.model.mxCell;
+import com.mxgraph.model.mxGeometry;
 import com.mxgraph.model.mxICell;
 import com.mxgraph.model.mxIGraphModel;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.swing.handler.mxCellHandler;
-import com.mxgraph.swing.handler.mxConnectionHandler;
+import com.mxgraph.swing.handler.mxVertexHandler;
 import com.mxgraph.swing.util.mxGraphTransferable;
 import com.mxgraph.swing.util.mxSwingConstants;
 import com.mxgraph.util.mxConstants;
@@ -33,6 +40,8 @@ import com.mxgraph.util.mxEventSource.mxIEventListener;
 import com.mxgraph.util.mxResources;
 import com.mxgraph.util.mxUtils;
 import com.mxgraph.view.mxCellState;
+import com.mxgraph.view.mxEdgeStyle;
+import com.mxgraph.view.mxEdgeStyle.mxEdgeStyleFunction;
 import com.mxgraph.view.mxGraph;
 
 public class ExpLineEditor extends BasicGraphEditor
@@ -72,6 +81,10 @@ public class ExpLineEditor extends BasicGraphEditor
 
 		mxSwingConstants.SHADOW_COLOR = Color.LIGHT_GRAY;
 		mxConstants.W3C_SHADOWCOLOR = "#D3D3D3";
+		
+		mxCodecRegistry.addPackage("br.ufrj.cos.expline.model");
+		mxCodecRegistry.register(new ActivityCodec());
+		//mxCodecRegistry.addAlias("br.ufrj.cos.expline.model.Activity", "Activity");
 
 		this.createFrame(new EditorMenuBar(this)).setVisible(true);
 		
@@ -244,18 +257,35 @@ public class ExpLineEditor extends BasicGraphEditor
 		}
 
 		@Override
-		protected mxConnectionHandler createConnectionHandler() {
+		protected ConnectionHandler createConnectionHandler() {
 			// TODO Auto-generated method stub
-			return super.createConnectionHandler();
+			return new ConnectionHandler(this);
 		}
 
 		@Override
 		public mxCellHandler createHandler(mxCellState state) {
 			// TODO Auto-generated method stub
-			return super.createHandler(state);
-		}
-		
+			if (graph.getModel().isVertex(state.getCell()))
+			{
+				return new mxVertexHandler(this, state);
+			}
+			else if (graph.getModel().isEdge(state.getCell()))
+			{
+				mxEdgeStyleFunction style = graph.getView().getEdgeStyle(state,
+						null, null, null);
 
+				if (graph.isLoop(state) || style == mxEdgeStyle.ElbowConnector
+						|| style == mxEdgeStyle.SideToSide
+						|| style == mxEdgeStyle.TopToBottom)
+				{
+					return new ElbowEdgeHandler(this, state);
+				}
+
+				return new EdgeHandler(this, state);
+			}
+
+			return new mxCellHandler(this, state);
+		}
 	}
 
 	/**
@@ -354,9 +384,17 @@ public class ExpLineEditor extends BasicGraphEditor
 		public Object createVertex(Object parent, String id, Object value,
 				double x, double y, double width, double height, String style,
 				boolean relative) {
-			// TODO Auto-generated method stub
-			return super.createVertex(parent, id, value, x, y, width, height, style,
-					relative);
+			
+			mxGeometry geometry = new mxGeometry(x, y, width, height);
+			geometry.setRelative(relative);
+
+			Activity vertex = new Activity(value, geometry, style);
+			vertex.setId(id);
+			vertex.setVertex(true);
+			vertex.setConnectable(true);
+
+			return vertex;
+			
 		}
 
 		@Override
