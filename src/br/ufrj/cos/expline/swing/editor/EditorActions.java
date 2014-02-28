@@ -47,6 +47,8 @@ import javax.swing.text.html.HTMLEditorKit;
 
 import org.w3c.dom.Document;
 
+import br.ufrj.cos.expline.model.Activity;
+
 import com.mxgraph.analysis.mxDistanceCostFunction;
 import com.mxgraph.analysis.mxGraphAnalysis;
 import com.mxgraph.canvas.mxGraphics2DCanvas;
@@ -180,22 +182,11 @@ public class EditorActions
 					.getGraphComponent();
 			mxGraph graph = graphComponent.getGraph();
 			
-			mxCell cell = (mxCell) graph.getSelectionCell();
+			Activity activity = (Activity) graph.getSelectionCell();
 			
-			String style = cell.getStyle();
+			activity.setAlgebraicOperator(algebraicOperator);
 			
-			String newStyle = "";
 			
-			String[] key_values = style.trim().split(";");
-			
-			for (String key_value : key_values) {
-				if(!key_value.contains("algebraicOperator"))
-					newStyle = newStyle + ";" + key_value;
-			}
-			
-			newStyle = newStyle.substring(1, newStyle.length()) +";algebraicOperator="+algebraicOperator;
-			
-			cell.setStyle(newStyle);
 		}
 	}
 	

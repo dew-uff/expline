@@ -3,7 +3,6 @@ package br.ufrj.cos.expline.swing.editor;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -35,9 +34,11 @@ import javax.swing.KeyStroke;
 import javax.swing.plaf.basic.BasicButtonUI;
 import javax.swing.table.AbstractTableModel;
 
+import br.ufrj.cos.expline.model.Activity;
+import br.ufrj.cos.expline.model.RelationSchema;
+import br.ufrj.cos.expline.model.RelationSchemaAttribute;
 import br.ufrj.cos.expline.swing.editor.EditorActions.AlgebraicOperatorAction;
 
-import com.mxgraph.model.mxCell;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxResources;
 import com.mxgraph.view.mxGraph;
@@ -234,29 +235,26 @@ public class EditorPropertiesFrame extends JDialog
 		inputRelationtabbedPane = new JTabbedPane();
 		
 		
-		mxCell cell = (mxCell) graph.getSelectionCell();
-		
-		String style = cell.getStyle();
+		Activity activity = (Activity) graph.getSelectionCell();
 		
 		inputRelationtNextIndex = 1;
 		
-		while(true){
-			if(style.contains("inRelSchAttr_"+inputRelationtNextIndex)){
-				inputRelationtabbedPane.addTab("Relation "+inputRelationtNextIndex, null, createInputRelationalSchemaPanel(inputRelationtNextIndex-1),
-                        "");
-      
-				inputRelationtabbedPane.setTabComponentAt(inputRelationtNextIndex-1, createCloseTabPanel());
-			}
-			else
-				break;
+		List<RelationSchema> inputRelationSchemas = activity.getInputRelationsSchemas();
+		
+		for (RelationSchema inputRelationSchema : inputRelationSchemas) {
+			inputRelationtabbedPane.addTab("Relation "+inputRelationtNextIndex, null, createInputRelationalSchemaPanel(inputRelationSchema, inputRelationtNextIndex-1),
+                    "");
+  
+			inputRelationtabbedPane.setTabComponentAt(inputRelationtNextIndex-1, createCloseTabPanel());
 			
 			inputRelationtNextIndex++;
-
 		}
 		
 		
 		if(inputRelationtNextIndex == 1){
-			inputRelationtabbedPane.addTab("Relation 1", null, createInputRelationalSchemaPanel(0),
+			RelationSchema emptyRelationSchema = new RelationSchema();
+			
+			inputRelationtabbedPane.addTab("Relation 1", null, createInputRelationalSchemaPanel(emptyRelationSchema, 0),
 	                          "");
 	        
 			inputRelationtabbedPane.setTabComponentAt(0, createCloseTabPanel());
@@ -281,11 +279,11 @@ public class EditorPropertiesFrame extends JDialog
 		return panel;
 	}
 	
-	public JPanel createInputRelationalSchemaPanel(int index){
+	public JPanel createInputRelationalSchemaPanel(RelationSchema relationSchema, int index){
 		
-		JPanel tablePanel = new JPanel(new BorderLayout());	
+		JPanel tablePanel = new JPanel(new BorderLayout());
 			
-		JTable inputTable = createInputTable(index);
+		JTable inputTable = new JTable(new RelationalSchemaTableModel(relationSchema));
 		
 		inputRelationalSchemaTables.add(index, inputTable);
 		
@@ -381,20 +379,11 @@ public class EditorPropertiesFrame extends JDialog
 		return tablePanel;
 	}
 	
-	public JTable createInputTable(int index){
-
-		List<RelationalSchemaAttribute> relations = getInputRelationAttributes(index);
-
-        JTable table = new JTable(new RelationalSchemaTableModel(relations));
-
-		return table;
-	}
-	
 	public JTable createOutputTable(){
 
-		List<RelationalSchemaAttribute> relations = getOutputRelationAttributes();
-        
-        OutputRelationalSchemaTableModel = new RelationalSchemaTableModel(relations);
+		Activity activity = (Activity) graph.getSelectionCell();
+	
+        OutputRelationalSchemaTableModel = new RelationalSchemaTableModel(activity.getOutputRelationSchema());
         JTable table = new JTable(OutputRelationalSchemaTableModel);
         
 		return table;
@@ -402,25 +391,16 @@ public class EditorPropertiesFrame extends JDialog
 	
 	public void loadAlgebraicOperator(){
 
-		mxCell cell = (mxCell) graph.getSelectionCell();
+		Activity activity = (Activity) graph.getSelectionCell();
 		
-		String style = cell.getStyle();
+		String albebraicOperator = activity.getAlgebraicOperator();
 		
-		String[] key_values = style.trim().split(";");
-		
-		for (String key_value : key_values) {
-			if(key_value.contains("algebraicOperator")){
-				String albebraicOperator = key_value.split("=")[1];
-				
-				for (int i = 0; i < algebraicOperatorsJComboBox.getModel().getSize(); i++) {
-					if (algebraicOperatorsJComboBox.getModel().getElementAt(i).equals(albebraicOperator)){
-						algebraicOperatorsJComboBox.setSelectedIndex(i);
-						break;
-					}
-				}
+		for (int i = 0; i < algebraicOperatorsJComboBox.getModel().getSize(); i++) {
+			if (algebraicOperatorsJComboBox.getModel().getElementAt(i).equals(albebraicOperator)){
+				algebraicOperatorsJComboBox.setSelectedIndex(i);
 				break;
 			}
-		}
+		}	
 		
 	}
 	
@@ -436,132 +416,26 @@ public class EditorPropertiesFrame extends JDialog
 	}
 	
 	public void saveInputRelations(){
-		
-		mxCell cell = (mxCell) graph.getSelectionCell();
-		
-		String newStyle = clearInputRelationFromActivity();
-		
-		cell.setStyle(newStyle);
-		
-		for (int i = 0; i < inputRelationalSchemaTables.size(); i++) {
-			saveInputRelationAttributes(i);
-		}
-	}
-	
-	public void saveInputRelationAttributes(int index){
 
-		mxCell cell = (mxCell) graph.getSelectionCell();
+		Activity activity = (Activity) graph.getSelectionCell();
 		
-		String newStyle = cell.getStyle();
+		activity.clearInputRelationsSchemas();
 		
-		RelationalSchemaTableModel inputRelationalSchemaTableModel = (RelationalSchemaTableModel) inputRelationalSchemaTables.get(index).getModel();
-		
-		List<RelationalSchemaAttribute> relAttrs = inputRelationalSchemaTableModel.getRelationAttributes();
-		
-		for (RelationalSchemaAttribute relAttr : relAttrs) {
-			newStyle = newStyle + ";inRelSchAttr_"+(index+1)+"=" + relAttr.getType() + "@%&"+ relAttr.getName();
+		for (JTable inputRelationalSchemaTable : inputRelationalSchemaTables) {
+			RelationalSchemaTableModel inputRelationalSchemaTableModel = (RelationalSchemaTableModel) inputRelationalSchemaTable.getModel();
+			
+			activity.addInputRelationSchema(inputRelationalSchemaTableModel.getRelationSchema());
 		}
-		
-		cell.setStyle(newStyle);
 	}
 	
 	public void saveOutputRelationAttributes(){
 
-		mxCell cell = (mxCell) graph.getSelectionCell();
+		Activity activity = (Activity) graph.getSelectionCell();
 		
-		String newStyle = clearOutputRelationFromActivity();
+		RelationSchema outputRelationSchema = OutputRelationalSchemaTableModel.getRelationSchema();
 		
-		List<RelationalSchemaAttribute> relAttrs = OutputRelationalSchemaTableModel.getRelationAttributes();
+		activity.setOutputRelationSchema(outputRelationSchema);
 		
-		for (RelationalSchemaAttribute relAttr : relAttrs) {
-			newStyle = newStyle + ";outRelSchAttr=" + relAttr.getType() + "@%&"+ relAttr.getName();
-		}
-		
-		cell.setStyle(newStyle);
-	}
-	
-	public String clearInputRelationFromActivity(){
-		
-		mxCell cell = (mxCell) graph.getSelectionCell();
-		
-		String style = cell.getStyle();
-		
-		String newStyle = "";
-		
-		String[] key_values = style.trim().split(";");
-		
-		for (String key_value : key_values) {
-			if(!key_value.contains("inRelSchAttr"))
-				newStyle = newStyle + ";" + key_value;
-		}
-		
-		return newStyle.substring(1, newStyle.length());
-	}
-	
-	public String clearOutputRelationFromActivity(){
-		
-		mxCell cell = (mxCell) graph.getSelectionCell();
-		
-		String style = cell.getStyle();
-		
-		String newStyle = "";
-		
-		String[] key_values = style.trim().split(";");
-		
-		for (String key_value : key_values) {
-			if(!key_value.contains("outRelSchAttr"))
-				newStyle = newStyle + ";" + key_value;
-		}
-		
-		return newStyle.substring(1, newStyle.length());
-	}
-	
-	public List<RelationalSchemaAttribute> getInputRelationAttributes(int index){
-
-		List<RelationalSchemaAttribute> relationSchemaAttributes = new ArrayList<>();
-		
-		mxCell cell = (mxCell) graph.getSelectionCell();
-		
-		String style = cell.getStyle();
-		
-		String[] key_values = style.trim().split(";");
-		
-		for (String key_value : key_values) {
-			if(key_value.contains("inRelSchAttr_"+(index+1))){
-				String value = key_value.split("=")[1];
-				String attributeType = value.split("@%&")[0];
-				String attributeName = value.split("@%&")[1];
-				
-				relationSchemaAttributes.add(new RelationalSchemaAttribute(attributeType, attributeName));
-			}
-			key_value.split("=");
-		}
-		
-		return relationSchemaAttributes;
-	}
-	
-	public List<RelationalSchemaAttribute> getOutputRelationAttributes(){
-
-		List<RelationalSchemaAttribute> relationSchemaAttributes = new ArrayList<>();
-		
-		mxCell cell = (mxCell) graph.getSelectionCell();
-		
-		String style = cell.getStyle();
-		
-		String[] key_values = style.trim().split(";");
-		
-		for (String key_value : key_values) {
-			if(key_value.contains("outRelSchAttr")){
-				String value = key_value.split("=")[1];
-				String attributeType = value.split("@%&")[0];
-				String attributeName = value.split("@%&")[1];
-				
-				relationSchemaAttributes.add(new RelationalSchemaAttribute(attributeType, attributeName));
-			}
-			key_value.split("=");
-		}
-		
-		return relationSchemaAttributes;
 	}
 
 	/**
@@ -614,35 +488,38 @@ public class EditorPropertiesFrame extends JDialog
 
     public class RelationalSchemaTableModel extends AbstractTableModel {
 
-        private List<RelationalSchemaAttribute> relations;
+        private RelationSchema relation;
 
-        public RelationalSchemaTableModel(List<RelationalSchemaAttribute> relations) {
-            this.relations = new ArrayList<>(relations);
+        public RelationalSchemaTableModel(RelationSchema relation) {
+            this.relation = relation;
         }
 
 
         
-        public void insertRow(String[] values){
-        	RelationalSchemaAttribute relation = new RelationalSchemaAttribute(values[0], values[1]);
-        	relations.add(0, relation);
+        public RelationSchema getRelationSchema() {
+			return relation;	
+		}
+
+
+
+		public void insertRow(String[] values){
+        	
+        	RelationSchemaAttribute attr = new RelationSchemaAttribute(values[0], values[1]);
+        	
+        	relation.addAttribute(attr);
 
             fireTableDataChanged();
         }
 
         public void removeRow(int row){
-        	relations.remove(row);
+        	relation.remove(row);
             fireTableDataChanged();
         }
-        
-        public final List<RelationalSchemaAttribute> getRelationAttributes(){
-        	return relations;
-        }
-        
         
         
         @Override
         public int getRowCount() {
-            return relations.size();
+            return relation.getAttributes().size();
         }
 
         @Override
@@ -684,7 +561,7 @@ public class EditorPropertiesFrame extends JDialog
 
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
-            RelationalSchemaAttribute relationAttr = relations.get(rowIndex);
+            RelationSchemaAttribute relationAttr = relation.getAttributes().get(rowIndex);
             Object value = null;
             switch (columnIndex) {
                 case 0:
@@ -699,7 +576,7 @@ public class EditorPropertiesFrame extends JDialog
         
         @Override
 		public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        	RelationalSchemaAttribute relationAttr = relations.get(rowIndex);
+        	RelationSchemaAttribute relationAttr = relation.getAttributes().get(rowIndex);
             switch (columnIndex) {
                 case 0:
                     relationAttr.setType((String)aValue);
@@ -794,7 +671,8 @@ public class EditorPropertiesFrame extends JDialog
         	int index = inputRelationtabbedPane.getTabCount() - 1;
         	inputRelationtabbedPane.removeTabAt(index);
         	        	
-    		inputRelationtabbedPane.addTab("Relation "+inputRelationtNextIndex, null, createInputRelationalSchemaPanel(index),
+        	RelationSchema relationSchema = new RelationSchema();
+    		inputRelationtabbedPane.addTab("Relation "+inputRelationtNextIndex, null, createInputRelationalSchemaPanel(relationSchema, index),
                     "");
   
     		inputRelationtabbedPane.setTabComponentAt(index, createCloseTabPanel());

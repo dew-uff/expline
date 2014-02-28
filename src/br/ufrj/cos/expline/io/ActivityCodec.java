@@ -12,7 +12,6 @@ import org.w3c.dom.Node;
 
 import br.ufrj.cos.expline.model.Activity;
 
-import com.mxgraph.io.mxCellCodec;
 import com.mxgraph.io.mxCodec;
 import com.mxgraph.io.mxCodecRegistry;
 import com.mxgraph.io.mxObjectCodec;

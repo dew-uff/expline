@@ -15,6 +15,8 @@ import org.w3c.dom.Document;
 
 import br.ufrj.cos.expline.io.ActivityCodec;
 import br.ufrj.cos.expline.model.Activity;
+import br.ufrj.cos.expline.model.RelationSchema;
+import br.ufrj.cos.expline.model.RelationSchemaAttribute;
 import br.ufrj.cos.expline.swing.editor.BasicGraphEditor;
 import br.ufrj.cos.expline.swing.editor.EditorMenuBar;
 import br.ufrj.cos.expline.swing.editor.EditorPalette;
@@ -24,6 +26,7 @@ import br.ufrj.cos.expline.swing.handler.ElbowEdgeHandler;
 
 import com.mxgraph.io.mxCodec;
 import com.mxgraph.io.mxCodecRegistry;
+import com.mxgraph.io.mxObjectCodec;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
 import com.mxgraph.model.mxICell;
@@ -84,6 +87,8 @@ public class ExpLineEditor extends BasicGraphEditor
 		
 		mxCodecRegistry.addPackage("br.ufrj.cos.expline.model");
 		mxCodecRegistry.register(new ActivityCodec());
+		mxCodecRegistry.register(new mxObjectCodec(new RelationSchema()));
+		mxCodecRegistry.register(new mxObjectCodec(new RelationSchemaAttribute()));
 		//mxCodecRegistry.addAlias("br.ufrj.cos.expline.model.Activity", "Activity");
 
 		this.createFrame(new EditorMenuBar(this)).setVisible(true);
