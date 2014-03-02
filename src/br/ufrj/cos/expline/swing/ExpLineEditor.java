@@ -7,6 +7,7 @@ import java.awt.Color;
 import java.awt.Point;
 import java.net.URL;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.UIManager;
@@ -89,6 +90,8 @@ public class ExpLineEditor extends BasicGraphEditor
 		mxCodecRegistry.register(new ActivityCodec());
 		mxCodecRegistry.register(new mxObjectCodec(new RelationSchema()));
 		mxCodecRegistry.register(new mxObjectCodec(new RelationSchemaAttribute()));
+		mxCodecRegistry.register(new mxObjectCodec(new ArrayList<RelationSchema>()));
+		mxCodecRegistry.register(new mxObjectCodec(new ArrayList<RelationSchemaAttribute>()));
 		//mxCodecRegistry.addAlias("br.ufrj.cos.expline.model.Activity", "Activity");
 
 		this.createFrame(new EditorMenuBar(this)).setVisible(true);
