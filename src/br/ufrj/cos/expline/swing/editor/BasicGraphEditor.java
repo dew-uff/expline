@@ -725,6 +725,25 @@ public class BasicGraphEditor extends JPanel
 			about.setVisible(true);
 		}
 	}
+	
+	public void rules()
+	{
+		JFrame frame = (JFrame) SwingUtilities.windowForComponent(this);
+
+		if (frame != null)
+		{
+			EditorRulesFrame about = new EditorRulesFrame(frame, this.graphComponent);
+			about.setModal(true);
+
+			// Centers inside the application frame
+			int x = frame.getX() + (frame.getWidth() - about.getWidth()) / 2;
+			int y = frame.getY() + (frame.getHeight() - about.getHeight()) / 2;
+			about.setLocation(x, y);
+
+			// Shows the modal dialog and waits
+			about.setVisible(true);
+		}
+	}
 
 	/**
 	 * 
