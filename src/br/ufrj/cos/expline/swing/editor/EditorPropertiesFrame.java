@@ -3,6 +3,7 @@ package br.ufrj.cos.expline.swing.editor;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -24,6 +25,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
@@ -31,6 +33,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import javax.swing.plaf.basic.BasicButtonUI;
 import javax.swing.table.AbstractTableModel;
 
@@ -62,12 +65,16 @@ public class EditorPropertiesFrame extends JDialog
 	protected JTable OutputRelationalSchemaTable = null;
 	protected JComboBox<String> algebraicOperatorsJComboBox = null;
 
+	protected final Frame owner;
+
 	/**
 	 * 
 	 */
 	public EditorPropertiesFrame(Frame owner, mxGraphComponent graphComponent)
 	{
 		super(owner);
+		
+		this.owner = owner;
 		
 		this.graphComponent = graphComponent;
 		this.graph = graphComponent.getGraph();
@@ -132,6 +139,7 @@ public class EditorPropertiesFrame extends JDialog
         
         //creating the tabbed Panel
         JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane.setBorder(BorderFactory.createTitledBorder("Relation Schema"));
         tabbedPane.addTab("Input", null, createInputPanel(),
                           "");
         
@@ -152,7 +160,7 @@ public class EditorPropertiesFrame extends JDialog
 				.createMatteBorder(1, 0, 0, 0, Color.GRAY), BorderFactory
 				.createEmptyBorder(16, 8, 8, 8)));
 		getContentPane().add(buttonPanel, BorderLayout.SOUTH);
-
+		
 		// Adds Cancel button to close window without saving
 		JButton cancelButton = new JButton("Cancel");
 		cancelButton.addActionListener(new ActionListener()

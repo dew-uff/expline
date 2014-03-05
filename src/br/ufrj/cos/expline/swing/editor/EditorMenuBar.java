@@ -7,58 +7,26 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
-import javax.swing.ButtonGroup;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
-import javax.swing.UIManager;
 
-import br.ufrj.cos.expline.swing.editor.EditorActions.AlgebraicOperatorOptionItem;
 import br.ufrj.cos.expline.swing.editor.EditorActions.AlignCellsAction;
-import br.ufrj.cos.expline.swing.editor.EditorActions.AutosizeAction;
-import br.ufrj.cos.expline.swing.editor.EditorActions.BackgroundAction;
-import br.ufrj.cos.expline.swing.editor.EditorActions.BackgroundImageAction;
-import br.ufrj.cos.expline.swing.editor.EditorActions.ColorAction;
 import br.ufrj.cos.expline.swing.editor.EditorActions.ExitAction;
-import br.ufrj.cos.expline.swing.editor.EditorActions.GridColorAction;
-import br.ufrj.cos.expline.swing.editor.EditorActions.GridStyleAction;
 import br.ufrj.cos.expline.swing.editor.EditorActions.HistoryAction;
-import br.ufrj.cos.expline.swing.editor.EditorActions.ImportAction;
-import br.ufrj.cos.expline.swing.editor.EditorActions.KeyValueAction;
 import br.ufrj.cos.expline.swing.editor.EditorActions.NewAction;
 import br.ufrj.cos.expline.swing.editor.EditorActions.OpenAction;
-import br.ufrj.cos.expline.swing.editor.EditorActions.PageBackgroundAction;
 import br.ufrj.cos.expline.swing.editor.EditorActions.PageSetupAction;
 import br.ufrj.cos.expline.swing.editor.EditorActions.PrintAction;
-import br.ufrj.cos.expline.swing.editor.EditorActions.PromptPropertyAction;
-import br.ufrj.cos.expline.swing.editor.EditorActions.PromptValueAction;
 import br.ufrj.cos.expline.swing.editor.EditorActions.SaveAction;
 import br.ufrj.cos.expline.swing.editor.EditorActions.ScaleAction;
-import br.ufrj.cos.expline.swing.editor.EditorActions.SelectShortestPathAction;
-import br.ufrj.cos.expline.swing.editor.EditorActions.SelectSpanningTreeAction;
-import br.ufrj.cos.expline.swing.editor.EditorActions.SetLabelPositionAction;
-import br.ufrj.cos.expline.swing.editor.EditorActions.SetStyleAction;
-import br.ufrj.cos.expline.swing.editor.EditorActions.StyleAction;
-import br.ufrj.cos.expline.swing.editor.EditorActions.StylesheetAction;
-import br.ufrj.cos.expline.swing.editor.EditorActions.ToggleAction;
-import br.ufrj.cos.expline.swing.editor.EditorActions.ToggleConnectModeAction;
-import br.ufrj.cos.expline.swing.editor.EditorActions.ToggleCreateTargetItem;
-import br.ufrj.cos.expline.swing.editor.EditorActions.ToggleDirtyAction;
-import br.ufrj.cos.expline.swing.editor.EditorActions.ToggleGridItem;
-import br.ufrj.cos.expline.swing.editor.EditorActions.ToggleOutlineItem;
-import br.ufrj.cos.expline.swing.editor.EditorActions.TogglePropertyItem;
-import br.ufrj.cos.expline.swing.editor.EditorActions.ToggleRulersItem;
-import br.ufrj.cos.expline.swing.editor.EditorActions.WarningAction;
-import br.ufrj.cos.expline.swing.editor.EditorActions.ZoomPolicyAction;
 
 import com.mxgraph.analysis.StructuralException;
-import com.mxgraph.analysis.mxGraphProperties.GraphType;
 import com.mxgraph.analysis.mxAnalysisGraph;
 import com.mxgraph.analysis.mxGraphProperties;
+import com.mxgraph.analysis.mxGraphProperties.GraphType;
 import com.mxgraph.analysis.mxGraphStructure;
 import com.mxgraph.analysis.mxTraversal;
 import com.mxgraph.costfunction.mxCostFunction;
@@ -67,7 +35,6 @@ import com.mxgraph.model.mxIGraphModel;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.swing.util.mxGraphActions;
 import com.mxgraph.util.mxConstants;
-import com.mxgraph.util.mxPoint;
 import com.mxgraph.util.mxResources;
 import com.mxgraph.view.mxGraph;
 import com.mxgraph.view.mxGraphView;
@@ -173,6 +140,21 @@ public class EditorMenuBar extends JMenuBar
 							mxResources.get("noActivitySelected"));	
 				}
 				
+			}
+		});
+		
+		 item = menu.add(new JMenuItem(mxResources.get("rule")));
+		item.addActionListener(new ActionListener()
+		{
+			/*
+			 * (non-Javadoc)
+			 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+			 */
+			public void actionPerformed(ActionEvent e)
+			{
+				
+				editor.rules();
+
 			}
 		});
 		
