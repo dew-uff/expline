@@ -38,7 +38,7 @@ import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxResources;
 import com.mxgraph.view.mxGraph;
 
-public class EditorRulesFrame extends JDialog
+public class ListRulesFrame extends JDialog
 {
 
 	/**
@@ -55,7 +55,7 @@ public class EditorRulesFrame extends JDialog
 	/**
 	 * 
 	 */
-	public EditorRulesFrame(Frame owner, mxGraphComponent graphComponent)
+	public ListRulesFrame(Frame owner, mxGraphComponent graphComponent)
 	{
 		super(owner);
 		
@@ -177,7 +177,7 @@ public class EditorRulesFrame extends JDialog
 			public void actionPerformed(ActionEvent e)
 			{
 //				OutputRelationalSchemaTableModel.insertRow(new String[] {"", ""});
-				EditorRuleFrame frame = new EditorRuleFrame((Dialog)EditorRulesFrame.this, graphComponent);
+				EditRule frame = new EditRule((Dialog)ListRulesFrame.this, graphComponent, new Rule());
 				frame.setModal(true);
 
 				frame.setVisible(true);

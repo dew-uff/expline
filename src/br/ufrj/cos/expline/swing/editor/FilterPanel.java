@@ -4,12 +4,10 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
@@ -20,50 +18,50 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.plaf.basic.BasicButtonUI;
 
+import br.ufrj.cos.expline.model.Expression;
+
 @SuppressWarnings("serial")
-public class ConditionPanel extends JPanel{
-   protected static final int PREF_W = 600;
-   protected static final int PREF_H = 450;
-   JPanel panelHolderPanel;
-
-   public ConditionPanel() {
-	   
-	  super();
-	  this.setPreferredSize(new Dimension(PREF_W, PREF_H));
-	  panelHolderPanel = new JPanel(new GridLayout(0, 1));
-	   
-	   
-      JPanel borderLayoutPanel = new JPanel(new BorderLayout());
-      borderLayoutPanel.add(panelHolderPanel, BorderLayout.NORTH);
-      JScrollPane scrollPane = new JScrollPane(borderLayoutPanel);
-      scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-      
-      panelHolderPanel.add(createConditionPanel());
-
-      this.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-      this.setLayout(new BorderLayout());
-      this.add(scrollPane, BorderLayout.CENTER);
-      
-   }
+public class FilterPanel extends JPanel{
+   protected EditRule editRulePanel;
    
-   public JPanel createConditionPanel(){
+   private int type;
+   
+   public final static int CONDITION_TYPE = 0;
+   
+   public final static int IMPLICATION_TYPE = 1;
+   
+   protected JComboBox<String> selectOperatorJComboBox;
+   protected JComboBox<String> modifierJComboBox;
+   JPopupMenu menu;
+   
+   
+
+   public FilterPanel(EditRule editRulePanel, int type, Expression exp) {
 	   
-		JPanel conditionPanel = new JPanel(new BorderLayout());
-		
-		JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 9));
+	  super(new BorderLayout());
+	  this.editRulePanel = editRulePanel;
+	  
+	  this.type = type;
+	  
+	  JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 9));
 		 
 		String[] selectOperator = new String[2];
 		selectOperator[0] = "Selected";
 		selectOperator[1] = "Not selected";
-		JComboBox<String> selectOperatorJComboBox = new JComboBox<String>(selectOperator);
+		selectOperatorJComboBox = new JComboBox<String>(selectOperator);
+		
+		if(exp.getOperation() == Expression.OPERATION_SELECTED){
+			selectOperatorJComboBox.setSelectedIndex(0);
+		}
+		else
+			selectOperatorJComboBox.setSelectedIndex(1);
+			
+		
 		filterPanel.add(selectOperatorJComboBox);
 		
 		String[] modifier = new String[9];
@@ -74,13 +72,52 @@ public class ConditionPanel extends JPanel{
 		modifier[4] = "Some optional";
 		modifier[5] = "Some variant";
 		modifier[6] = "All";
-		modifier[7] = "All Optionals";
-		modifier[8] = "All Variants";
-		JComboBox<String> modifierJComboBox = new JComboBox<String>(modifier);
+		modifier[7] = "All optionals";
+		modifier[8] = "All variants";
+		modifierJComboBox = new JComboBox<String>(modifier);
 		filterPanel.add(modifierJComboBox);
 		
+		if(exp.getModifier() == Expression.MODIFIER_ANY){
+			if(exp.getFilter() == Expression.FILTER_NONE){
+				modifierJComboBox.setSelectedIndex(0);
+			}
+			else
+			if(exp.getFilter() == Expression.FILTER_OPTIONAL){
+				modifierJComboBox.setSelectedIndex(1);
+			}
+			else
+			if(exp.getFilter() == Expression.FILTER_VARIANT){
+				modifierJComboBox.setSelectedIndex(2);
+			}
+		}
+		else if(exp.getModifier() == Expression.MODIFIER_SOME){
+			if(exp.getFilter() == Expression.FILTER_NONE){
+				modifierJComboBox.setSelectedIndex(3);
+			}
+			else
+			if(exp.getFilter() == Expression.FILTER_OPTIONAL){
+				modifierJComboBox.setSelectedIndex(4);
+			}
+			else
+			if(exp.getFilter() == Expression.FILTER_VARIANT){
+				modifierJComboBox.setSelectedIndex(5);
+			}
+		}
+		else if(exp.getModifier() == Expression.MODIFIER_ALL){
+			if(exp.getFilter() == Expression.FILTER_NONE){
+				modifierJComboBox.setSelectedIndex(6);
+			}
+			else
+			if(exp.getFilter() == Expression.FILTER_OPTIONAL){
+				modifierJComboBox.setSelectedIndex(7);
+			}
+			else
+			if(exp.getFilter() == Expression.FILTER_VARIANT){
+				modifierJComboBox.setSelectedIndex(8);
+			}
+		}
 		
-		final JPopupMenu menu = new JPopupMenu();
+		menu = new JPopupMenu();
 		JCheckBox item1 =  new JCheckBox("Other Court");
 		JCheckBox item2 =  new JCheckBox("Tribunal Court");
 		JCheckBox item3 =  new JCheckBox("High Court");
@@ -91,6 +128,9 @@ public class ConditionPanel extends JPanel{
 		menu.add(item2);
 		menu.add(item3);
 		menu.add(item4);
+		
+		
+		
 	
 	
 	    final JButton button = new JButton();
@@ -126,38 +166,34 @@ public class ConditionPanel extends JPanel{
 		
 		gbc.gridy = 1;
 		gbc.insets = new Insets(2,0,0,0);
-		configPanel.add(new MinusButton(conditionPanel), gbc);
+		configPanel.add(new MinusButton(this), gbc);
 		 
 			 
 		JPanel flowLayoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		flowLayoutPanel.add(configPanel);
 		 
 		 
-		conditionPanel.add(filterPanel, BorderLayout.CENTER);
-		conditionPanel.add(flowLayoutPanel, BorderLayout.EAST);
+		this.add(filterPanel, BorderLayout.CENTER);
+		this.add(flowLayoutPanel, BorderLayout.EAST);
 		 
 		//conditionPanel.setBorder(BorderFactory.createTitledBorder("condition"));
-		conditionPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
-			
-		return conditionPanel;
+		this.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+	  
+		
+		if(type == CONDITION_TYPE){
+			editRulePanel.conditionPanelHolder.add(this);
+			editRulePanel.conditionExpressions.add(this);
+		}
+		else{
+			editRulePanel.implicationPanelHolder.add(this);
+			editRulePanel.implicationExpressions.add(this);
+		}
+      
    }
-
-   private static void createAndShowGui() {
-      ConditionPanel test2 = new ConditionPanel();
-      JFrame frame = new JFrame("ConditionPanel");
-      frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-      frame.getContentPane().add(test2);
-      frame.pack();
-      frame.setLocationRelativeTo(null);
-      frame.setVisible(true);
-   }
-
-   public static void main(String[] args) {
-      SwingUtilities.invokeLater(new Runnable() {
-         public void run() {
-            createAndShowGui();
-         }
-      });
+   
+   private void loadData() {
+	   
+	   //carrega das expressions que estao em rule
 
    }
    
@@ -184,9 +220,8 @@ public class ConditionPanel extends JPanel{
 
        public void actionPerformed(ActionEvent e) {
 
-			JPanel conditionPanel = createConditionPanel();
+			new FilterPanel(editRulePanel, type, new Expression());
 					
-			panelHolderPanel.add(conditionPanel);
 			this.revalidate();
 			this.repaint();
          
@@ -221,9 +256,9 @@ public class ConditionPanel extends JPanel{
    }
    
    private class MinusButton extends JButton implements ActionListener {
-       JPanel conditionPanel;
+       FilterPanel filterPanel;
 	   
-	   public MinusButton(JPanel conditionPanel) {
+	   public MinusButton(FilterPanel filterPanel) {
            int size = 17;
            setPreferredSize(new Dimension(size, size));
            setToolTipText("Remove condition");
@@ -242,15 +277,28 @@ public class ConditionPanel extends JPanel{
            //Close the proper tab by clicking the button
            addActionListener(this);
            
-           this.conditionPanel = conditionPanel;
+           this.filterPanel = filterPanel;
        }
 
        public void actionPerformed(ActionEvent e) {
-    	  if(panelHolderPanel.getComponents().length > 1) { 
-    		  panelHolderPanel.remove(conditionPanel);
-    		  panelHolderPanel.revalidate();
-    		  panelHolderPanel.repaint();
-    	  }  
+    	  
+    	  if(type == CONDITION_TYPE){
+    		  
+        	  if(editRulePanel.conditionPanelHolder.getComponents().length > 1) { 
+        		  editRulePanel.conditionPanelHolder.remove(filterPanel);
+        		  editRulePanel.conditionExpressions.remove(filterPanel);
+        		  editRulePanel.conditionPanelHolder.revalidate();
+        		  editRulePanel.conditionPanelHolder.repaint();
+        	  }  
+    	  }
+    	  else{
+    		  if(editRulePanel.implicationPanelHolder.getComponents().length > 1) { 
+    			  editRulePanel.implicationPanelHolder.remove(filterPanel);
+        		  editRulePanel.implicationExpressions.remove(filterPanel);
+        		  editRulePanel.implicationPanelHolder.revalidate();
+        		  editRulePanel.implicationPanelHolder.repaint();
+    		  }
+    	  }
        }
 
        //we don't want to update UI for this button
