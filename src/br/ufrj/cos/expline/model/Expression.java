@@ -50,6 +50,10 @@ public class Expression implements Cloneable, Serializable{
 	public void setActivities(List<Activity> activities) {
 		this.activities = activities;
 	}
+	
+	public void addActivity(Activity activity) {
+		this.activities.add(activity);
+	}
 
 	public int getOperation() {
 		return operation;

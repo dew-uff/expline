@@ -142,7 +142,7 @@ public class ExpLineEditor extends BasicGraphEditor
 				new ImageIcon(
 						ExpLineEditor.class
 								.getResource("/images/rounded.png")),
-				"Invariant;rounded=1;strokeWidth=5;fontSize=24", 160, 120, "");
+				"rounded=1;strokeWidth=5;fontSize=24", 160, 120, "", "Invariant");
 		
 		activitiesPalette
 		.addTemplate(
@@ -150,7 +150,7 @@ public class ExpLineEditor extends BasicGraphEditor
 				new ImageIcon(
 						ExpLineEditor.class
 								.getResource("/images/rounded.png")),
-				"Optional;rounded=1;dashed=1;strokeWidth=5;fontSize=24", 160, 120, "");
+				"rounded=1;dashed=1;strokeWidth=5;fontSize=24", 160, 120, "", "Optional");
 		
 		activitiesPalette
 		.addTemplate(
@@ -158,21 +158,21 @@ public class ExpLineEditor extends BasicGraphEditor
 				new ImageIcon(
 						ExpLineEditor.class
 								.getResource("/images/doublerectangle.png")),
-				"VariationPoint;rectangle;shape=doubleRectangle;rounded=1;strokeWidth=5;fontSize=24", 160, 120, "");
+				"rectangle;shape=doubleRectangle;rounded=1;strokeWidth=5;fontSize=24", 160, 120, "", "VariationPoint");
 		activitiesPalette
 		.addTemplate(
 				"Optional Variation Point",
 				new ImageIcon(
 						ExpLineEditor.class
 								.getResource("/images/doublerectangle.png")),
-				"OptionalVariationPoint;rectangle;shape=doubleRectangle;dashed=1;rounded=1;strokeWidth=5;fontSize=24", 160, 120, "");
+				"rectangle;shape=doubleRectangle;dashed=1;rounded=1;strokeWidth=5;fontSize=24", 160, 120, "", "OptionalVariationPoint");
 		activitiesPalette
 		.addTemplate(
 				"Variant",
 				new ImageIcon(
 						ExpLineEditor.class
 								.getResource("/images/rounded.png")),
-				"Variant;strokeWidth=5;fillColor=#FF0033;fontSize=24;cloneable=0", 160, 120, "");
+				"strokeWidth=5;fillColor=#FF0033;fontSize=24;cloneable=0", 160, 120, "", "Variant");
 		
 
 		connectionsPalette
@@ -396,7 +396,7 @@ public class ExpLineEditor extends BasicGraphEditor
 			mxGeometry geometry = new mxGeometry(x, y, width, height);
 			geometry.setRelative(relative);
 
-			Activity vertex = new Activity(value, geometry, style);
+			Activity vertex = new Activity(value, geometry, style, "");
 			vertex.setId(id);
 			vertex.setVertex(true);
 			vertex.setConnectable(true);

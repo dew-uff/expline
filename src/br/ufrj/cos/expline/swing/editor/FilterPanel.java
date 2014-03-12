@@ -23,7 +23,11 @@ import javax.swing.JPopupMenu;
 import javax.swing.border.BevelBorder;
 import javax.swing.plaf.basic.BasicButtonUI;
 
+import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.model.Expression;
+
+import com.mxgraph.model.mxGraphModel;
+import com.mxgraph.view.mxGraph;
 
 @SuppressWarnings("serial")
 public class FilterPanel extends JPanel{
@@ -75,6 +79,28 @@ public class FilterPanel extends JPanel{
 		modifier[7] = "All optionals";
 		modifier[8] = "All variants";
 		modifierJComboBox = new JComboBox<String>(modifier);
+		
+		menu = new JPopupMenu();
+		
+		modifierJComboBox.setAction(new AbstractAction("") {
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	    	
+	        	String selectedItem = (String) modifierJComboBox.getSelectedItem();
+	        	
+	        	if(selectedItem.contains("variant")){
+	        		fillActivityListPopupMenu(Expression.FILTER_VARIANT);
+	        	}
+	        	else
+        		if(selectedItem.contains("optional")){
+        			fillActivityListPopupMenu(Expression.FILTER_OPTIONAL);
+	        	}
+        		else{
+        			fillActivityListPopupMenu(Expression.FILTER_NONE);
+        		}
+	        }
+	    });
+		
 		filterPanel.add(modifierJComboBox);
 		
 		if(exp.getModifier() == Expression.MODIFIER_ANY){
@@ -115,24 +141,9 @@ public class FilterPanel extends JPanel{
 			if(exp.getFilter() == Expression.FILTER_VARIANT){
 				modifierJComboBox.setSelectedIndex(8);
 			}
-		}
+		} 
 		
-		menu = new JPopupMenu();
-		JCheckBox item1 =  new JCheckBox("Other Court");
-		JCheckBox item2 =  new JCheckBox("Tribunal Court");
-		JCheckBox item3 =  new JCheckBox("High Court");
-		JCheckBox item4 =  new JCheckBox("Supreme Court");
-		   
-		   
-		menu.add(item1);
-		menu.add(item2);
-		menu.add(item3);
-		menu.add(item4);
-		
-		
-		
-	
-	
+
 	    final JButton button = new JButton();
 	    button.setAction(new AbstractAction("Choose") {
 		    private boolean visible;
@@ -189,6 +200,50 @@ public class FilterPanel extends JPanel{
 			editRulePanel.implicationExpressions.add(this);
 		}
       
+   }
+   
+   private void fillActivityListPopupMenu(int filter){
+
+	    mxGraph graph = editRulePanel.graph;
+		Object[] vertices = graph.getChildVertices(graph.getDefaultParent());
+		
+		menu.removeAll();
+	   
+	   if(filter == Expression.FILTER_NONE){
+		   for (Object vertex : vertices) {
+			   Activity activity = (Activity) vertex;
+			   
+			   if(activity.getType().contains("Variant") || activity.getType().contains("Optional")){
+				   JCheckBox item =  new JCheckBox((String)activity.getValue());
+				   item.setActionCommand(activity.getId());
+				   menu.add(item);
+			   }
+		   }
+	   }
+	   else
+	   if(filter == Expression.FILTER_VARIANT){
+		   for (Object vertex : vertices) {
+			   Activity activity = (Activity) vertex;
+			   
+			   if(activity.getType().contains("Variant")){
+				   JCheckBox item =  new JCheckBox((String)activity.getValue());
+				   item.setActionCommand(activity.getId());
+				   menu.add(item);
+			   }
+		   }
+	   }
+	   else
+	   if(filter == Expression.FILTER_OPTIONAL){
+		   for (Object vertex : vertices) {
+			   Activity activity = (Activity) vertex;
+			   
+			   if(activity.getType().contains("Optional")){
+				   JCheckBox item =  new JCheckBox((String)activity.getValue());
+				   item.setActionCommand(activity.getId());
+				   menu.add(item);
+			   }
+		   }
+	   }
    }
    
    private void loadData() {

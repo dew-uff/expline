@@ -23,15 +23,15 @@ public class Activity extends mxCell implements Cloneable, Serializable{
 	private RelationSchema outputRelationSchema;
 	
 	
-	public Activity(Object value, mxGeometry geometry, String style)
+	public Activity(Object value, mxGeometry geometry, String style, String type)
 	{
 		super(value, geometry, style);
 		
-		type = "invariant";
-		algebraicOperator = "map";
+		this.type = type;
+		this.algebraicOperator = "map";
 		
-		inputRelationsSchemas = new ArrayList<RelationSchema>();
-		outputRelationSchema = new RelationSchema();
+		this.inputRelationsSchemas = new ArrayList<RelationSchema>();
+		this.outputRelationSchema = new RelationSchema();
 	}
 	
 	

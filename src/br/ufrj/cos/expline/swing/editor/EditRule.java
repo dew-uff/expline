@@ -7,7 +7,6 @@ import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.Menu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -22,9 +21,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
+import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.model.Expression;
 import br.ufrj.cos.expline.model.Rule;
 
+import com.mxgraph.model.mxGraphModel;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxResources;
 import com.mxgraph.view.mxGraph;
@@ -51,18 +52,24 @@ public class EditRule extends JDialog
 	
 	JPanel implicationPanelHolder;
 	
+	JTextField ruleNameField;
+
+	private final ListRulesFrame owner;
+	
 
 	/**
 	 * 
 	 */
-	public EditRule(Dialog owner, mxGraphComponent graphComponent, Rule rule)
+	public EditRule(final Dialog owner, mxGraphComponent graphComponent, Rule rule)
 	{
 		super(owner);
 		
-		
+		this.owner = (ListRulesFrame) owner;
 		
 		this.graphComponent = graphComponent;
 		this.graph = graphComponent.getGraph();
+		
+		this.rule = rule;
 		
 		conditionExpressions = new ArrayList<FilterPanel>();
 		implicationExpressions = new ArrayList<FilterPanel>();
@@ -137,9 +144,10 @@ public class EditRule extends JDialog
 	    JPanel namePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 	    
 	    namePanel.add(new JLabel("Name"));
-	    JTextField nameField = new JTextField();
-	    nameField.setColumns(13);
-	    namePanel.add(nameField);	    
+	    ruleNameField = new JTextField();
+	    ruleNameField.setColumns(13);
+	    ruleNameField.setText(rule.getName());
+	    namePanel.add(ruleNameField);	    
 
 	    getContentPane().add(namePanel, BorderLayout.NORTH);
 	    getContentPane().add(centerPanel, BorderLayout.CENTER);
@@ -169,16 +177,10 @@ public class EditRule extends JDialog
 		okButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
-			{
-//				for (Component comp : conditionPanel1.getComponents()) {
-//					for (Component comp1 : ((JScrollPane)comp).getComponents()) {
-//						System.out.println(comp1);
-//					} 
-//					System.out.println(comp);
-//				} 
-//				setVisible(false);
-				
+			{	
 				saveData();
+				refreshListRulesFrame();
+				setVisible(false);
 			}
 		});
 		
@@ -193,15 +195,29 @@ public class EditRule extends JDialog
 	}
 	
 	
+	public void refreshListRulesFrame(){
+		owner.model.addElement(rule);
+		owner.revalidate();
+		owner.repaint();
+	}
+	
 	public void saveData(){
 		
-		//salva do zero todas as expressões pra não dar problema de duplicata ou sujeira
+		//salva do zero todas as expressões pra não dar problema de duplicata ou sujeira 
+		
 		List<Expression> conditions = new ArrayList<Expression>();
 		List<Expression> implications = new ArrayList<Expression>();
+		
+		rule.setCondition(conditions);
+		rule.setImplication(implications);
+		
+		rule.setName(ruleNameField.getText());
 		
 		for (FilterPanel conditionPanel : conditionExpressions) {
 			
 			Expression exp = new Expression();
+			
+			conditions.add(exp);
 			
 			String operator = (String) conditionPanel.selectOperatorJComboBox.getSelectedItem();
 			
@@ -246,14 +262,78 @@ public class EditRule extends JDialog
 				
 				jchBox.setActionCommand("action");
 				
-				if(jchBox.isSelected())
-					System.out.println(jchBox.getSelectedObjects()[0]);
+				if(jchBox.isSelected()){
+					String id = jchBox.getActionCommand();
+					
+					Activity activity = (Activity) ((mxGraphModel)graph.getModel()).getCell(id);
+					
+				}
 				
 			}
 			
 		}
 		
 		
+		
+		for (FilterPanel implicationPanel : implicationExpressions) {
+			
+			Expression exp = new Expression();
+			
+			implications.add(exp);
+			
+			String operator = (String) implicationPanel.selectOperatorJComboBox.getSelectedItem();
+			
+			if(operator.equals("Select")){
+				exp.setOperation(Expression.OPERATION_SELECTED);
+			}
+			else{
+				exp.setOperation(Expression.OPERATION_NOT_SELECTED);
+			}
+			
+			
+			
+			String modifier = (String) implicationPanel.modifierJComboBox.getSelectedItem();
+			
+			if(modifier.contains("All")){
+				exp.setModifier(Expression.MODIFIER_ALL);
+			}
+			else
+			if(modifier.contains("Some")){
+				exp.setModifier(Expression.MODIFIER_SOME);
+			}
+			else
+			if(modifier.contains("Any")){
+				exp.setModifier(Expression.MODIFIER_ANY);
+			}
+			
+			
+			if(modifier.contains("optional")){
+				exp.setFilter(Expression.FILTER_OPTIONAL);
+			}
+			else
+			if(modifier.contains("variant")){
+				exp.setFilter(Expression.FILTER_VARIANT);
+			}
+			else
+				exp.setFilter(Expression.FILTER_NONE);
+			
+			
+			
+			for (Component component : implicationPanel.menu.getComponents()){
+				JCheckBox jchBox = (JCheckBox) component;
+				
+				jchBox.setActionCommand("action");
+				
+				if(jchBox.isSelected()){
+					String id = jchBox.getActionCommand();
+					
+					Activity activity = (Activity) ((mxGraphModel)graph.getModel()).getCell(id);
+					
+				}
+				
+			}
+			
+		}
 		
 		
 	}

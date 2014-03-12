@@ -247,10 +247,10 @@ public class EditorPalette extends JPanel
 	 * @param value
 	 */
 	public void addTemplate(final String name, ImageIcon icon, String style,
-			int width, int height, Object value)
+			int width, int height, Object value, String type)
 	{
 		mxCell cell = new Activity(value, new mxGeometry(0, 0, width, height),
-				style);
+				style, type);
 		cell.setVertex(true);
 
 		addTemplate(name, icon, cell);

@@ -34,6 +34,8 @@ import javax.swing.SwingUtilities;
 
 import br.ufrj.cos.expline.model.Rule;
 
+import com.mxgraph.model.mxCell;
+import com.mxgraph.model.mxGraphModel;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxResources;
 import com.mxgraph.view.mxGraph;
@@ -51,6 +53,12 @@ public class ListRulesFrame extends JDialog
 	protected JPanel monitoringSrvrPanel;
 	
 	protected Frame owner;
+	
+	protected DefaultListModel<Rule> model;
+	
+	protected JList<Rule> OutputRelationalSchemaTable;
+	
+	protected List<Rule> rules;
 
 	/**
 	 * 
@@ -59,11 +67,13 @@ public class ListRulesFrame extends JDialog
 	{
 		super(owner);
 		
-		
 		this.owner = owner;
 		
 		this.graphComponent = graphComponent;
 		this.graph = graphComponent.getGraph();
+		
+		rules = new ArrayList<Rule>();
+		
 		
 		setTitle(mxResources.get("rules"));
 		setLayout(new BorderLayout());
@@ -158,17 +168,17 @@ public class ListRulesFrame extends JDialog
 		
 		JPanel tablePanel = new JPanel(new BorderLayout());		
 			
-		final DefaultListModel<Rule> model = new DefaultListModel<Rule>();
+		model = new DefaultListModel<Rule>();
 		
 		
-		JList<Rule> OutputRelationalSchemaTable = new JList<Rule>(model);
+		OutputRelationalSchemaTable = new JList<Rule>(model);
 		
 		// creates panel to contain the table
 		tablePanel.add(new JScrollPane(
 				OutputRelationalSchemaTable), BorderLayout.CENTER);
         
         JPanel commandPanel = new JPanel();
-        commandPanel.setLayout(new GridLayout(2, 1));
+        commandPanel.setLayout(new GridLayout(3, 1));
 
 		// Adds Add button to create new attribute in the table
 		JButton addButton = new JButton("Add");
@@ -176,11 +186,25 @@ public class ListRulesFrame extends JDialog
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-//				OutputRelationalSchemaTableModel.insertRow(new String[] {"", ""});
-				EditRule frame = new EditRule((Dialog)ListRulesFrame.this, graphComponent, new Rule());
+				Rule rule = new Rule();
+				
+				rules.add(rule);
+				
+				EditRule frame = new EditRule((Dialog)ListRulesFrame.this, graphComponent, rule);
 				frame.setModal(true);
 
 				frame.setVisible(true);
+			}
+		});
+		
+		commandPanel.add(addButton);
+		
+		JButton editButton = new JButton("Edit");
+		editButton.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				editRule();
 			}
 		});
 		
@@ -194,7 +218,6 @@ public class ListRulesFrame extends JDialog
 			public void actionPerformed(ActionEvent e)
 			{
 				model.addElement(new Rule());
-//				OutputRelationalSchemaTableModel.removeRow(OutputRelationalSchemaTable.getSelectedRow());
 			}
 		});
 		
@@ -207,6 +230,37 @@ public class ListRulesFrame extends JDialog
     
         
 		return tablePanel;
+	}
+	
+	
+	void editRule(){
+		Rule rule = model.getElementAt(OutputRelationalSchemaTable.getSelectedIndex());
+		
+		EditRule frame = new EditRule((Dialog)ListRulesFrame.this, graphComponent, rule);
+		frame.setModal(true);
+
+		frame.setVisible(true);
+	}
+	
+	void addRule(){
+		Rule rule = model.getElementAt(OutputRelationalSchemaTable.getSelectedIndex());
+		
+		EditRule frame = new EditRule((Dialog)ListRulesFrame.this, graphComponent, rule);
+		frame.setModal(true);
+
+		frame.setVisible(true);
+		
+		
+		rules.add(rule);
+	}
+	
+	void removeRule(){
+		
+		Rule rule = model.getElementAt(OutputRelationalSchemaTable.getSelectedIndex());
+		
+		model.removeElement(rule);
+		
+		rules.remove(rule);
 	}
 
 }
