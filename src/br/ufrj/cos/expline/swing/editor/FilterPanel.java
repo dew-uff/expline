@@ -12,6 +12,7 @@ import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -26,7 +27,6 @@ import javax.swing.plaf.basic.BasicButtonUI;
 import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.model.Expression;
 
-import com.mxgraph.model.mxGraphModel;
 import com.mxgraph.view.mxGraph;
 
 @SuppressWarnings("serial")
@@ -45,7 +45,7 @@ public class FilterPanel extends JPanel{
    
    
 
-   public FilterPanel(EditRule editRulePanel, int type, Expression exp) {
+   public FilterPanel(EditRule editRulePanel, int type, final Expression exp) {
 	   
 	  super(new BorderLayout());
 	  this.editRulePanel = editRulePanel;
@@ -89,14 +89,14 @@ public class FilterPanel extends JPanel{
 	        	String selectedItem = (String) modifierJComboBox.getSelectedItem();
 	        	
 	        	if(selectedItem.contains("variant")){
-	        		fillActivityListPopupMenu(Expression.FILTER_VARIANT);
+	        		fillActivityListPopupMenu(exp, Expression.FILTER_VARIANT);
 	        	}
 	        	else
         		if(selectedItem.contains("optional")){
-        			fillActivityListPopupMenu(Expression.FILTER_OPTIONAL);
+        			fillActivityListPopupMenu(exp, Expression.FILTER_OPTIONAL);
 	        	}
         		else{
-        			fillActivityListPopupMenu(Expression.FILTER_NONE);
+        			fillActivityListPopupMenu(exp, Expression.FILTER_NONE);
         		}
 	        }
 	    });
@@ -202,7 +202,7 @@ public class FilterPanel extends JPanel{
       
    }
    
-   private void fillActivityListPopupMenu(int filter){
+   private void fillActivityListPopupMenu(Expression exp, int filter){
 
 	    mxGraph graph = editRulePanel.graph;
 		Object[] vertices = graph.getChildVertices(graph.getDefaultParent());
@@ -216,8 +216,10 @@ public class FilterPanel extends JPanel{
 			   if(activity.getType().contains("Variant") || activity.getType().contains("Optional")){
 				   JCheckBox item =  new JCheckBox((String)activity.getValue());
 				   item.setActionCommand(activity.getId());
+				   item.setSelected(isSelected(activity, exp.getActivities()));
 				   menu.add(item);
 			   }
+			   
 		   }
 	   }
 	   else
@@ -228,6 +230,7 @@ public class FilterPanel extends JPanel{
 			   if(activity.getType().contains("Variant")){
 				   JCheckBox item =  new JCheckBox((String)activity.getValue());
 				   item.setActionCommand(activity.getId());
+				   item.setSelected(isSelected(activity, exp.getActivities()));
 				   menu.add(item);
 			   }
 		   }
@@ -240,13 +243,23 @@ public class FilterPanel extends JPanel{
 			   if(activity.getType().contains("Optional")){
 				   JCheckBox item =  new JCheckBox((String)activity.getValue());
 				   item.setActionCommand(activity.getId());
+				   item.setSelected(isSelected(activity, exp.getActivities()));
 				   menu.add(item);
 			   }
 		   }
 	   }
    }
    
-   private void loadData() {
+   private boolean isSelected(Activity activity, List<Activity> activities) {
+	
+	   for (Activity actv : activities)
+		   if(actv.getId().equals(activity.getId()))
+			   return true;
+	   
+	   return false;
+   }
+
+private void loadData() {
 	   
 	   //carrega das expressions que estao em rule
 

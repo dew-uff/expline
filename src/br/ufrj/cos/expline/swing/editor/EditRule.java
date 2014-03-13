@@ -179,7 +179,6 @@ public class EditRule extends JDialog
 			public void actionPerformed(ActionEvent e)
 			{	
 				saveData();
-				refreshListRulesFrame();
 				setVisible(false);
 			}
 		});
@@ -192,13 +191,6 @@ public class EditRule extends JDialog
 		setResizable(true);
 		setSize(600, 500);
 		setLocationRelativeTo(owner);
-	}
-	
-	
-	public void refreshListRulesFrame(){
-		owner.model.addElement(rule);
-		owner.revalidate();
-		owner.repaint();
 	}
 	
 	public void saveData(){
@@ -221,7 +213,7 @@ public class EditRule extends JDialog
 			
 			String operator = (String) conditionPanel.selectOperatorJComboBox.getSelectedItem();
 			
-			if(operator.equals("Select")){
+			if(operator.equals("Selected")){
 				exp.setOperation(Expression.OPERATION_SELECTED);
 			}
 			else{
@@ -260,12 +252,11 @@ public class EditRule extends JDialog
 			for (Component component : conditionPanel.menu.getComponents()){
 				JCheckBox jchBox = (JCheckBox) component;
 				
-				jchBox.setActionCommand("action");
-				
 				if(jchBox.isSelected()){
 					String id = jchBox.getActionCommand();
 					
 					Activity activity = (Activity) ((mxGraphModel)graph.getModel()).getCell(id);
+					exp.addActivity(activity);
 					
 				}
 				
@@ -322,13 +313,11 @@ public class EditRule extends JDialog
 			for (Component component : implicationPanel.menu.getComponents()){
 				JCheckBox jchBox = (JCheckBox) component;
 				
-				jchBox.setActionCommand("action");
-				
 				if(jchBox.isSelected()){
 					String id = jchBox.getActionCommand();
 					
 					Activity activity = (Activity) ((mxGraphModel)graph.getModel()).getCell(id);
-					
+					exp.addActivity(activity);
 				}
 				
 			}
