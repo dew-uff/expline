@@ -15,6 +15,7 @@ import javax.swing.UIManager;
 import org.w3c.dom.Document;
 
 import br.ufrj.cos.expline.io.ActivityCodec;
+import br.ufrj.cos.expline.io.ExpLineCodec;
 import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.model.ExpLine;
 import br.ufrj.cos.expline.model.Expression;
@@ -90,6 +91,7 @@ public class ExpLineEditor extends BasicGraphEditor
 		mxConstants.W3C_SHADOWCOLOR = "#D3D3D3";
 		
 		mxCodecRegistry.addPackage("br.ufrj.cos.expline.model");
+		mxCodecRegistry.register(new ExpLineCodec());
 		mxCodecRegistry.register(new ActivityCodec());
 		mxCodecRegistry.register(new mxObjectCodec(new RelationSchema()));
 		mxCodecRegistry.register(new mxObjectCodec(new RelationSchemaAttribute()));
