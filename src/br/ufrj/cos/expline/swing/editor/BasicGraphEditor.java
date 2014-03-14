@@ -32,6 +32,8 @@ import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import br.ufrj.cos.expline.swing.ExpLineEditor.ExpLineGraphComponent;
+
 import com.mxgraph.layout.mxCircleLayout;
 import com.mxgraph.layout.mxCompactTreeLayout;
 import com.mxgraph.layout.mxEdgeLabelLayout;
@@ -732,7 +734,7 @@ public class BasicGraphEditor extends JPanel
 
 		if (frame != null)
 		{
-			ListRulesFrame about = new ListRulesFrame(frame, this.graphComponent);
+			ListRulesFrame about = new ListRulesFrame(frame, (ExpLineGraphComponent)this.graphComponent);
 			about.setModal(true);
 
 			// Centers inside the application frame

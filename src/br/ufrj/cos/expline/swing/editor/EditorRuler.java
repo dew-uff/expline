@@ -162,7 +162,7 @@ public class EditorRuler extends JComponent implements MouseMotionListener,
 	/**
 	 * Constructs a new ruler for the specified graph and orientation.
 	 * 
-	 * @param graph
+	 * @param expLineGraph
 	 *            The graph to create the ruler for.
 	 * @param orientation
 	 *            The orientation to use for the ruler.

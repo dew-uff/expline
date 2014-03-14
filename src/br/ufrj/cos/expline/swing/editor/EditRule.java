@@ -24,11 +24,11 @@ import javax.swing.JTextField;
 import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.model.Expression;
 import br.ufrj.cos.expline.model.Rule;
+import br.ufrj.cos.expline.swing.ExpLineEditor.ExpLineGraph;
+import br.ufrj.cos.expline.swing.ExpLineEditor.ExpLineGraphComponent;
 
 import com.mxgraph.model.mxGraphModel;
-import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxResources;
-import com.mxgraph.view.mxGraph;
 
 public class EditRule extends JDialog
 {
@@ -38,8 +38,8 @@ public class EditRule extends JDialog
 	 */
 	private static final long serialVersionUID = -3378029138434324390L;
 	
-	protected mxGraphComponent graphComponent;
-	protected mxGraph graph;
+	protected ExpLineGraphComponent expLineGraphComponent;
+	protected ExpLineGraph expLineGraph;
 	protected JPanel monitoringSrvrPanel;
 	
 	protected Rule rule;
@@ -53,21 +53,17 @@ public class EditRule extends JDialog
 	JPanel implicationPanelHolder;
 	
 	JTextField ruleNameField;
-
-	private final ListRulesFrame owner;
 	
 
 	/**
 	 * 
 	 */
-	public EditRule(final Dialog owner, mxGraphComponent graphComponent, Rule rule)
+	public EditRule(final Dialog owner, ExpLineGraphComponent expLinegraphComponent, Rule rule)
 	{
 		super(owner);
 		
-		this.owner = (ListRulesFrame) owner;
-		
-		this.graphComponent = graphComponent;
-		this.graph = graphComponent.getGraph();
+		this.expLineGraphComponent = expLinegraphComponent;
+		this.expLineGraph = (ExpLineGraph) expLinegraphComponent.getGraph();
 		
 		this.rule = rule;
 		
@@ -255,7 +251,7 @@ public class EditRule extends JDialog
 				if(jchBox.isSelected()){
 					String id = jchBox.getActionCommand();
 					
-					Activity activity = (Activity) ((mxGraphModel)graph.getModel()).getCell(id);
+					Activity activity = (Activity) ((mxGraphModel)expLineGraph.getModel()).getCell(id);
 					exp.addActivity(activity);
 					
 				}
@@ -316,7 +312,7 @@ public class EditRule extends JDialog
 				if(jchBox.isSelected()){
 					String id = jchBox.getActionCommand();
 					
-					Activity activity = (Activity) ((mxGraphModel)graph.getModel()).getCell(id);
+					Activity activity = (Activity) ((mxGraphModel)expLineGraph.getModel()).getCell(id);
 					exp.addActivity(activity);
 				}
 				

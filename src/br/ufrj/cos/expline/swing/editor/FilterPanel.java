@@ -41,7 +41,7 @@ public class FilterPanel extends JPanel{
    
    protected JComboBox<String> selectOperatorJComboBox;
    protected JComboBox<String> modifierJComboBox;
-   JPopupMenu menu;
+   protected JPopupMenu menu;
    
    
 
@@ -204,7 +204,7 @@ public class FilterPanel extends JPanel{
    
    private void fillActivityListPopupMenu(Expression exp, int filter){
 
-	    mxGraph graph = editRulePanel.graph;
+	    mxGraph graph = editRulePanel.expLineGraph;
 		Object[] vertices = graph.getChildVertices(graph.getDefaultParent());
 		
 		menu.removeAll();

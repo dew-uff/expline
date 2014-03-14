@@ -46,6 +46,7 @@ import javax.swing.text.html.HTMLEditorKit;
 import org.w3c.dom.Document;
 
 import br.ufrj.cos.expline.model.Activity;
+import br.ufrj.cos.expline.swing.ExpLineEditor.ExpLineModel;
 
 import com.mxgraph.analysis.mxDistanceCostFunction;
 import com.mxgraph.analysis.mxGraphAnalysis;
@@ -1383,6 +1384,10 @@ public class EditorActions
 					// Check modified flag and display save dialog
 					mxCell root = new mxCell();
 					root.insert(new mxCell());
+					
+					ExpLineModel model = (ExpLineModel) graph.getModel();
+					model.clearRules();
+					
 					graph.getModel().setRoot(root);
 
 					editor.setModified(false);

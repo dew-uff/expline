@@ -13,7 +13,6 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -26,6 +25,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import br.ufrj.cos.expline.model.Rule;
+import br.ufrj.cos.expline.swing.ExpLineEditor.ExpLineGraph;
+import br.ufrj.cos.expline.swing.ExpLineEditor.ExpLineGraphComponent;
+import br.ufrj.cos.expline.swing.ExpLineEditor.ExpLineModel;
 
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxResources;
@@ -39,8 +41,8 @@ public class ListRulesFrame extends JDialog
 	 */
 	private static final long serialVersionUID = -3378029138434324390L;
 	
-	protected mxGraphComponent graphComponent;
-	protected mxGraph graph;
+	protected ExpLineGraphComponent expLineGraphComponent;
+	protected ExpLineGraph expLineGraph;
 	protected JPanel monitoringSrvrPanel;
 	
 	protected Frame owner;
@@ -54,17 +56,18 @@ public class ListRulesFrame extends JDialog
 	/**
 	 * 
 	 */
-	public ListRulesFrame(Frame owner, mxGraphComponent graphComponent)
+	public ListRulesFrame(Frame owner, ExpLineGraphComponent expLineGraphComponent)
 	{
 		super(owner);
 		
 		this.owner = owner;
 		
-		this.graphComponent = graphComponent;
-		this.graph = graphComponent.getGraph();
+		this.expLineGraphComponent = expLineGraphComponent;
+		this.expLineGraph = (ExpLineGraph) expLineGraphComponent.getGraph();
 		
-		rules = new ArrayList<Rule>();
+		ExpLineModel model = (ExpLineModel) expLineGraph.getModel();
 		
+		rules = model.getRules();
 		
 		setTitle(mxResources.get("rules"));
 		setLayout(new BorderLayout());
@@ -164,6 +167,8 @@ public class ListRulesFrame extends JDialog
 		
 		ruleJList = new JList<Rule>(model);
 		
+		loadRulesList();
+		
 		// creates panel to contain the table
 		tablePanel.add(new JScrollPane(
 				ruleJList), BorderLayout.CENTER);
@@ -217,12 +222,21 @@ public class ListRulesFrame extends JDialog
 	}
 	
 	
+	private void loadRulesList() {
+		
+		for (Rule rule : rules) {
+			model.addElement(rule);
+		}
+		
+	}
+
+
 	void editRule(){
 		
 		if(!ruleJList.isSelectionEmpty()){
 			Rule rule = model.getElementAt(ruleJList.getSelectedIndex());
 			
-			EditRule frame = new EditRule((Dialog)ListRulesFrame.this, graphComponent, rule);
+			EditRule frame = new EditRule((Dialog)ListRulesFrame.this, expLineGraphComponent, rule);
 			frame.setModal(true);
 	
 			frame.setVisible(true);
@@ -237,7 +251,7 @@ public class ListRulesFrame extends JDialog
 		
 		rule.setName("new rule");
 		
-		EditRule frame = new EditRule((Dialog)ListRulesFrame.this, graphComponent, rule);
+		EditRule frame = new EditRule((Dialog)ListRulesFrame.this, expLineGraphComponent, rule);
 		frame.setModal(true);
 
 		frame.setVisible(true);
