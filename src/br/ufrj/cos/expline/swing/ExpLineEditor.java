@@ -8,7 +8,6 @@ import java.awt.Point;
 import java.net.URL;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.UIManager;
@@ -17,6 +16,7 @@ import org.w3c.dom.Document;
 
 import br.ufrj.cos.expline.io.ActivityCodec;
 import br.ufrj.cos.expline.model.Activity;
+import br.ufrj.cos.expline.model.ExpLine;
 import br.ufrj.cos.expline.model.Expression;
 import br.ufrj.cos.expline.model.RelationSchema;
 import br.ufrj.cos.expline.model.RelationSchemaAttribute;
@@ -33,7 +33,6 @@ import com.mxgraph.io.mxCodecRegistry;
 import com.mxgraph.io.mxObjectCodec;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
-import com.mxgraph.model.mxGraphModel;
 import com.mxgraph.model.mxICell;
 import com.mxgraph.model.mxIGraphModel;
 import com.mxgraph.swing.mxGraphComponent;
@@ -75,7 +74,7 @@ public class ExpLineEditor extends BasicGraphEditor
 	//ExpLineEditor.class.getResource("/images/connector.gif");
 
 	public ExpLineEditor()
-	{
+	{	
 		this("ExpLine", new ExpLineGraphComponent(new ExpLineGraph()));
 		
 		try
@@ -110,7 +109,7 @@ public class ExpLineEditor extends BasicGraphEditor
 	/**
 	 * 
 	 */
-	public ExpLineEditor(String appTitle, mxGraphComponent component)
+	public ExpLineEditor(String appTitle, ExpLineGraphComponent component)
 	{
 		super(appTitle, component);
 		final mxGraph graph = graphComponent.getGraph();
@@ -322,7 +321,7 @@ public class ExpLineEditor extends BasicGraphEditor
 		{
 			
 			//TODO I have to call the builder sending the model....
-			super(new ExpLineModel());
+			super(new ExpLine());
 			setMultigraph(false);
 			
 		}
@@ -426,47 +425,6 @@ public class ExpLineEditor extends BasicGraphEditor
 			else
 				return false;
 		}
-
-	}
-	
-	/**
-	 * A graph that creates new edges from a given template edge.
-	 */
-	public static class ExpLineModel extends mxGraphModel
-	{
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = -5685023531009138220L;
-		
-		protected List<Rule> rules;
-		
-		
-		public ExpLineModel(){
-			rules = new ArrayList<Rule>();
-		}
-
-		public List<Rule> getRules() {
-			return rules;
-		}
-
-		public void setRules(List<Rule> rules) {
-			this.rules = rules;
-		}
-		
-		public boolean addRule(Rule rule) {
-			return rules.add(rule);
-		}
-		
-		public boolean removeRule(Rule rule) {
-			return rules.remove(rule);
-		}
-		
-		public void clearRules() {
-			rules.clear();
-		}
-		
 
 	}
 }

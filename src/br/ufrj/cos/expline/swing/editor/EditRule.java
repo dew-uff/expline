@@ -40,7 +40,6 @@ public class EditRule extends JDialog
 	
 	protected ExpLineGraphComponent expLineGraphComponent;
 	protected ExpLineGraph expLineGraph;
-	protected JPanel monitoringSrvrPanel;
 	
 	protected Rule rule;
 	
@@ -85,8 +84,6 @@ public class EditRule extends JDialog
 	    borderLayoutPanel.add(conditionPanelHolder, BorderLayout.NORTH);
 	    JScrollPane scrollPane = new JScrollPane(borderLayoutPanel);
 	    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-	      
-	    //conditionPanelHolder.add(new FilterPanel(this, FilterPanel.CONDITION_TYPE));
 	    
 	    if(rule.getCondition().isEmpty())
 	    	conditionPanelHolder.add(new FilterPanel(this, FilterPanel.CONDITION_TYPE, new Expression()));

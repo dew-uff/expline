@@ -24,14 +24,12 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import br.ufrj.cos.expline.model.ExpLine;
 import br.ufrj.cos.expline.model.Rule;
 import br.ufrj.cos.expline.swing.ExpLineEditor.ExpLineGraph;
 import br.ufrj.cos.expline.swing.ExpLineEditor.ExpLineGraphComponent;
-import br.ufrj.cos.expline.swing.ExpLineEditor.ExpLineModel;
 
-import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxResources;
-import com.mxgraph.view.mxGraph;
 
 public class ListRulesFrame extends JDialog
 {
@@ -43,11 +41,10 @@ public class ListRulesFrame extends JDialog
 	
 	protected ExpLineGraphComponent expLineGraphComponent;
 	protected ExpLineGraph expLineGraph;
-	protected JPanel monitoringSrvrPanel;
 	
 	protected Frame owner;
 	
-	protected DefaultListModel<Rule> model;
+	protected DefaultListModel<Rule> rulesListModel;
 	
 	protected JList<Rule> ruleJList;
 	
@@ -65,7 +62,7 @@ public class ListRulesFrame extends JDialog
 		this.expLineGraphComponent = expLineGraphComponent;
 		this.expLineGraph = (ExpLineGraph) expLineGraphComponent.getGraph();
 		
-		ExpLineModel model = (ExpLineModel) expLineGraph.getModel();
+		ExpLine model = (ExpLine) expLineGraph.getModel();
 		
 		rules = model.getRules();
 		
@@ -160,17 +157,16 @@ public class ListRulesFrame extends JDialog
 	
 	public JPanel createOutputRelationalSchemaPanel(){
 		
-		JPanel tablePanel = new JPanel(new BorderLayout());		
+		JPanel rulesListPanel = new JPanel(new BorderLayout());		
 			
-		model = new DefaultListModel<Rule>();
+		rulesListModel = new DefaultListModel<Rule>();
 		
-		
-		ruleJList = new JList<Rule>(model);
+		ruleJList = new JList<Rule>(rulesListModel);
 		
 		loadRulesList();
 		
 		// creates panel to contain the table
-		tablePanel.add(new JScrollPane(
+		rulesListPanel.add(new JScrollPane(
 				ruleJList), BorderLayout.CENTER);
         
         JPanel commandPanel = new JPanel();
@@ -215,17 +211,17 @@ public class ListRulesFrame extends JDialog
 		JPanel east = new JPanel(new GridBagLayout());
 		east.add(commandPanel);
 		
-		tablePanel.add(east, BorderLayout.EAST);
+		rulesListPanel.add(east, BorderLayout.EAST);
     
         
-		return tablePanel;
+		return rulesListPanel;
 	}
 	
 	
 	private void loadRulesList() {
 		
 		for (Rule rule : rules) {
-			model.addElement(rule);
+			rulesListModel.addElement(rule);
 		}
 		
 	}
@@ -234,7 +230,7 @@ public class ListRulesFrame extends JDialog
 	void editRule(){
 		
 		if(!ruleJList.isSelectionEmpty()){
-			Rule rule = model.getElementAt(ruleJList.getSelectedIndex());
+			Rule rule = rulesListModel.getElementAt(ruleJList.getSelectedIndex());
 			
 			EditRule frame = new EditRule((Dialog)ListRulesFrame.this, expLineGraphComponent, rule);
 			frame.setModal(true);
@@ -247,7 +243,7 @@ public class ListRulesFrame extends JDialog
 		Rule rule = new Rule();
 		
 		rules.add(rule);
-		model.addElement(rule);
+		rulesListModel.addElement(rule);
 		
 		rule.setName("new rule");
 		
@@ -260,9 +256,9 @@ public class ListRulesFrame extends JDialog
 	
 	void removeRule(){
 		
-		Rule rule = model.getElementAt(ruleJList.getSelectedIndex());
+		Rule rule = rulesListModel.getElementAt(ruleJList.getSelectedIndex());
 		
-		model.removeElement(rule);
+		rulesListModel.removeElement(rule);
 		
 		rules.remove(rule);
 		

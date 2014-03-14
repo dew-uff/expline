@@ -46,7 +46,7 @@ import javax.swing.text.html.HTMLEditorKit;
 import org.w3c.dom.Document;
 
 import br.ufrj.cos.expline.model.Activity;
-import br.ufrj.cos.expline.swing.ExpLineEditor.ExpLineModel;
+import br.ufrj.cos.expline.model.ExpLine;
 
 import com.mxgraph.analysis.mxDistanceCostFunction;
 import com.mxgraph.analysis.mxGraphAnalysis;
@@ -1385,7 +1385,7 @@ public class EditorActions
 					mxCell root = new mxCell();
 					root.insert(new mxCell());
 					
-					ExpLineModel model = (ExpLineModel) graph.getModel();
+					ExpLine model = (ExpLine) graph.getModel();
 					model.clearRules();
 					
 					graph.getModel().setRoot(root);

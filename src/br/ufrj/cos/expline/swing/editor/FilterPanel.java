@@ -187,7 +187,6 @@ public class FilterPanel extends JPanel{
 		this.add(filterPanel, BorderLayout.CENTER);
 		this.add(flowLayoutPanel, BorderLayout.EAST);
 		 
-		//conditionPanel.setBorder(BorderFactory.createTitledBorder("condition"));
 		this.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 	  
 		
@@ -258,12 +257,6 @@ public class FilterPanel extends JPanel{
 	   
 	   return false;
    }
-
-private void loadData() {
-	   
-	   //carrega das expressions que estao em rule
-
-   }
    
    private class AddButton extends JButton implements ActionListener {
        public AddButton() {
@@ -289,7 +282,6 @@ private void loadData() {
        public void actionPerformed(ActionEvent e) {
 
 			new FilterPanel(editRulePanel, type, new Expression());
-					
 			this.revalidate();
 			this.repaint();
          
