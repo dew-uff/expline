@@ -15,28 +15,28 @@ public class Rule implements Cloneable, Serializable{
 	
 	private List<Expression> conditions;
 	
-	private List<Expression> implication;
+	private List<Expression> implications;
 	
 	public Rule(){
 		name = "";
 		conditions = new ArrayList<Expression>();
-		implication = new ArrayList<Expression>();
+		implications = new ArrayList<Expression>();
 	}
 	
-	public List<Expression> getCondition() {
+	public List<Expression> getConditions() {
 		return conditions;
 	}
 
-	public void setCondition(List<Expression> conditions) {
+	public void setConditions(List<Expression> conditions) {
 		this.conditions = conditions;
 	}
 
-	public List<Expression> getImplication() {
-		return implication;
+	public List<Expression> getImplications() {
+		return implications;
 	}
 
-	public void setImplication(List<Expression> implication) {
-		this.implication = implication;
+	public void setImplications(List<Expression> implications) {
+		this.implications = implications;
 	}
 	
 	public boolean addCondition(Expression expression){
@@ -44,7 +44,7 @@ public class Rule implements Cloneable, Serializable{
 	}
 	
 	public boolean addImplication(Expression expression){
-		return implication.add(expression);
+		return implications.add(expression);
 	}
 	
 	public void clearConditions(){
@@ -52,8 +52,8 @@ public class Rule implements Cloneable, Serializable{
 		
 	}
 	
-	public void clearImplication(){
-		implication.clear();
+	public void clearImplications(){
+		implications.clear();
 	}
 
 	@Override

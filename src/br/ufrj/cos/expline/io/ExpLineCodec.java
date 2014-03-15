@@ -4,12 +4,16 @@
  */
 package br.ufrj.cos.expline.io;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import br.ufrj.cos.expline.model.ExpLine;
+import br.ufrj.cos.expline.model.Rule;
 
 import com.mxgraph.io.mxCodec;
 import com.mxgraph.io.mxObjectCodec;
@@ -29,7 +33,7 @@ public class ExpLineCodec extends mxObjectCodec
 	 */
 	public ExpLineCodec()
 	{
-		this(new ExpLine(), null, new String[] { "rules" },
+		this(new ExpLine(), new String[] { "rules" }, null,
 				null);
 	}
 
@@ -57,10 +61,10 @@ public class ExpLineCodec extends mxObjectCodec
 	 */
 	protected void encodeObject(mxCodec enc, Object obj, Node node)
 	{
-		if (obj instanceof mxGraphModel)
+		if (obj instanceof ExpLine)
 		{
 			Node rootNode = enc.getDocument().createElement("root");
-			mxGraphModel model = (mxGraphModel) obj;
+			mxGraphModel model = (ExpLine) obj;
 			enc.encodeCell((mxICell) model.getRoot(), rootNode, true);
 			node.appendChild(rootNode);
 		}
@@ -71,37 +75,17 @@ public class ExpLineCodec extends mxObjectCodec
 	 * XML of the user object (inversion).
 	 */
 	public Node afterEncode(mxCodec enc, Object obj, Node node)
-	{
-		
-		Node rootNode = enc.getDocument().createElement("Test");
+	{	
+
+		Node rootNode = enc.getDocument().createElement("Rules");
 		ExpLine model = (ExpLine) obj;
-		Node rulesNode = enc.encode(model.getRules());
-		node.appendChild(rootNode);
 		
-//		if (obj instanceof mxCell)
-//		{
-//			mxCell cell = (mxCell) obj;
-//
-//			if (cell.getValue() instanceof Node)
-//			{
-//				// Wraps the graphical annotation up in the
-//				// user object (inversion) by putting the
-//				// result of the default encoding into
-//				// a clone of the user object (node type 1)
-//				// and returning this cloned user object.
-//				Element tmp = (Element) node;
-//				node = enc.getDocument().importNode((Node) cell.getValue(),
-//						true);
-//				node.appendChild(tmp);
-//
-//				// Moves the id attribute to the outermost
-//				// XML node, namely the node which denotes
-//				// the object boundaries in the file.
-//				String id = tmp.getAttribute("id");
-//				((Element) node).setAttribute("id", id);
-//				tmp.removeAttribute("id");
-//			}
-//		}
+		for (Rule rule : model.getRules()) {
+			Node ruleNode = enc.encode(rule);
+			rootNode.appendChild(ruleNode);
+		}
+		
+		node.appendChild(rootNode);
 
 		return node;
 	}
@@ -116,15 +100,15 @@ public class ExpLineCodec extends mxObjectCodec
 		if (node instanceof Element)
 		{
 			Element elt = (Element) node;
-			mxGraphModel model = null;
+			ExpLine model = null;
 
-			if (into instanceof mxGraphModel)
+			if (into instanceof ExpLine)
 			{
-				model = (mxGraphModel) into;
+				model = (ExpLine) into;
 			}
 			else
 			{
-				model = new mxGraphModel();
+				model = new ExpLine();
 			}
 
 			// Reads the cells into the graph model. All cells
@@ -159,6 +143,26 @@ public class ExpLineCodec extends mxObjectCodec
 		}
 
 		return node;
+	}
+	
+	@Override
+	public Object afterDecode(mxCodec dec, Node node, Object obj) {
+		
+		List<Rule> rules = new ArrayList<Rule>();
+		
+		Node ruleNode = node.getLastChild();
+		
+		NodeList rulesList = ruleNode.getChildNodes();
+		
+		for (int i = 0; i < rulesList.getLength(); i++) {
+			Rule rule = (Rule) dec.decode(rulesList.item(i));
+			rules.add(rule);
+		}
+		
+		ExpLine expline = (ExpLine) obj;
+		expline.setRules(rules);
+		
+		return obj;
 	}
 
 }

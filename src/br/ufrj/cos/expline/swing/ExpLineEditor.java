@@ -16,6 +16,7 @@ import org.w3c.dom.Document;
 
 import br.ufrj.cos.expline.io.ActivityCodec;
 import br.ufrj.cos.expline.io.ExpLineCodec;
+import br.ufrj.cos.expline.io.ExpressionCodec;
 import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.model.ExpLine;
 import br.ufrj.cos.expline.model.Expression;
@@ -93,12 +94,13 @@ public class ExpLineEditor extends BasicGraphEditor
 		mxCodecRegistry.addPackage("br.ufrj.cos.expline.model");
 		mxCodecRegistry.register(new ExpLineCodec());
 		mxCodecRegistry.register(new ActivityCodec());
+		mxCodecRegistry.register(new mxObjectCodec(new ArrayList<Activity>()));
 		mxCodecRegistry.register(new mxObjectCodec(new RelationSchema()));
 		mxCodecRegistry.register(new mxObjectCodec(new RelationSchemaAttribute()));
 		mxCodecRegistry.register(new mxObjectCodec(new ArrayList<RelationSchema>()));
 		mxCodecRegistry.register(new mxObjectCodec(new ArrayList<RelationSchemaAttribute>()));
 		mxCodecRegistry.register(new mxObjectCodec(new Rule()));
-		mxCodecRegistry.register(new mxObjectCodec(new Expression()));
+		mxCodecRegistry.register(new ExpressionCodec());
 		mxCodecRegistry.register(new mxObjectCodec(new ArrayList<Rule>()));
 		mxCodecRegistry.register(new mxObjectCodec(new ArrayList<Expression>()));
 		//mxCodecRegistry.addAlias("br.ufrj.cos.expline.model.Activity", "Activity");

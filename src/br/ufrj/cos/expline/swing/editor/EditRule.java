@@ -85,10 +85,10 @@ public class EditRule extends JDialog
 	    JScrollPane scrollPane = new JScrollPane(borderLayoutPanel);
 	    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 	    
-	    if(rule.getCondition().isEmpty())
+	    if(rule.getConditions().isEmpty())
 	    	conditionPanelHolder.add(new FilterPanel(this, FilterPanel.CONDITION_TYPE, new Expression()));
 	    
-	    for (Expression exp : rule.getCondition()) {
+	    for (Expression exp : rule.getConditions()) {
 	    	conditionPanelHolder.add(new FilterPanel(this, FilterPanel.CONDITION_TYPE, exp));
 		}
 
@@ -109,10 +109,10 @@ public class EditRule extends JDialog
 	    scrollPane = new JScrollPane(borderLayoutPanel);
 	    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 	      
-	    if(rule.getImplication().isEmpty())
+	    if(rule.getImplications().isEmpty())
 	    	implicationPanelHolder.add(new FilterPanel(this, FilterPanel.IMPLICATION_TYPE, new Expression()));
 	    
-	    for (Expression exp : rule.getImplication()) {
+	    for (Expression exp : rule.getImplications()) {
 	    	implicationPanelHolder.add(new FilterPanel(this, FilterPanel.IMPLICATION_TYPE, exp));
 		}
 
@@ -188,13 +188,13 @@ public class EditRule extends JDialog
 	
 	public void saveData(){
 		
-		//salva do zero todas as expressıes pra n„o dar problema de duplicata ou sujeira 
+		//salva do zero todas as express√µes pra n√£o dar problema de duplicata ou sujeira 
 		
 		List<Expression> conditions = new ArrayList<Expression>();
 		List<Expression> implications = new ArrayList<Expression>();
 		
-		rule.setCondition(conditions);
-		rule.setImplication(implications);
+		rule.setConditions(conditions);
+		rule.setImplications(implications);
 		
 		rule.setName(ruleNameField.getText());
 		

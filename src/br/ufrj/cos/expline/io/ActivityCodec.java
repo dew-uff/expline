@@ -15,7 +15,6 @@ import br.ufrj.cos.expline.model.Activity;
 import com.mxgraph.io.mxCodec;
 import com.mxgraph.io.mxCodecRegistry;
 import com.mxgraph.io.mxObjectCodec;
-import com.mxgraph.model.mxCell;
 
 /**
  * Codec for mxCells. This class is created and registered
@@ -68,11 +67,11 @@ public class ActivityCodec extends mxObjectCodec
 	 */
 	public Node afterEncode(mxCodec enc, Object obj, Node node)
 	{
-		if (obj instanceof mxCell)
+		if (obj instanceof Activity)
 		{
-			mxCell cell = (mxCell) obj;
+			Activity activity = (Activity) obj;
 
-			if (cell.getValue() instanceof Node)
+			if (activity.getValue() instanceof Node)
 			{
 				// Wraps the graphical annotation up in the
 				// user object (inversion) by putting the
@@ -80,7 +79,7 @@ public class ActivityCodec extends mxObjectCodec
 				// a clone of the user object (node type 1)
 				// and returning this cloned user object.
 				Element tmp = (Element) node;
-				node = enc.getDocument().importNode((Node) cell.getValue(),
+				node = enc.getDocument().importNode((Node) activity.getValue(),
 						true);
 				node.appendChild(tmp);
 
@@ -104,9 +103,9 @@ public class ActivityCodec extends mxObjectCodec
 	{
 		Element inner = (Element) node;
 
-		if (obj instanceof mxCell)
+		if (obj instanceof Activity)
 		{
-			mxCell cell = (mxCell) obj;
+			Activity activity = (Activity) obj;
 			String classname = getName();
 			String nodeName = node.getNodeName();
 			
@@ -171,18 +170,18 @@ public class ActivityCodec extends mxObjectCodec
 
 				// Creates the user object out of the XML node
 				Element value = (Element) node.cloneNode(true);
-				cell.setValue(value);
+				activity.setValue(value);
 				String id = value.getAttribute("id");
 
 				if (id != null)
 				{
-					cell.setId(id);
+					activity.setId(id);
 					value.removeAttribute("id");
 				}
 			}
 			else
 			{
-				cell.setId(((Element) node).getAttribute("id"));
+				activity.setId(((Element) node).getAttribute("id"));
 			}
 
 			// Preprocesses and removes all Id-references

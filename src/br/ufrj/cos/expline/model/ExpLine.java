@@ -16,7 +16,7 @@ public class ExpLine extends mxGraphModel
 	 */
 	private static final long serialVersionUID = -5685023531009138220L;
 	
-	protected List<Rule> rules;
+	private List<Rule> rules;
 	
 	
 	public ExpLine(){
