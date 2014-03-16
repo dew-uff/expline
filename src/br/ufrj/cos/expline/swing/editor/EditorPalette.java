@@ -28,6 +28,7 @@ import javax.swing.JPanel;
 import javax.swing.TransferHandler;
 
 import br.ufrj.cos.expline.model.Activity;
+import br.ufrj.cos.expline.model.Edge;
 
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
@@ -224,14 +225,14 @@ public class EditorPalette extends JPanel
 	 * @param value
 	 */
 	public void addEdgeTemplate(final String name, ImageIcon icon,
-			String style, int width, int height, Object value)
+			int width, int height, Object value, int type)
 	{
 		mxGeometry geometry = new mxGeometry(0, 0, width, height);
 		geometry.setTerminalPoint(new mxPoint(0, height), true);
 		geometry.setTerminalPoint(new mxPoint(width, 0), false);
 		geometry.setRelative(true);
 
-		mxCell cell = new mxCell(value, geometry, style);
+		mxCell cell = new Edge(value, geometry, type);
 		cell.setEdge(true);
 
 		addTemplate(name, icon, cell);
@@ -246,11 +247,11 @@ public class EditorPalette extends JPanel
 	 * @param height
 	 * @param value
 	 */
-	public void addTemplate(final String name, ImageIcon icon, String style,
-			int width, int height, Object value, String type)
+	public void addTemplate(final String name, ImageIcon icon,
+			int width, int height, Object value, int type)
 	{
 		mxCell cell = new Activity(value, new mxGeometry(0, 0, width, height),
-				style, type);
+				type);
 		cell.setVertex(true);
 
 		addTemplate(name, icon, cell);

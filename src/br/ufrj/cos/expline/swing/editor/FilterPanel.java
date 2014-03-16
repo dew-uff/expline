@@ -211,8 +211,8 @@ public class FilterPanel extends JPanel{
 	   if(filter == Expression.FILTER_NONE){
 		   for (Object vertex : vertices) {
 			   Activity activity = (Activity) vertex;
-			   
-			   if(activity.getType().contains("Variant") || activity.getType().contains("Optional")){
+
+			   if(activity.getType() == Activity.OPTIONAL_INVARIANT_TYPE || activity.getType() == Activity.OPTIONAL_VARIATION_POINT_TYPE || activity.getType() == Activity.VARIANT_TYPE){
 				   JCheckBox item =  new JCheckBox((String)activity.getValue());
 				   item.setActionCommand(activity.getId());
 				   item.setSelected(isSelected(activity, exp.getActivities()));
@@ -226,7 +226,7 @@ public class FilterPanel extends JPanel{
 		   for (Object vertex : vertices) {
 			   Activity activity = (Activity) vertex;
 			   
-			   if(activity.getType().contains("Variant")){
+			   if(activity.getType() == Activity.VARIANT_TYPE){
 				   JCheckBox item =  new JCheckBox((String)activity.getValue());
 				   item.setActionCommand(activity.getId());
 				   item.setSelected(isSelected(activity, exp.getActivities()));
@@ -239,7 +239,7 @@ public class FilterPanel extends JPanel{
 		   for (Object vertex : vertices) {
 			   Activity activity = (Activity) vertex;
 			   
-			   if(activity.getType().contains("Optional")){
+			   if(activity.getType() == Activity.OPTIONAL_INVARIANT_TYPE || activity.getType() == Activity.OPTIONAL_VARIATION_POINT_TYPE){
 				   JCheckBox item =  new JCheckBox((String)activity.getValue());
 				   item.setActionCommand(activity.getId());
 				   item.setSelected(isSelected(activity, exp.getActivities()));

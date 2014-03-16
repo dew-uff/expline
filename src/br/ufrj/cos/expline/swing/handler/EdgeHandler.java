@@ -5,6 +5,8 @@
 package br.ufrj.cos.expline.swing.handler;
 
 import br.ufrj.cos.expline.analysis.GraphStructure;
+import br.ufrj.cos.expline.model.Activity;
+import br.ufrj.cos.expline.model.Edge;
 
 import com.mxgraph.analysis.mxAnalysisGraph;
 import com.mxgraph.model.mxCell;
@@ -37,17 +39,17 @@ public class EdgeHandler extends mxEdgeHandler
 	{
 		
 		//ExpLine-begin
-		mxCell src = (mxCell) source;
-		mxCell trg = (mxCell) target;
-		mxCell edge =  (mxCell) state.getCell();
+		Activity src = (Activity) source;
+		Activity trg = (Activity) target;
+		Edge edge =  (Edge) state.getCell();
 		
-		if(edge.getStyle().contains("WorkflowEdge")){
+		if(edge.getType() == Edge.WORKFLOW_TYPE){
 			if(src != null){
-				if (src.getStyle().contains("Variant"))
+				if (src.getType() == Activity.VARIANT_TYPE)
 					return "";
 			}
 			if(trg != null){
-				if (trg.getStyle().contains("Variant"))
+				if (trg.getType() == Activity.VARIANT_TYPE)
 					return "";
 			}
 		}
@@ -55,11 +57,11 @@ public class EdgeHandler extends mxEdgeHandler
 			//it's variant relationship
 			
 			if(src != null){
-				if (!src.getStyle().contains("OptionalVariationPoint") && !src.getStyle().contains("VariationPoint"))
+				if (src.getType() != Activity.OPTIONAL_VARIATION_POINT_TYPE && src.getType() != Activity.VARIATION_POINT_TYPE)
 					return "";
 			}
 			if(trg != null){
-				if (!trg.getStyle().contains("Variant"))
+				if (trg.getType() != Activity.VARIANT_TYPE)
 					return "";
 			}
 			

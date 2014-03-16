@@ -1440,7 +1440,7 @@ public class EditorActions
 
 			if (palette != null && icon != null)
 			{
-				palette.addTemplate(name, icon, "shape=" + name, 80, 80, "", "");
+				palette.addTemplate(name, icon, 80, 80, "", Activity.INVARIANT_TYPE);
 			}
 
 			return name;

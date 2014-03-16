@@ -18,6 +18,7 @@ import br.ufrj.cos.expline.io.ActivityCodec;
 import br.ufrj.cos.expline.io.ExpLineCodec;
 import br.ufrj.cos.expline.io.ExpressionCodec;
 import br.ufrj.cos.expline.model.Activity;
+import br.ufrj.cos.expline.model.Edge;
 import br.ufrj.cos.expline.model.ExpLine;
 import br.ufrj.cos.expline.model.Expression;
 import br.ufrj.cos.expline.model.RelationSchema;
@@ -137,7 +138,10 @@ public class ExpLineEditor extends BasicGraphEditor
 
 					if (graph.getModel().isEdge(cell))
 					{
-						((ExpLineGraph) graph).setEdgeTemplate(cell);
+//						((ExpLineGraph) graph).setEdgeTemplate(cell);
+
+						Edge edge = new Edge("", ((mxCell)cell).getGeometry(), Edge.WORKFLOW_TYPE);
+						((ExpLineGraph) graph).setEdgeTemplate(edge);
 					}
 				}
 			}
@@ -153,7 +157,7 @@ public class ExpLineEditor extends BasicGraphEditor
 				new ImageIcon(
 						ExpLineEditor.class
 								.getResource("/images/rounded.png")),
-				"rounded=1;strokeWidth=5;fontSize=24", 160, 120, "", "Invariant");
+				160, 120, "", Activity.INVARIANT_TYPE);
 		
 		activitiesPalette
 		.addTemplate(
@@ -161,7 +165,7 @@ public class ExpLineEditor extends BasicGraphEditor
 				new ImageIcon(
 						ExpLineEditor.class
 								.getResource("/images/rounded.png")),
-				"rounded=1;dashed=1;strokeWidth=5;fontSize=24", 160, 120, "", "Optional");
+				160, 120, "", Activity.OPTIONAL_INVARIANT_TYPE);
 		
 		activitiesPalette
 		.addTemplate(
@@ -169,21 +173,21 @@ public class ExpLineEditor extends BasicGraphEditor
 				new ImageIcon(
 						ExpLineEditor.class
 								.getResource("/images/doublerectangle.png")),
-				"rectangle;shape=doubleRectangle;rounded=1;strokeWidth=5;fontSize=24", 160, 120, "", "VariationPoint");
+				160, 120, "", Activity.VARIATION_POINT_TYPE);
 		activitiesPalette
 		.addTemplate(
 				"Optional Variation Point",
 				new ImageIcon(
 						ExpLineEditor.class
 								.getResource("/images/doublerectangle.png")),
-				"rectangle;shape=doubleRectangle;dashed=1;rounded=1;strokeWidth=5;fontSize=24", 160, 120, "", "OptionalVariationPoint");
+				160, 120, "", Activity.OPTIONAL_VARIATION_POINT_TYPE);
 		activitiesPalette
 		.addTemplate(
 				"Variant",
 				new ImageIcon(
 						ExpLineEditor.class
 								.getResource("/images/rounded.png")),
-				"strokeWidth=5;fillColor=#FF0033;fontSize=24;cloneable=0", 160, 120, "", "Variant");
+				160, 120, "", Activity.VARIANT_TYPE);
 		
 
 		connectionsPalette
@@ -192,14 +196,14 @@ public class ExpLineEditor extends BasicGraphEditor
 				new ImageIcon(
 						ExpLineEditor.class
 								.getResource("/images/connect.png")),
-				"WorkflowEdge;strokeWidth=8;strokeColor=#000066", 100, 100, "");
+				100, 100, "", Edge.WORKFLOW_TYPE);
 		connectionsPalette
 		.addEdgeTemplate(
 				"Variant relationship",
 				new ImageIcon(
 						ExpLineEditor.class
 								.getResource("/images/arrow.png")),
-				"VariantRelationship;arrow;strokeWidth=5;strokeColor=#000000", 120, 120, "");
+				 120, 120, "", Edge.VARIANT_RELATIONSHIP_TYPE);
 		
 
 	}
@@ -324,9 +328,13 @@ public class ExpLineEditor extends BasicGraphEditor
 		public ExpLineGraph()
 		{
 			
-			//TODO I have to call the builder sending the model....
 			super(new ExpLine());
 			setMultigraph(false);
+			
+			Edge edge = new Edge("", new mxGeometry(), Edge.WORKFLOW_TYPE);
+			edge.getGeometry().setRelative(true);
+			
+			setEdgeTemplate(edge);
 			
 		}
 
@@ -411,7 +419,7 @@ public class ExpLineEditor extends BasicGraphEditor
 			mxGeometry geometry = new mxGeometry(x, y, width, height);
 			geometry.setRelative(relative);
 
-			Activity vertex = new Activity(value, geometry, style, "");
+			Activity vertex = new Activity(value, geometry, style, Activity.INVARIANT_TYPE);
 			vertex.setId(id);
 			vertex.setVertex(true);
 			vertex.setConnectable(true);

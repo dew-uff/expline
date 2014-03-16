@@ -10,9 +10,10 @@ import java.awt.event.MouseEvent;
 import javax.swing.JOptionPane;
 
 import br.ufrj.cos.expline.analysis.GraphStructure;
+import br.ufrj.cos.expline.model.Activity;
+import br.ufrj.cos.expline.model.Edge;
 
 import com.mxgraph.analysis.mxAnalysisGraph;
-import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.swing.handler.mxCellMarker;
@@ -121,18 +122,18 @@ public class ConnectionHandler extends mxConnectionHandler
 	
 	//ExpLine-Begin	
 	
-	public boolean isValidExpLineConnection(mxCell source, mxCell target)
+	public boolean isValidExpLineConnection(Activity source, Activity target)
 	{
 
-		if(target != null && source != target) {	
-			if (source.getStyle().contains("Variant") && !(target.getStyle().contains("VariationPoint") || target.getStyle().contains("OptionalVariationPoint"))){
+		if(target != null && source != target) {
+			
+			if (source.getType() == Activity.VARIANT_TYPE && target.getType() != Activity.VARIATION_POINT_TYPE && target.getType() != Activity.OPTIONAL_VARIATION_POINT_TYPE){
 				return false;
 			}
 			
-			if(target.getStyle().contains("Variant") && !(source.getStyle().contains("VariationPoint") || source.getStyle().contains("OptionalVariationPoint"))){
+			if (target.getType() == Activity.VARIANT_TYPE && source.getType() != Activity.VARIATION_POINT_TYPE && source.getType() != Activity.OPTIONAL_VARIATION_POINT_TYPE){
 				return false;
 			}
-			
 			
 			mxAnalysisGraph aGraph = new mxAnalysisGraph();
 			aGraph.setGraph(graphComponent.getGraph());
@@ -148,23 +149,23 @@ public class ConnectionHandler extends mxConnectionHandler
 	
 	public void defineEdgeType(){
 		
-		mxCell previewState = (mxCell) connectPreview.getPreviewState().getCell();
+		Edge previewState = (Edge) connectPreview.getPreviewState().getCell();
 		
 		
-		mxCell src = (mxCell) previewState.getTerminal(true);
-		mxCell trg = (mxCell) previewState.getTerminal(false);
+		Activity src = (Activity) previewState.getTerminal(true);
+		Activity trg = (Activity) previewState.getTerminal(false);
 		
-		previewState.setStyle("strokeWidth=8;strokeColor=#000066");
+		previewState.changeType(Edge.WORKFLOW_TYPE);
 		
 		if(trg != null){
-			if (src.getStyle().contains("Variant")){
-				previewState.setStyle("arrow;strokeWidth=8");
+			if (src.getType() == Activity.VARIANT_TYPE){
+				previewState.changeType(Edge.VARIANT_RELATIONSHIP_TYPE);
 				previewState.setSource(trg);
 				previewState.setTarget(src);
 			}
 			else
-				if(trg.getStyle().contains("Variant")){
-					previewState.setStyle("arrow;strokeWidth=8");
+				if(trg.getType() == Activity.VARIANT_TYPE){
+					previewState.changeType(Edge.VARIANT_RELATIONSHIP_TYPE);
 				}
 		}
 	}
@@ -185,7 +186,7 @@ public class ConnectionHandler extends mxConnectionHandler
 		}
 		
 		//ExpLine-Begin
-		if(!isValidExpLineConnection((mxCell)source, (mxCell)target))
+		if(!isValidExpLineConnection((Activity)source, (Activity)target))
 		{	
 			return "";
 		}
