@@ -1,7 +1,12 @@
 package br.ufrj.cos.expline.swing;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.ButtonGroup;
 import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.TransferHandler;
 
@@ -22,7 +27,7 @@ public class PopupMenu extends JPopupMenu
 	 */
 	private static final long serialVersionUID = -3132749140550242191L;
 
-	public PopupMenu(ExpLineEditor editor)
+	public PopupMenu(final ExpLineEditor editor)
 	{
 		boolean selected = !editor.getGraphComponent().getGraph()
 				.isSelectionEmpty();
@@ -72,6 +77,48 @@ public class PopupMenu extends JPopupMenu
 			if (isVertex){
 				JMenu menu = (JMenu) add(new JMenu(mxResources.get("albegraicOperator")));
 				PopupMenu.populateAlgebraicOperatorMenu(menu, editor);
+				
+				
+				
+				JMenuItem item = add(new JMenuItem(mxResources.get("properties")));
+				item.addActionListener(new ActionListener()
+				{
+					/*
+					 * (non-Javadoc)
+					 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+					 */
+					public void actionPerformed(ActionEvent e)
+					{
+						
+						if (!editor.getGraphComponent().getGraph()
+								.isSelectionEmpty()) {
+							if (editor.getGraphComponent().getGraph().getSelectionCount() == 1){
+								
+								if(((mxCell)editor.getGraphComponent().getGraph().getSelectionCell()).isVertex()){
+									
+									editor.properties();
+									
+								}
+								else{				
+									JOptionPane.showMessageDialog(editor.graphComponent,
+											mxResources.get("noActivitySelected"));	
+								}
+								
+							}
+							else{
+								JOptionPane.showMessageDialog(editor.graphComponent,
+										mxResources.get("moreThanOneSected"));	
+							}
+							
+						}
+						else{
+							JOptionPane.showMessageDialog(editor.graphComponent,
+									mxResources.get("noActivitySelected"));	
+						}
+						
+					}
+				});
+				
 			}
 				
 			addSeparator();

@@ -110,7 +110,7 @@ public class ListRulesFrame extends JDialog
         
         //Creating a Panel that is going to be located in the center of the screen that contains the algebraic and tabbed panel
         JPanel middle = new JPanel(new BorderLayout());
-        middle.add(createOutputRelationalSchemaPanel());
+        middle.add(createRuleListPanel());
         getContentPane().add(middle, BorderLayout.CENTER);
 
 
@@ -155,7 +155,7 @@ public class ListRulesFrame extends JDialog
 	}
 	
 	
-	public JPanel createOutputRelationalSchemaPanel(){
+	public JPanel createRuleListPanel(){
 		
 		JPanel rulesListPanel = new JPanel(new BorderLayout());		
 			
@@ -173,7 +173,7 @@ public class ListRulesFrame extends JDialog
         commandPanel.setLayout(new GridLayout(3, 1));
 
 		// Adds Add button to create new attribute in the table
-		JButton addButton = new JButton("Add");
+		JButton addButton = new JButton(mxResources.get("add"));
 		addButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -184,7 +184,7 @@ public class ListRulesFrame extends JDialog
 		
 		commandPanel.add(addButton);
 		
-		JButton editButton = new JButton("Edit");
+		JButton editButton = new JButton(mxResources.get("edit"));
 		editButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -197,7 +197,7 @@ public class ListRulesFrame extends JDialog
 		
 		
 		// Adds Remove button to remove attribute of table
-		JButton removeButton = new JButton("Remove");
+		JButton removeButton = new JButton(mxResources.get("remove"));
 		removeButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)

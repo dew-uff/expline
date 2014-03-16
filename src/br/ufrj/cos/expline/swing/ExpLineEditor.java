@@ -858,7 +858,7 @@ public class ExpLineEditor extends JPanel
 
 		if (frame != null)
 		{
-			PropertiesFrame about = new PropertiesFrame(frame, this.graphComponent);
+			ActivityPropertiesFrame about = new ActivityPropertiesFrame(frame, this.graphComponent);
 			about.setModal(true);
 
 			// Centers inside the application frame

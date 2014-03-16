@@ -27,6 +27,7 @@ import javax.swing.plaf.basic.BasicButtonUI;
 import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.model.Expression;
 
+import com.mxgraph.util.mxResources;
 import com.mxgraph.view.mxGraph;
 
 @SuppressWarnings("serial")
@@ -55,8 +56,8 @@ public class FilterPanel extends JPanel{
 	  JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 9));
 		 
 		String[] selectOperator = new String[2];
-		selectOperator[0] = "Selected";
-		selectOperator[1] = "Not selected";
+		selectOperator[0] = mxResources.get("selected");
+		selectOperator[1] = mxResources.get("notSelected");
 		selectOperatorJComboBox = new JComboBox<String>(selectOperator);
 		
 		if(exp.getOperation() == Expression.OPERATION_SELECTED){
@@ -69,15 +70,15 @@ public class FilterPanel extends JPanel{
 		filterPanel.add(selectOperatorJComboBox);
 		
 		String[] modifier = new String[9];
-		modifier[0] = "Any";
-		modifier[1] = "Any optional";
-		modifier[2] = "Any variant";
-		modifier[3] = "Some";
-		modifier[4] = "Some optional";
-		modifier[5] = "Some variant";
-		modifier[6] = "All";
-		modifier[7] = "All optionals";
-		modifier[8] = "All variants";
+		modifier[0] = mxResources.get("any");
+		modifier[1] = mxResources.get("any") +" " +mxResources.get("optional");
+		modifier[2] = mxResources.get("any") +" " +mxResources.get("variant");
+		modifier[3] = mxResources.get("some");
+		modifier[4] = mxResources.get("some") +" " +mxResources.get("optional");
+		modifier[5] = mxResources.get("some") +" " +mxResources.get("variant");
+		modifier[6] = mxResources.get("all");
+		modifier[7] = mxResources.get("all") +" " +mxResources.get("optional");
+		modifier[8] = mxResources.get("all") +" " +mxResources.get("variant");
 		modifierJComboBox = new JComboBox<String>(modifier);
 		
 		menu = new JPopupMenu();
@@ -88,11 +89,11 @@ public class FilterPanel extends JPanel{
 	    	
 	        	String selectedItem = (String) modifierJComboBox.getSelectedItem();
 	        	
-	        	if(selectedItem.contains("variant")){
+	        	if(selectedItem.contains(mxResources.get("variant"))){
 	        		fillActivityListPopupMenu(exp, Expression.FILTER_VARIANT);
 	        	}
 	        	else
-        		if(selectedItem.contains("optional")){
+        		if(selectedItem.contains(mxResources.get("optional"))){
         			fillActivityListPopupMenu(exp, Expression.FILTER_OPTIONAL);
 	        	}
         		else{

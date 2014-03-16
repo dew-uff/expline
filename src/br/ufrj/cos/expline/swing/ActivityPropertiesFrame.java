@@ -3,7 +3,6 @@ package br.ufrj.cos.expline.swing;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -25,7 +24,6 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
@@ -33,7 +31,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
 import javax.swing.plaf.basic.BasicButtonUI;
 import javax.swing.table.AbstractTableModel;
 
@@ -46,7 +43,7 @@ import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxResources;
 import com.mxgraph.view.mxGraph;
 
-public class PropertiesFrame extends JDialog
+public class ActivityPropertiesFrame extends JDialog
 {
 
 	/**
@@ -70,7 +67,7 @@ public class PropertiesFrame extends JDialog
 	/**
 	 * 
 	 */
-	public PropertiesFrame(Frame owner, mxGraphComponent graphComponent)
+	public ActivityPropertiesFrame(Frame owner, mxGraphComponent graphComponent)
 	{
 		super(owner);
 		
@@ -139,11 +136,11 @@ public class PropertiesFrame extends JDialog
         
         //creating the tabbed Panel
         JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.setBorder(BorderFactory.createTitledBorder("Relation Schema"));
-        tabbedPane.addTab("Input", null, createInputPanel(),
+        tabbedPane.setBorder(BorderFactory.createTitledBorder(mxResources.get("relationSchema")));
+        tabbedPane.addTab(mxResources.get("input"), null, createInputPanel(),
                           "");
         
-        tabbedPane.addTab("Output", null, createOutputRelationalSchemaPanel(),
+        tabbedPane.addTab(mxResources.get("output"), null, createOutputRelationalSchemaPanel(),
                 "");
         
         
@@ -162,7 +159,7 @@ public class PropertiesFrame extends JDialog
 		getContentPane().add(buttonPanel, BorderLayout.SOUTH);
 		
 		// Adds Cancel button to close window without saving
-		JButton cancelButton = new JButton("Cancel");
+		JButton cancelButton = new JButton(mxResources.get("cancel"));
 		cancelButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -174,7 +171,7 @@ public class PropertiesFrame extends JDialog
 		buttonPanel.add(cancelButton);
 
 		// Adds Ok button to close window saving the information
-		JButton okButton = new JButton("OK");
+		JButton okButton = new JButton(mxResources.get("ok"));
 		okButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -199,7 +196,7 @@ public class PropertiesFrame extends JDialog
 		
         JPanel pnlTab = new JPanel(new GridBagLayout());
         pnlTab.setOpaque(false);
-        JLabel lblTitle = new JLabel("Relation "+inputRelationtNextIndex);
+        JLabel lblTitle = new JLabel(mxResources.get("relation")+" "+inputRelationtNextIndex);
         JButton btnClose = new TabCloseButton(inputRelationtNextIndex);
 
         GridBagConstraints gbc = new GridBagConstraints();
@@ -250,7 +247,7 @@ public class PropertiesFrame extends JDialog
 		List<RelationSchema> inputRelationSchemas = activity.getInputRelationsSchemas();
 		
 		for (RelationSchema inputRelationSchema : inputRelationSchemas) {
-			inputRelationtabbedPane.addTab("Relation "+inputRelationtNextIndex, null, createInputRelationalSchemaPanel(inputRelationSchema, inputRelationtNextIndex-1),
+			inputRelationtabbedPane.addTab(mxResources.get("relation")+" "+inputRelationtNextIndex, null, createInputRelationalSchemaPanel(inputRelationSchema, inputRelationtNextIndex-1),
                     "");
   
 			inputRelationtabbedPane.setTabComponentAt(inputRelationtNextIndex-1, createCloseTabPanel());
@@ -262,7 +259,7 @@ public class PropertiesFrame extends JDialog
 		if(inputRelationtNextIndex == 1){
 			RelationSchema emptyRelationSchema = new RelationSchema();
 			
-			inputRelationtabbedPane.addTab("Relation 1", null, createInputRelationalSchemaPanel(emptyRelationSchema, 0),
+			inputRelationtabbedPane.addTab(mxResources.get("relation")+" 1", null, createInputRelationalSchemaPanel(emptyRelationSchema, 0),
 	                          "");
 	        
 			inputRelationtabbedPane.setTabComponentAt(0, createCloseTabPanel());
@@ -272,7 +269,7 @@ public class PropertiesFrame extends JDialog
 		
         
         
-		inputRelationtabbedPane.addTab("Add", null, new JPanel(),
+		inputRelationtabbedPane.addTab(mxResources.get("add"), null, new JPanel(),
                 "");
 
 		inputRelationtabbedPane.setTabComponentAt(inputRelationtNextIndex-1, createAddTabPanel());
@@ -303,7 +300,7 @@ public class PropertiesFrame extends JDialog
         commandPanel.setLayout(new GridLayout(2, 1));
 
 		// Adds Add button to create new attribute in the table
-		JButton addButton = new JButton("Add");
+		JButton addButton = new JButton(mxResources.get("add"));
 		addButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -318,7 +315,7 @@ public class PropertiesFrame extends JDialog
 		
 		
 		// Adds Remove button to remove attribute of table
-		JButton removeButton = new JButton("Remove");
+		JButton removeButton = new JButton(mxResources.get("remove"));
 		removeButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -354,7 +351,7 @@ public class PropertiesFrame extends JDialog
         commandPanel.setLayout(new GridLayout(2, 1));
 
 		// Adds Add button to create new attribute in the table
-		JButton addButton = new JButton("Add");
+		JButton addButton = new JButton(mxResources.get("add"));
 		addButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -367,7 +364,7 @@ public class PropertiesFrame extends JDialog
 		
 		
 		// Adds Remove button to remove attribute of table
-		JButton removeButton = new JButton("Remove");
+		JButton removeButton = new JButton(mxResources.get("remove"));
 		removeButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -542,10 +539,10 @@ public class PropertiesFrame extends JDialog
             String name = "??";
             switch (column) {
                 case 0:
-                    name = "Attribute Type";
+                    name = mxResources.get("attrType");
                     break;
                 case 1:
-                    name = "Attribute Name";
+                    name = mxResources.get("attrName");
                     break;
             }
             return name;
@@ -623,7 +620,7 @@ public class PropertiesFrame extends JDialog
  
         public void actionPerformed(ActionEvent e) {
         	if(inputRelationtabbedPane.getTabCount()>2){
-	        	int tab_index = inputRelationtabbedPane.indexOfTab("Relation "+index);
+	        	int tab_index = inputRelationtabbedPane.indexOfTab(mxResources.get("relation")+" "+index);
 	        	inputRelationtabbedPane.removeTabAt(tab_index);
 	        	inputRelationalSchemaTables.remove(tab_index);
         	}
@@ -680,13 +677,13 @@ public class PropertiesFrame extends JDialog
         	inputRelationtabbedPane.removeTabAt(index);
         	        	
         	RelationSchema relationSchema = new RelationSchema();
-    		inputRelationtabbedPane.addTab("Relation "+inputRelationtNextIndex, null, createInputRelationalSchemaPanel(relationSchema, index),
+    		inputRelationtabbedPane.addTab(mxResources.get("attributeType")+" "+inputRelationtNextIndex, null, createInputRelationalSchemaPanel(relationSchema, index),
                     "");
   
     		inputRelationtabbedPane.setTabComponentAt(index, createCloseTabPanel());
     		
     		
-    		inputRelationtabbedPane.addTab("Add", null, new JPanel(),
+    		inputRelationtabbedPane.addTab(mxResources.get("add"), null, new JPanel(),
                     "");
 
     		inputRelationtabbedPane.setTabComponentAt(index+1, createAddTabPanel());

@@ -96,11 +96,11 @@ public class EditRuleFrame extends JDialog
 	    conditionPanel1.setLayout(new BorderLayout());
 	    conditionPanel1.add(scrollPane, BorderLayout.CENTER);
 
-	    conditionPanel1.setBorder(BorderFactory.createTitledBorder("Condition"));
+	    conditionPanel1.setBorder(BorderFactory.createTitledBorder(mxResources.get("conditions")));
 	    
 	    
 	    JPanel conditionPanel2 = new JPanel();
-		conditionPanel1.setPreferredSize(new Dimension(600, 450));
+		conditionPanel2.setPreferredSize(new Dimension(600, 450));
 		implicationPanelHolder  = new JPanel(new GridLayout(0, 1));
 		   
 		   
@@ -120,7 +120,7 @@ public class EditRuleFrame extends JDialog
 	    conditionPanel2.setLayout(new BorderLayout());
 	    conditionPanel2.add(scrollPane, BorderLayout.CENTER);
 
-	    conditionPanel2.setBorder(BorderFactory.createTitledBorder("Implication"));
+	    conditionPanel2.setBorder(BorderFactory.createTitledBorder(mxResources.get("implications")));
 	    
 	    JPanel cp1 = new JPanel(new BorderLayout());
 	    //cp1.add(panel, BorderLayout.NORTH);
@@ -136,7 +136,7 @@ public class EditRuleFrame extends JDialog
 	    
 	    JPanel namePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 	    
-	    namePanel.add(new JLabel("Name"));
+	    namePanel.add(new JLabel(mxResources.get("name")));
 	    ruleNameField = new JTextField();
 	    ruleNameField.setColumns(13);
 	    ruleNameField.setText(rule.getName());
@@ -154,7 +154,7 @@ public class EditRuleFrame extends JDialog
 		getContentPane().add(buttonPanel, BorderLayout.SOUTH);
 
 		// Adds Cancel button to close window without saving
-		JButton cancelButton = new JButton("Cancel");
+		JButton cancelButton = new JButton(mxResources.get("cancel"));
 		cancelButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -166,7 +166,7 @@ public class EditRuleFrame extends JDialog
 		buttonPanel.add(cancelButton);
 
 		// Adds Ok button to close window saving the information
-		JButton okButton = new JButton("OK");
+		JButton okButton = new JButton(mxResources.get("ok"));
 		okButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
@@ -217,24 +217,24 @@ public class EditRuleFrame extends JDialog
 			
 			String modifier = (String) conditionPanel.modifierJComboBox.getSelectedItem();
 			
-			if(modifier.contains("All")){
+			if(modifier.contains(mxResources.get("all"))){
 				exp.setModifier(Expression.MODIFIER_ALL);
 			}
 			else
-			if(modifier.contains("Some")){
+			if(modifier.contains(mxResources.get("some"))){
 				exp.setModifier(Expression.MODIFIER_SOME);
 			}
 			else
-			if(modifier.contains("Any")){
+			if(modifier.contains(mxResources.get("any"))){
 				exp.setModifier(Expression.MODIFIER_ANY);
 			}
 			
 			
-			if(modifier.contains("optional")){
+			if(modifier.contains(mxResources.get("optional"))){
 				exp.setFilter(Expression.FILTER_OPTIONAL);
 			}
 			else
-			if(modifier.contains("variant")){
+			if(modifier.contains(mxResources.get("variant"))){
 				exp.setFilter(Expression.FILTER_VARIANT);
 			}
 			else
@@ -267,7 +267,7 @@ public class EditRuleFrame extends JDialog
 			
 			String operator = (String) implicationPanel.selectOperatorJComboBox.getSelectedItem();
 			
-			if(operator.equals("Select")){
+			if(operator.equals(mxResources.get("selected"))){
 				exp.setOperation(Expression.OPERATION_SELECTED);
 			}
 			else{
@@ -278,24 +278,24 @@ public class EditRuleFrame extends JDialog
 			
 			String modifier = (String) implicationPanel.modifierJComboBox.getSelectedItem();
 			
-			if(modifier.contains("All")){
+			if(modifier.contains(mxResources.get("all"))){
 				exp.setModifier(Expression.MODIFIER_ALL);
 			}
 			else
-			if(modifier.contains("Some")){
+			if(modifier.contains(mxResources.get("some"))){
 				exp.setModifier(Expression.MODIFIER_SOME);
 			}
 			else
-			if(modifier.contains("Any")){
+			if(modifier.contains(mxResources.get("any"))){
 				exp.setModifier(Expression.MODIFIER_ANY);
 			}
 			
 			
-			if(modifier.contains("optional")){
+			if(modifier.contains(mxResources.get("optional"))){
 				exp.setFilter(Expression.FILTER_OPTIONAL);
 			}
 			else
-			if(modifier.contains("variant")){
+			if(modifier.contains(mxResources.get("variant"))){
 				exp.setFilter(Expression.FILTER_VARIANT);
 			}
 			else
