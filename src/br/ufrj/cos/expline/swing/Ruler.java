@@ -1,5 +1,5 @@
 /* 
- * $Id: EditorRuler.java,v 1.1 2012/11/15 13:26:46 gaudenz Exp $
+ * $Id: Ruler.java,v 1.1 2012/11/15 13:26:46 gaudenz Exp $
  * Copyright (c) 2001-2005, Gaudenz Alder
  * 
  * All rights reserved.
@@ -7,7 +7,7 @@
  * See LICENSE file for license details. If you are unable to locate
  * this file please contact info (at) jgraph (dot) com.
  */
-package br.ufrj.cos.expline.swing.editor;
+package br.ufrj.cos.expline.swing;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -42,7 +42,7 @@ import com.mxgraph.view.mxGraph;
 /**
  * Component that displays a ruler for a JGraph component.
  */
-public class EditorRuler extends JComponent implements MouseMotionListener,
+public class Ruler extends JComponent implements MouseMotionListener,
 		DropTargetListener
 {
 
@@ -167,7 +167,7 @@ public class EditorRuler extends JComponent implements MouseMotionListener,
 	 * @param orientation
 	 *            The orientation to use for the ruler.
 	 */
-	public EditorRuler(mxGraphComponent graphComponent, int orientation)
+	public Ruler(mxGraphComponent graphComponent, int orientation)
 	{
 		this.orientation = orientation;
 		this.graphComponent = graphComponent;

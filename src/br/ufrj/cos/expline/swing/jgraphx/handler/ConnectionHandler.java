@@ -2,7 +2,7 @@
  * $Id: ConnectionHandler.java,v 1.1 2012/11/15 13:26:44 gaudenz Exp $
  * Copyright (c) 2008, Gaudenz Alder
  */
-package br.ufrj.cos.expline.swing.handler;
+package br.ufrj.cos.expline.swing.jgraphx.handler;
 
 import java.awt.Color;
 import java.awt.event.MouseEvent;

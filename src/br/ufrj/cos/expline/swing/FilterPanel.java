@@ -1,4 +1,4 @@
-package br.ufrj.cos.expline.swing.editor;
+package br.ufrj.cos.expline.swing;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -31,7 +31,7 @@ import com.mxgraph.view.mxGraph;
 
 @SuppressWarnings("serial")
 public class FilterPanel extends JPanel{
-   protected EditRule editRulePanel;
+   protected EditRuleFrame editRulePanel;
    
    private int type;
    
@@ -45,7 +45,7 @@ public class FilterPanel extends JPanel{
    
    
 
-   public FilterPanel(EditRule editRulePanel, int type, final Expression exp) {
+   public FilterPanel(EditRuleFrame editRulePanel, int type, final Expression exp) {
 	   
 	  super(new BorderLayout());
 	  this.editRulePanel = editRulePanel;

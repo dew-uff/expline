@@ -1,8 +1,8 @@
 /**
- * $Id: EditorKeyboardHandler.java,v 1.1 2012/11/15 13:26:46 gaudenz Exp $
+ * $Id: KeyboardHandler.java,v 1.1 2012/11/15 13:26:46 gaudenz Exp $
  * Copyright (c) 2008, Gaudenz Alder
  */
-package br.ufrj.cos.expline.swing.editor;
+package br.ufrj.cos.expline.swing;
 
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
@@ -17,14 +17,14 @@ import com.mxgraph.swing.util.mxGraphActions;
  * @author Administrator
  * 
  */
-public class EditorKeyboardHandler extends mxKeyboardHandler
+public class KeyboardHandler extends mxKeyboardHandler
 {
 
 	/**
 	 * 
 	 * @param graphComponent
 	 */
-	public EditorKeyboardHandler(mxGraphComponent graphComponent)
+	public KeyboardHandler(mxGraphComponent graphComponent)
 	{
 		super(graphComponent);
 	}
@@ -61,12 +61,12 @@ public class EditorKeyboardHandler extends mxKeyboardHandler
 	{
 		ActionMap map = super.createActionMap();
 
-		map.put("save", new EditorActions.SaveAction(false));
-		map.put("saveAs", new EditorActions.SaveAction(true));
-		map.put("new", new EditorActions.NewAction());
-		map.put("open", new EditorActions.OpenAction());
-		map.put("undo", new EditorActions.HistoryAction(true));
-		map.put("redo", new EditorActions.HistoryAction(false));
+		map.put("save", new Actions.SaveAction(false));
+		map.put("saveAs", new Actions.SaveAction(true));
+		map.put("new", new Actions.NewAction());
+		map.put("open", new Actions.OpenAction());
+		map.put("undo", new Actions.HistoryAction(true));
+		map.put("redo", new Actions.HistoryAction(false));
 		map.put("selectVertices", mxGraphActions.getSelectVerticesAction());
 		map.put("selectEdges", mxGraphActions.getSelectEdgesAction());
 

@@ -1,7 +1,5 @@
-package br.ufrj.cos.expline.swing.editor;
+package br.ufrj.cos.expline.swing;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -13,20 +11,19 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.TransferHandler;
 
-import br.ufrj.cos.expline.swing.editor.EditorActions.AlignCellsAction;
-import br.ufrj.cos.expline.swing.editor.EditorActions.ExitAction;
-import br.ufrj.cos.expline.swing.editor.EditorActions.HistoryAction;
-import br.ufrj.cos.expline.swing.editor.EditorActions.NewAction;
-import br.ufrj.cos.expline.swing.editor.EditorActions.OpenAction;
-import br.ufrj.cos.expline.swing.editor.EditorActions.PageSetupAction;
-import br.ufrj.cos.expline.swing.editor.EditorActions.PrintAction;
-import br.ufrj.cos.expline.swing.editor.EditorActions.SaveAction;
-import br.ufrj.cos.expline.swing.editor.EditorActions.ScaleAction;
+import br.ufrj.cos.expline.swing.Actions.AlignCellsAction;
+import br.ufrj.cos.expline.swing.Actions.ExitAction;
+import br.ufrj.cos.expline.swing.Actions.HistoryAction;
+import br.ufrj.cos.expline.swing.Actions.NewAction;
+import br.ufrj.cos.expline.swing.Actions.OpenAction;
+import br.ufrj.cos.expline.swing.Actions.PageSetupAction;
+import br.ufrj.cos.expline.swing.Actions.PrintAction;
+import br.ufrj.cos.expline.swing.Actions.SaveAction;
+import br.ufrj.cos.expline.swing.Actions.ScaleAction;
 
 import com.mxgraph.analysis.StructuralException;
 import com.mxgraph.analysis.mxAnalysisGraph;
 import com.mxgraph.analysis.mxGraphProperties;
-import com.mxgraph.analysis.mxGraphProperties.GraphType;
 import com.mxgraph.analysis.mxGraphStructure;
 import com.mxgraph.analysis.mxTraversal;
 import com.mxgraph.costfunction.mxCostFunction;
@@ -39,7 +36,7 @@ import com.mxgraph.util.mxResources;
 import com.mxgraph.view.mxGraph;
 import com.mxgraph.view.mxGraphView;
 
-public class EditorMenuBar extends JMenuBar
+public class MenuBar extends JMenuBar
 {
 
 	/**
@@ -52,7 +49,7 @@ public class EditorMenuBar extends JMenuBar
 		IS_CONNECTED, IS_SIMPLE, IS_CYCLIC_DIRECTED, IS_CYCLIC_UNDIRECTED, COMPLEMENTARY, REGULARITY, COMPONENTS, MAKE_CONNECTED, MAKE_SIMPLE, IS_TREE, ONE_SPANNING_TREE, IS_DIRECTED, GET_CUT_VERTEXES, GET_CUT_EDGES, GET_SOURCES, GET_SINKS, PLANARITY, IS_BICONNECTED, GET_BICONNECTED, SPANNING_TREE, FLOYD_ROY_WARSHALL
 	}
 
-	public EditorMenuBar(final BasicGraphEditor editor)
+	public MenuBar(final ExpLineEditor editor)
 	{
 		final mxGraphComponent graphComponent = editor.getGraphComponent();
 		final mxGraph graph = graphComponent.getGraph();
@@ -253,102 +250,6 @@ public class EditorMenuBar extends JMenuBar
 		});
 	}
 
-	/**
-	 *
-	 */
-	public static class InsertGraph extends AbstractAction
-	{
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 4010463992665008365L;
-
-		/**
-		 * 
-		 */
-		protected GraphType graphType;
-
-		protected mxAnalysisGraph aGraph;
-
-		/**
-		 * @param aGraph 
-		 * 
-		 */
-		public InsertGraph(GraphType tree, mxAnalysisGraph aGraph)
-		{
-			this.graphType = tree;
-			this.aGraph = aGraph;
-		}
-
-		/**
-		 * 
-		 */
-		public void actionPerformed(ActionEvent e)
-		{
-			if (e.getSource() instanceof mxGraphComponent)
-			{
-				mxGraphComponent graphComponent = (mxGraphComponent) e.getSource();
-				mxGraph graph = graphComponent.getGraph();
-
-				// dialog = new FactoryConfigDialog();
-				String dialogText = "";
-				if (graphType == GraphType.NULL)
-					dialogText = "Configure null graph";
-				else if (graphType == GraphType.COMPLETE)
-					dialogText = "Configure complete graph";
-				else if (graphType == GraphType.NREGULAR)
-					dialogText = "Configure n-regular graph";
-				else if (graphType == GraphType.GRID)
-					dialogText = "Configure grid graph";
-				else if (graphType == GraphType.BIPARTITE)
-					dialogText = "Configure bipartite graph";
-				else if (graphType == GraphType.COMPLETE_BIPARTITE)
-					dialogText = "Configure complete bipartite graph";
-				else if (graphType == GraphType.BFS_DIR)
-					dialogText = "Configure BFS algorithm";
-				else if (graphType == GraphType.BFS_UNDIR)
-					dialogText = "Configure BFS algorithm";
-				else if (graphType == GraphType.DFS_DIR)
-					dialogText = "Configure DFS algorithm";
-				else if (graphType == GraphType.DFS_UNDIR)
-					dialogText = "Configure DFS algorithm";
-				else if (graphType == GraphType.DIJKSTRA)
-					dialogText = "Configure Dijkstra's algorithm";
-				else if (graphType == GraphType.BELLMAN_FORD)
-					dialogText = "Configure Bellman-Ford algorithm";
-				else if (graphType == GraphType.MAKE_TREE_DIRECTED)
-					dialogText = "Configure make tree directed algorithm";
-				else if (graphType == GraphType.KNIGHT_TOUR)
-					dialogText = "Configure knight's tour";
-				else if (graphType == GraphType.GET_ADJ_MATRIX)
-					dialogText = "Configure adjacency matrix";
-				else if (graphType == GraphType.FROM_ADJ_MATRIX)
-					dialogText = "Input adjacency matrix";
-				else if (graphType == GraphType.PETERSEN)
-					dialogText = "Configure Petersen graph";
-				else if (graphType == GraphType.WHEEL)
-					dialogText = "Configure Wheel graph";
-				else if (graphType == GraphType.STAR)
-					dialogText = "Configure Star graph";
-				else if (graphType == GraphType.PATH)
-					dialogText = "Configure Path graph";
-				else if (graphType == GraphType.FRIENDSHIP_WINDMILL)
-					dialogText = "Configure Friendship Windmill graph";
-				else if (graphType == GraphType.INDEGREE)
-					dialogText = "Configure indegree analysis";
-				else if (graphType == GraphType.OUTDEGREE)
-					dialogText = "Configure outdegree analysis";
-				GraphConfigDialog dialog = new GraphConfigDialog(graphType, dialogText);
-				dialog.configureLayout(graph, graphType, aGraph);
-				dialog.setModal(true);
-				Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-				Dimension frameSize = dialog.getSize();
-				dialog.setLocation(screenSize.width / 2 - (frameSize.width / 2), screenSize.height / 2 - (frameSize.height / 2));
-				dialog.setVisible(true);
-			}
-		}
-	}
 
 	/**
 	 *

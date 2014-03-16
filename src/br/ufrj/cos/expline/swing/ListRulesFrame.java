@@ -1,4 +1,4 @@
-package br.ufrj.cos.expline.swing.editor;
+package br.ufrj.cos.expline.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -26,8 +26,8 @@ import javax.swing.JScrollPane;
 
 import br.ufrj.cos.expline.model.ExpLine;
 import br.ufrj.cos.expline.model.Rule;
-import br.ufrj.cos.expline.swing.ExpLineEditor.ExpLineGraph;
-import br.ufrj.cos.expline.swing.ExpLineEditor.ExpLineGraphComponent;
+import br.ufrj.cos.expline.swing.jgraphx.ExpLineGraph;
+import br.ufrj.cos.expline.swing.jgraphx.ExpLineGraphComponent;
 
 import com.mxgraph.util.mxResources;
 
@@ -232,7 +232,7 @@ public class ListRulesFrame extends JDialog
 		if(!ruleJList.isSelectionEmpty()){
 			Rule rule = rulesListModel.getElementAt(ruleJList.getSelectedIndex());
 			
-			EditRule frame = new EditRule((Dialog)ListRulesFrame.this, expLineGraphComponent, rule);
+			EditRuleFrame frame = new EditRuleFrame((Dialog)ListRulesFrame.this, expLineGraphComponent, rule);
 			frame.setModal(true);
 	
 			frame.setVisible(true);
@@ -247,7 +247,7 @@ public class ListRulesFrame extends JDialog
 		
 		rule.setName("new rule");
 		
-		EditRule frame = new EditRule((Dialog)ListRulesFrame.this, expLineGraphComponent, rule);
+		EditRuleFrame frame = new EditRuleFrame((Dialog)ListRulesFrame.this, expLineGraphComponent, rule);
 		frame.setModal(true);
 
 		frame.setVisible(true);

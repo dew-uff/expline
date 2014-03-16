@@ -1,12 +1,12 @@
-package br.ufrj.cos.expline.swing.editor;
+package br.ufrj.cos.expline.swing;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 import javax.swing.TransferHandler;
 
-import br.ufrj.cos.expline.swing.editor.EditorActions.AlgebraicOperatorOptionItem;
-import br.ufrj.cos.expline.swing.editor.EditorActions.HistoryAction;
+import br.ufrj.cos.expline.swing.Actions.AlgebraicOperatorOptionItem;
+import br.ufrj.cos.expline.swing.Actions.HistoryAction;
 
 import com.mxgraph.model.mxCell;
 import com.mxgraph.swing.mxGraphComponent;
@@ -14,7 +14,7 @@ import com.mxgraph.swing.util.mxGraphActions;
 import com.mxgraph.util.mxResources;
 import com.mxgraph.view.mxGraph;
 
-public class EditorPopupMenu extends JPopupMenu
+public class PopupMenu extends JPopupMenu
 {
 
 	/**
@@ -22,7 +22,7 @@ public class EditorPopupMenu extends JPopupMenu
 	 */
 	private static final long serialVersionUID = -3132749140550242191L;
 
-	public EditorPopupMenu(BasicGraphEditor editor)
+	public PopupMenu(ExpLineEditor editor)
 	{
 		boolean selected = !editor.getGraphComponent().getGraph()
 				.isSelectionEmpty();
@@ -71,7 +71,7 @@ public class EditorPopupMenu extends JPopupMenu
 			
 			if (isVertex){
 				JMenu menu = (JMenu) add(new JMenu(mxResources.get("albegraicOperator")));
-				EditorPopupMenu.populateAlgebraicOperatorMenu(menu, editor);
+				PopupMenu.populateAlgebraicOperatorMenu(menu, editor);
 			}
 				
 			addSeparator();
@@ -88,7 +88,7 @@ public class EditorPopupMenu extends JPopupMenu
 	
 	//ExpLine-Begin
 	
-	public static void populateAlgebraicOperatorMenu(JMenu menu, BasicGraphEditor editor)
+	public static void populateAlgebraicOperatorMenu(JMenu menu, ExpLineEditor editor)
 	{
 		
 		ButtonGroup algebraicOperatorGroup = new ButtonGroup();

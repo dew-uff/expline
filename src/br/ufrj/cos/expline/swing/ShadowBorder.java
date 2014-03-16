@@ -9,7 +9,7 @@
  * installation directory. If you are unable to locate this file please
  * contact JGraph sales for another copy.
  */
-package br.ufrj.cos.expline.swing.editor;
+package br.ufrj.cos.expline.swing;
 
 import java.awt.Color;
 import java.awt.Component;

@@ -1,4 +1,4 @@
-package br.ufrj.cos.expline.swing.editor;
+package br.ufrj.cos.expline.swing;
 
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
@@ -40,13 +40,13 @@ import javax.swing.table.AbstractTableModel;
 import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.model.RelationSchema;
 import br.ufrj.cos.expline.model.RelationSchemaAttribute;
-import br.ufrj.cos.expline.swing.editor.EditorActions.AlgebraicOperatorAction;
+import br.ufrj.cos.expline.swing.Actions.AlgebraicOperatorAction;
 
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxResources;
 import com.mxgraph.view.mxGraph;
 
-public class EditorPropertiesFrame extends JDialog
+public class PropertiesFrame extends JDialog
 {
 
 	/**
@@ -70,7 +70,7 @@ public class EditorPropertiesFrame extends JDialog
 	/**
 	 * 
 	 */
-	public EditorPropertiesFrame(Frame owner, mxGraphComponent graphComponent)
+	public PropertiesFrame(Frame owner, mxGraphComponent graphComponent)
 	{
 		super(owner);
 		

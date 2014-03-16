@@ -1,8 +1,8 @@
 /**
- * $Id: EditorPalette.java,v 1.1 2012/11/15 13:26:46 gaudenz Exp $
+ * $Id: Palette.java,v 1.1 2012/11/15 13:26:46 gaudenz Exp $
  * Copyright (c) 2007-2012, JGraph Ltd
  */
-package br.ufrj.cos.expline.swing.editor;
+package br.ufrj.cos.expline.swing;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -41,7 +41,7 @@ import com.mxgraph.util.mxPoint;
 import com.mxgraph.util.mxRectangle;
 import com.mxgraph.util.mxEventSource.mxIEventListener;
 
-public class EditorPalette extends JPanel
+public class Palette extends JPanel
 {
 
 	/**
@@ -68,7 +68,7 @@ public class EditorPalette extends JPanel
 	 * 
 	 */
 	@SuppressWarnings("serial")
-	public EditorPalette()
+	public Palette()
 	{
 		setBackground(new Color(149, 230, 190));
 		setLayout(new FlowLayout(FlowLayout.LEADING, 5, 5));
@@ -281,7 +281,7 @@ public class EditorPalette extends JPanel
 
 		final JLabel entry = new JLabel(icon);
 		entry.setPreferredSize(new Dimension(50, 50));
-		entry.setBackground(EditorPalette.this.getBackground().brighter());
+		entry.setBackground(Palette.this.getBackground().brighter());
 		entry.setFont(new Font(entry.getFont().getFamily(), 0, 10));
 
 		entry.setVerticalTextPosition(JLabel.BOTTOM);

@@ -1,4 +1,4 @@
-package br.ufrj.cos.expline.swing.editor;
+package br.ufrj.cos.expline.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -24,7 +24,7 @@ import javax.swing.KeyStroke;
 
 import com.mxgraph.util.mxResources;
 
-public class EditorAboutFrame extends JDialog
+public class AboutFrame extends JDialog
 {
 
 	/**
@@ -35,7 +35,7 @@ public class EditorAboutFrame extends JDialog
 	/**
 	 * 
 	 */
-	public EditorAboutFrame(Frame owner)
+	public AboutFrame(Frame owner)
 	{
 		super(owner);
 		setTitle(mxResources.get("aboutGraphEditor"));

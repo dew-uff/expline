@@ -1,4 +1,4 @@
-package br.ufrj.cos.expline.swing.editor;
+package br.ufrj.cos.expline.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -24,13 +24,13 @@ import javax.swing.JTextField;
 import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.model.Expression;
 import br.ufrj.cos.expline.model.Rule;
-import br.ufrj.cos.expline.swing.ExpLineEditor.ExpLineGraph;
-import br.ufrj.cos.expline.swing.ExpLineEditor.ExpLineGraphComponent;
+import br.ufrj.cos.expline.swing.jgraphx.ExpLineGraph;
+import br.ufrj.cos.expline.swing.jgraphx.ExpLineGraphComponent;
 
 import com.mxgraph.model.mxGraphModel;
 import com.mxgraph.util.mxResources;
 
-public class EditRule extends JDialog
+public class EditRuleFrame extends JDialog
 {
 
 	/**
@@ -57,7 +57,7 @@ public class EditRule extends JDialog
 	/**
 	 * 
 	 */
-	public EditRule(final Dialog owner, ExpLineGraphComponent expLinegraphComponent, Rule rule)
+	public EditRuleFrame(final Dialog owner, ExpLineGraphComponent expLinegraphComponent, Rule rule)
 	{
 		super(owner);
 		

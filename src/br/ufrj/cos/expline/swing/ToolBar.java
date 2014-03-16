@@ -1,4 +1,4 @@
-package br.ufrj.cos.expline.swing.editor;
+package br.ufrj.cos.expline.swing;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -10,11 +10,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
 import javax.swing.TransferHandler;
 
-import br.ufrj.cos.expline.swing.editor.EditorActions.HistoryAction;
-import br.ufrj.cos.expline.swing.editor.EditorActions.NewAction;
-import br.ufrj.cos.expline.swing.editor.EditorActions.OpenAction;
-import br.ufrj.cos.expline.swing.editor.EditorActions.PrintAction;
-import br.ufrj.cos.expline.swing.editor.EditorActions.SaveAction;
+import br.ufrj.cos.expline.swing.Actions.HistoryAction;
+import br.ufrj.cos.expline.swing.Actions.NewAction;
+import br.ufrj.cos.expline.swing.Actions.OpenAction;
+import br.ufrj.cos.expline.swing.Actions.PrintAction;
+import br.ufrj.cos.expline.swing.Actions.SaveAction;
 
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.swing.util.mxGraphActions;
@@ -23,7 +23,7 @@ import com.mxgraph.util.mxEventObject;
 import com.mxgraph.util.mxEventSource.mxIEventListener;
 import com.mxgraph.view.mxGraphView;
 
-public class EditorToolBar extends JToolBar
+public class ToolBar extends JToolBar
 {
 
 	/**
@@ -41,7 +41,7 @@ public class EditorToolBar extends JToolBar
 	/**
 	 * 
 	 */
-	public EditorToolBar(final BasicGraphEditor editor, int orientation)
+	public ToolBar(final ExpLineEditor editor, int orientation)
 	{
 		super(orientation);
 		setBorder(BorderFactory.createCompoundBorder(BorderFactory
