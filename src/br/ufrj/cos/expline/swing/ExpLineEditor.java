@@ -285,14 +285,14 @@ public class ExpLineEditor extends JPanel
 				"Workflow edge",
 				new ImageIcon(
 						ExpLineEditor.class
-								.getResource("/images/connect.png")),
+								.getResource("/images/arrow.png")),
 				100, 100, "", Edge.WORKFLOW_TYPE);
 		connectionsPalette
 		.addEdgeTemplate(
 				"Variant relationship",
 				new ImageIcon(
 						ExpLineEditor.class
-								.getResource("/images/arrow.png")),
+								.getResource("/images/vertical.png")),
 				 120, 120, "", Edge.VARIANT_RELATIONSHIP_TYPE);
 
 	}

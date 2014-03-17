@@ -50,14 +50,15 @@ public class Edge extends mxCell implements Cloneable, Serializable{
 	public void changeType(int newType){
 		
 		if (newType == WORKFLOW_TYPE){
-			style = "strokeWidth=8;strokeColor=#000066";
+			style = "noEdgeStyle=1;horizontal;strokeWidth=8;strokeColor=#000000";
 			type = newType;
 		}
 		else
 		if (newType == VARIANT_RELATIONSHIP_TYPE){
-			style = "arrow;strokeWidth=5;strokeColor=#000000";
+//			style = "arrow;strokeWidth=5;strokeColor=#000000";
+			style = "vertical;strokeWidth=5;startArrow=none;endArrow=none;strokeColor=#000000";
 			type = newType;
-		}	
+		}
 	}
 	
 	

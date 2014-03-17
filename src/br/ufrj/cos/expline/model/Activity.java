@@ -113,23 +113,23 @@ public class Activity extends mxCell implements Cloneable, Serializable{
 	public void setStyle(int type){
 		
 		if (type == INVARIANT_TYPE){
-			style = "rounded=1;strokeWidth=5;fontSize=24";
+			style = "rounded=1;fillColor=#E4E9AF;gradientColor=#E4E9AF;strokeWidth=3;strokeColor=#000000;fontSize=22;fontColor=#000000";
 		}
 		else
 		if (type == OPTIONAL_INVARIANT_TYPE){
-			style = "rounded=1;dashed=1;strokeWidth=5;fontSize=24";
+			style = "rounded=1;dashed=1;fillColor=#E4E9AF;gradientColor=#E4E9AF;strokeWidth=3;strokeColor=#000000;fontSize=22;fontColor=#000000";
 		}
 		else
 		if (type == VARIATION_POINT_TYPE){
-			style = "rectangle;shape=doubleRectangle;rounded=1;strokeWidth=5;fontSize=24";
+			style = "rectangle;shape=doubleRectangle;rounded=1;fillColor=#E4E9AF;gradientColor=#E4E9AF;strokeWidth=3;strokeColor=#000000;fontSize=22;fontColor=#000000";
 		}
 		else
 		if (type == OPTIONAL_VARIATION_POINT_TYPE){
-			style = "rectangle;shape=doubleRectangle;dashed=1;rounded=1;strokeWidth=5;fontSize=24";
+			style = "rectangle;shape=doubleRectangle;dashed=1;rounded=1;fillColor=#E4E9AF;gradientColor=#E4E9AF;strokeWidth=3;strokeColor=#000000;fontSize=22;fontColor=#000000";
 		}
 		else
 		if (type == VARIANT_TYPE){
-			style = "strokeWidth=5;fillColor=#FF0033;fontSize=24";
+			style = "strokeWidth=5;fillColor=#FF0033;fillColor=#C5D4E1;gradientColor=#C5D4E1;strokeWidth=3;strokeColor=#000000;fontSize=22;fontColor=#000000";
 		}
 		
 	}

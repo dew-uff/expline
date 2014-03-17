@@ -362,9 +362,9 @@ public class Actions
 				mxGraphComponent graphComponent = editor.getGraphComponent();
 				mxGraph graph = graphComponent.getGraph();
 				FileFilter selectedFilter = null;
-				DefaultFileFilter mxeFilter = new DefaultFileFilter(".mxe",
-						"mxGraph Editor " + mxResources.get("file")
-						+ " (.mxe)");
+				DefaultFileFilter mxeFilter = new DefaultFileFilter(".xpl",
+						"ExpLine Editor " + mxResources.get("file")
+						+ " (.xpl)");
 				String filename = null;
 				boolean dialogShown = false;
 
@@ -639,9 +639,9 @@ public class Actions
 						JFileChooser fc = new JFileChooser(wd);
 
 						// Adds file filter for supported file format
-						DefaultFileFilter defaultFilter = new DefaultFileFilter(".mxe",
-								"mxGraph Editor " + mxResources.get("file")
-								+ " (.mxe)")
+						DefaultFileFilter defaultFilter = new DefaultFileFilter(".xpl",
+								"ExpLine Editor " + mxResources.get("file")
+								+ " (.xpl)")
 						{
 
 							public boolean accept(File file)

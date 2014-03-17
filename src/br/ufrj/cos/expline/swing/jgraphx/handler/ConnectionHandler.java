@@ -14,6 +14,7 @@ import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.model.Edge;
 
 import com.mxgraph.analysis.mxAnalysisGraph;
+import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.swing.handler.mxCellMarker;
@@ -122,8 +123,17 @@ public class ConnectionHandler extends mxConnectionHandler
 	
 	//ExpLine-Begin	
 	
-	public boolean isValidExpLineConnection(Activity source, Activity target)
+	public boolean isValidExpLineConnection(mxCell src, mxCell trg)
 	{
+		
+		if(src != null && src.isEdge())
+			return false;
+		
+		if(trg != null && trg.isEdge())
+			return false;
+		
+		Activity source = (Activity) src;
+		Activity target = (Activity) trg;
 
 		if(target != null && source != target) {
 			
@@ -186,7 +196,7 @@ public class ConnectionHandler extends mxConnectionHandler
 		}
 		
 		//ExpLine-Begin
-		if(!isValidExpLineConnection((Activity)source, (Activity)target))
+		if(!isValidExpLineConnection((mxCell)source, (mxCell)target))
 		{	
 			return "";
 		}
