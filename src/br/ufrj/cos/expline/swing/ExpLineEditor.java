@@ -35,6 +35,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import br.ufrj.cos.expline.io.ActivityCodec;
+import br.ufrj.cos.expline.io.EdgeCodec;
 import br.ufrj.cos.expline.io.ExpLineCodec;
 import br.ufrj.cos.expline.io.ExpressionCodec;
 import br.ufrj.cos.expline.model.Activity;
@@ -65,10 +66,10 @@ import com.mxgraph.swing.handler.mxRubberband;
 import com.mxgraph.swing.util.mxGraphTransferable;
 import com.mxgraph.swing.util.mxMorphing;
 import com.mxgraph.swing.util.mxSwingConstants;
+import com.mxgraph.util.mxConstants;
 import com.mxgraph.util.mxEvent;
 import com.mxgraph.util.mxEventObject;
 import com.mxgraph.util.mxEventSource.mxIEventListener;
-import com.mxgraph.util.mxConstants;
 import com.mxgraph.util.mxRectangle;
 import com.mxgraph.util.mxResources;
 import com.mxgraph.util.mxUndoManager;
@@ -191,6 +192,7 @@ public class ExpLineEditor extends JPanel
 		mxCodecRegistry.addPackage("br.ufrj.cos.expline.model");
 		mxCodecRegistry.register(new ExpLineCodec());
 		mxCodecRegistry.register(new ActivityCodec());
+		mxCodecRegistry.register(new EdgeCodec());
 		mxCodecRegistry.register(new mxObjectCodec(new ArrayList<Activity>()));
 		mxCodecRegistry.register(new mxObjectCodec(new RelationSchema()));
 		mxCodecRegistry.register(new mxObjectCodec(new RelationSchemaAttribute()));

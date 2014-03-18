@@ -38,6 +38,10 @@ public class Edge extends mxCell implements Cloneable, Serializable{
 		this.edge = true;
 		
 	}
+	
+	public Edge(){
+		
+	}
 
 	public int getType() {
 		return type;
