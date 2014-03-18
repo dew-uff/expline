@@ -221,10 +221,6 @@ public class EditRuleFrame extends JDialog
 				exp.setModifier(Expression.MODIFIER_ALL);
 			}
 			else
-			if(modifier.contains(mxResources.get("some"))){
-				exp.setModifier(Expression.MODIFIER_SOME);
-			}
-			else
 			if(modifier.contains(mxResources.get("any"))){
 				exp.setModifier(Expression.MODIFIER_ANY);
 			}
@@ -280,10 +276,6 @@ public class EditRuleFrame extends JDialog
 			
 			if(modifier.contains(mxResources.get("all"))){
 				exp.setModifier(Expression.MODIFIER_ALL);
-			}
-			else
-			if(modifier.contains(mxResources.get("some"))){
-				exp.setModifier(Expression.MODIFIER_SOME);
 			}
 			else
 			if(modifier.contains(mxResources.get("any"))){

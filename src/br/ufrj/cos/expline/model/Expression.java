@@ -17,15 +17,13 @@ public class Expression implements Cloneable, Serializable{
 	
 	public final static int MODIFIER_ANY = 2;
 	
-	public final static int MODIFIER_SOME = 3;
+	public final static int MODIFIER_ALL = 3;
 	
-	public final static int MODIFIER_ALL = 4;
+	public final static int FILTER_NONE = 4;
 	
-	public final static int FILTER_NONE = 5;
+	public final static int FILTER_VARIANT = 5;
 	
-	public final static int FILTER_VARIANT = 6;
-	
-	public final static int FILTER_OPTIONAL = 7;
+	public final static int FILTER_OPTIONAL = 6;
 	
 	private int operation;
 	

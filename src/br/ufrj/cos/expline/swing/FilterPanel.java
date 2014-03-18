@@ -69,16 +69,13 @@ public class FilterPanel extends JPanel{
 		
 		filterPanel.add(selectOperatorJComboBox);
 		
-		String[] modifier = new String[9];
+		String[] modifier = new String[6];
 		modifier[0] = mxResources.get("any");
-		modifier[1] = mxResources.get("any") +" " +mxResources.get("optional");
-		modifier[2] = mxResources.get("any") +" " +mxResources.get("variant");
-		modifier[3] = mxResources.get("some");
-		modifier[4] = mxResources.get("some") +" " +mxResources.get("optional");
-		modifier[5] = mxResources.get("some") +" " +mxResources.get("variant");
-		modifier[6] = mxResources.get("all");
-		modifier[7] = mxResources.get("all") +" " +mxResources.get("optional");
-		modifier[8] = mxResources.get("all") +" " +mxResources.get("variant");
+		modifier[1] = mxResources.get("any") +" (" +mxResources.get("optional")+")";
+		modifier[2] = mxResources.get("any") +" (" +mxResources.get("variant")+")";
+		modifier[3] = mxResources.get("all");
+		modifier[4] = mxResources.get("all") +" (" +mxResources.get("optional")+")";
+		modifier[5] = mxResources.get("all") +" (" +mxResources.get("variant")+")";
 		modifierJComboBox = new JComboBox<String>(modifier);
 		
 		menu = new JPopupMenu();
@@ -117,7 +114,7 @@ public class FilterPanel extends JPanel{
 				modifierJComboBox.setSelectedIndex(2);
 			}
 		}
-		else if(exp.getModifier() == Expression.MODIFIER_SOME){
+		else if(exp.getModifier() == Expression.MODIFIER_ALL){
 			if(exp.getFilter() == Expression.FILTER_NONE){
 				modifierJComboBox.setSelectedIndex(3);
 			}
@@ -128,19 +125,6 @@ public class FilterPanel extends JPanel{
 			else
 			if(exp.getFilter() == Expression.FILTER_VARIANT){
 				modifierJComboBox.setSelectedIndex(5);
-			}
-		}
-		else if(exp.getModifier() == Expression.MODIFIER_ALL){
-			if(exp.getFilter() == Expression.FILTER_NONE){
-				modifierJComboBox.setSelectedIndex(6);
-			}
-			else
-			if(exp.getFilter() == Expression.FILTER_OPTIONAL){
-				modifierJComboBox.setSelectedIndex(7);
-			}
-			else
-			if(exp.getFilter() == Expression.FILTER_VARIANT){
-				modifierJComboBox.setSelectedIndex(8);
 			}
 		} 
 		
