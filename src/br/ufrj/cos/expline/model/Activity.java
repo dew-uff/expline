@@ -28,9 +28,9 @@ public class Activity extends mxCell implements Cloneable, Serializable{
 	
 	private String algebraicOperator;
 	
-	private List<RelationSchema> inputRelationsSchemas;
+	private List<Port> inputPorts;
 	
-	private RelationSchema outputRelationSchema;
+	private Port outputPort;
 	
 	
 	public Activity(Object value, mxGeometry geometry, String style, int type)
@@ -40,8 +40,9 @@ public class Activity extends mxCell implements Cloneable, Serializable{
 		this.type = type;
 		this.algebraicOperator = "map";
 		
-		this.inputRelationsSchemas = new ArrayList<RelationSchema>();
-		this.outputRelationSchema = new RelationSchema();
+		this.inputPorts = new ArrayList<Port>();
+		
+		this.initializeDefaultPorts();
 	}
 	
 	public Activity(Object value, mxGeometry geometry, int type)
@@ -53,18 +54,46 @@ public class Activity extends mxCell implements Cloneable, Serializable{
 		
 		setStyle(type);
 		
-		this.inputRelationsSchemas = new ArrayList<RelationSchema>();
-		this.outputRelationSchema = new RelationSchema();
+		this.inputPorts = new ArrayList<Port>();
+		
+		this.initializeDefaultPorts();
 	}
 	
 	
 	public Activity() {
 		// TODO Auto-generated constructor stub
-		this.inputRelationsSchemas = new ArrayList<RelationSchema>();
-		this.outputRelationSchema = new RelationSchema();
+		this.inputPorts = new ArrayList<Port>();
+		
+		this.algebraicOperator = "map";
+		
+		this.initializeDefaultPorts();
 	}
 
 
+	public void initializeDefaultPorts(){
+		
+		inputPorts.clear();
+		outputPort = null;
+		
+		if(type != Activity.VARIANT_TYPE){
+			
+			Port inputPort = new Port(Port.INPUT_TYPE, this);
+				
+			Port outputPort = new Port(Port.OUTPUT_TYPE, this);
+			
+			this.addInputPort(inputPort);
+			this.setOutputPort(outputPort);
+			
+			if(algebraicOperator.equals("join")){
+				Port inputPort2 = new Port(Port.INPUT_TYPE, this);
+				
+				this.addInputPort(inputPort2);
+			}
+			
+		}
+		
+	}
+	
 	public int getType() {
 		return type;
 	}
@@ -82,31 +111,33 @@ public class Activity extends mxCell implements Cloneable, Serializable{
 	}
 
 
-	public List<RelationSchema> getInputRelationsSchemas() {
-		return inputRelationsSchemas;
+	public List<Port> getInputPorts() {
+		return inputPorts;
 	}
 
 
-	public void setInputRelationsSchemas(List<RelationSchema> inputRelationsSchemas) {
-		this.inputRelationsSchemas = inputRelationsSchemas;
+	public void setInputPorts(List<Port> inputPorts) {
+		this.inputPorts = inputPorts;
 	}
 	
 	public void clearInputRelationsSchemas() {
-		this.inputRelationsSchemas.clear();
+		this.inputPorts.clear();
 	}
 
-	public RelationSchema getOutputRelationSchema() {
-		return outputRelationSchema;
-	}
-
-
-	public void setOutputRelationSchema(RelationSchema outputRelationSchema) {
-		this.outputRelationSchema = outputRelationSchema;
+	public Port getOutputPort() {
+		return outputPort;
 	}
 
 
-	public void addInputRelationSchema(RelationSchema relationSchema) {
-		this.inputRelationsSchemas.add(relationSchema);
+	public void setOutputPort(Port outputPort) {
+		this.outputPort = outputPort;
+		this.insert(outputPort);
+	}
+
+
+	public void addInputPort(Port inputPort) {
+		this.inputPorts.add(inputPort);
+		this.insert(inputPort);
 		
 	}
 	

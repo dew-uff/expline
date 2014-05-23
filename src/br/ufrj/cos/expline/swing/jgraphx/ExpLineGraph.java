@@ -42,6 +42,12 @@ public class ExpLineGraph extends mxGraph
 	{
 		edgeTemplate = template;
 	}
+	
+	// Removes the folding icon and disables any folding
+	public boolean isCellFoldable(Object cell, boolean collapse)
+	{
+		return false;
+	}
 
 	/**
 	 * Prints out some useful information about the cell in the tooltip.
@@ -134,5 +140,58 @@ public class ExpLineGraph extends mxGraph
 		else
 			return false;
 	}
+
+	@Override
+	public Object[] removeCells() {
+		// TODO Auto-generated method stub
+		return super.removeCells();
+	}
+	
+
+	@Override
+	public Object[] removeCellsFromParent() {
+		// TODO Auto-generated method stub
+		return super.removeCellsFromParent();
+	}
+
+	@Override
+	public Object[] removeCellsFromParent(Object[] cells) {
+		// TODO Auto-generated method stub
+		return super.removeCellsFromParent(cells);
+	}
+
+	@Override
+	public Object[] removeCells(Object[] cells) {
+		// TODO Auto-generated method stub
+		return super.removeCells(cells);
+	}
+
+	@Override
+	public Object[] removeCells(Object[] cells, boolean includeEdges) {
+		// TODO Auto-generated method stub
+		return super.removeCells(cells, includeEdges);
+	}
+
+	@Override
+	public void selectCell(boolean isNext, boolean isParent, boolean isChild) {
+		// TODO Auto-generated method stub
+		super.selectCell(isNext, isParent, isChild);
+	}
+
+	@Override
+	public void selectCells(boolean vertices, boolean edges) {
+		// TODO Auto-generated method stub
+		super.selectCells(vertices, edges);
+	}
+
+	@Override
+	public void selectCells(boolean vertices, boolean edges, Object parent) {
+		// TODO Auto-generated method stub
+		super.selectCells(vertices, edges, parent);
+	}
+	
+	
+	
+	
 
 }

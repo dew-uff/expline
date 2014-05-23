@@ -35,6 +35,7 @@ import javax.swing.plaf.basic.BasicButtonUI;
 import javax.swing.table.AbstractTableModel;
 
 import br.ufrj.cos.expline.model.Activity;
+import br.ufrj.cos.expline.model.Port;
 import br.ufrj.cos.expline.model.RelationSchema;
 import br.ufrj.cos.expline.model.RelationSchemaAttribute;
 import br.ufrj.cos.expline.swing.Actions.AlgebraicOperatorAction;
@@ -176,6 +177,7 @@ public class ActivityPropertiesFrame extends JDialog
 		{
 			public void actionPerformed(ActionEvent e)
 			{
+				
 				saveAlgebraicOperator();
 			    saveInputRelations();
 				saveOutputRelationAttributes();
@@ -244,9 +246,12 @@ public class ActivityPropertiesFrame extends JDialog
 		
 		inputRelationtNextIndex = 1;
 		
-		List<RelationSchema> inputRelationSchemas = activity.getInputRelationsSchemas();
+		List<Port> inputPorts = activity.getInputPorts();
 		
-		for (RelationSchema inputRelationSchema : inputRelationSchemas) {
+		for (Port inputPort : inputPorts) {
+			
+			RelationSchema inputRelationSchema = inputPort.getRelationSchema();
+			
 			inputRelationtabbedPane.addTab(mxResources.get("relation")+" "+inputRelationtNextIndex, null, createInputRelationalSchemaPanel(inputRelationSchema, inputRelationtNextIndex-1),
                     "");
   
@@ -388,7 +393,7 @@ public class ActivityPropertiesFrame extends JDialog
 
 		Activity activity = (Activity) graph.getSelectionCell();
 	
-        OutputRelationalSchemaTableModel = new RelationalSchemaTableModel(activity.getOutputRelationSchema());
+        OutputRelationalSchemaTableModel = new RelationalSchemaTableModel(activity.getOutputPort().getRelationSchema());
         JTable table = new JTable(OutputRelationalSchemaTableModel);
         
 		return table;
@@ -429,7 +434,13 @@ public class ActivityPropertiesFrame extends JDialog
 		for (JTable inputRelationalSchemaTable : inputRelationalSchemaTables) {
 			RelationalSchemaTableModel inputRelationalSchemaTableModel = (RelationalSchemaTableModel) inputRelationalSchemaTable.getModel();
 			
-			activity.addInputRelationSchema(inputRelationalSchemaTableModel.getRelationSchema());
+			//activity.addInputRelationSchema(inputRelationalSchemaTableModel.getRelationSchema());
+			
+			Port inputPort = new Port(Port.INPUT_TYPE, activity);
+			
+			inputPort.setRelationSchema(inputRelationalSchemaTableModel.getRelationSchema());
+			
+			activity.addInputPort(inputPort);
 		}
 	}
 	
@@ -439,7 +450,9 @@ public class ActivityPropertiesFrame extends JDialog
 		
 		RelationSchema outputRelationSchema = OutputRelationalSchemaTableModel.getRelationSchema();
 		
-		activity.setOutputRelationSchema(outputRelationSchema);
+		//activity.setOutputRelationSchema(outputRelationSchema);
+		
+		activity.getOutputPort().setRelationSchema(outputRelationSchema);;
 		
 	}
 

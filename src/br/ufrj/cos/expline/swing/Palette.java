@@ -253,7 +253,7 @@ public class Palette extends JPanel
 		mxCell cell = new Activity(value, new mxGeometry(0, 0, width, height),
 				type);
 		cell.setVertex(true);
-
+		
 		addTemplate(name, icon, cell);
 	}
 
