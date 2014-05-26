@@ -33,7 +33,7 @@ public class Port extends mxCell implements Cloneable, Serializable{
 			PORT_DIAMETER);
 		}
 		else
-			g = new mxGeometry(1, 0.5, PORT_DIAMETER,
+			g = new mxGeometry(1.03, 0.5, PORT_DIAMETER,
 					PORT_DIAMETER);
 		
 		// Because the origin is at upper left corner, need to translate to
@@ -42,7 +42,8 @@ public class Port extends mxCell implements Cloneable, Serializable{
 		g.setRelative(true);
 		
 		setGeometry(g);
-		setStyle("shape=ellipse;perimter=ellipsePerimeter;fillColor=#000000;gradientColor=#000000;strokeColor=#000000");
+		//setStyle("shape=ellipse;perimter=ellipsePerimeter;fillColor=#000000;gradientColor=#000000;strokeColor=#000000");
+		setStyle("triangle;fillColor=#000000;gradientColor=#000000;strokeColor=#000000");
 		setVertex(true);
 		relationSchema = new RelationSchema();
 		this.type = type;

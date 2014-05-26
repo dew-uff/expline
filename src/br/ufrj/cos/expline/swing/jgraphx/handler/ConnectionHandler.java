@@ -12,6 +12,7 @@ import javax.swing.JOptionPane;
 import br.ufrj.cos.expline.analysis.GraphStructure;
 import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.model.Edge;
+import br.ufrj.cos.expline.model.Port;
 
 import com.mxgraph.analysis.mxAnalysisGraph;
 import com.mxgraph.model.mxCell;
@@ -126,61 +127,108 @@ public class ConnectionHandler extends mxConnectionHandler
 	public boolean isValidExpLineConnection(mxCell src, mxCell trg)
 	{
 		
-		if(src != null && src.isEdge())
-			return false;
-		
-		if(trg != null && trg.isEdge())
-			return false;
-		
-		Activity source = (Activity) src;
-		Activity target = (Activity) trg;
+		if(src != null){
+			if(src instanceof Activity){
+				if(trg != null && trg instanceof Activity){
+					Activity source = (Activity) src;
+					Activity target = (Activity) trg;
+					
+					if(source != target) {
+						
+						if (source.getType() != Activity.VARIANT_TYPE && source.getType() != Activity.VARIATION_POINT_TYPE){
+							return false;
+						}
+						
+						if (target.getType() != Activity.VARIANT_TYPE && target.getType() != Activity.VARIATION_POINT_TYPE){
+							return false;
+						}
 
-		if(target != null && source != target) {
-			
-			if (source.getType() == Activity.VARIANT_TYPE && target.getType() != Activity.VARIATION_POINT_TYPE && target.getType() != Activity.OPTIONAL_VARIATION_POINT_TYPE){
-				return false;
+						
+						if (source.getType() == Activity.VARIANT_TYPE && target.getType() != Activity.VARIATION_POINT_TYPE && target.getType() != Activity.OPTIONAL_VARIATION_POINT_TYPE){
+							return false;
+						}
+						
+						if (target.getType() == Activity.VARIANT_TYPE && source.getType() != Activity.VARIATION_POINT_TYPE && source.getType() != Activity.OPTIONAL_VARIATION_POINT_TYPE){
+							return false;
+						}
+						
+						mxAnalysisGraph aGraph = new mxAnalysisGraph();
+						aGraph.setGraph(graphComponent.getGraph());
+						
+						if (GraphStructure.makesCycle(aGraph, source, target))
+							return false;
+						else
+							return true;
+						
+					}
+					else
+						return false;
+				}
+				else
+					return false;
 			}
-			
-			if (target.getType() == Activity.VARIANT_TYPE && source.getType() != Activity.VARIATION_POINT_TYPE && source.getType() != Activity.OPTIONAL_VARIATION_POINT_TYPE){
-				return false;
-			}
-			
-			mxAnalysisGraph aGraph = new mxAnalysisGraph();
-			aGraph.setGraph(graphComponent.getGraph());
-			
-			if (GraphStructure.makesCycle(aGraph, source, target))
-				return false;
 			else
-				return true;
+			if(src instanceof Port){
+				if(trg != null && trg instanceof Port){
+					Activity source = (Activity) src.getParent();
+					Activity target = (Activity) trg.getParent();
+					
+					Port srcPort = (Port) src;
+					Port trgPort = (Port) trg;
+					
+					
+					if (source == target)
+						return false;
+					
+					if(srcPort.getType() == trgPort.getType())
+						return false;
+					
+					mxAnalysisGraph aGraph = new mxAnalysisGraph();
+					aGraph.setGraph(graphComponent.getGraph());
+					
+					if (GraphStructure.makesCycle(aGraph, source, target))
+						return false;
+					else
+						return true;
+					
+				}
+				else
+					return false;
+			}
+			else
+				return false;
 		}
+		else
+			return false;
 		
-		return false;
 	}
+	
 	
 	public void defineEdgeType(){
 		
 		Edge previewState = (Edge) connectPreview.getPreviewState().getCell();
 		
 		
-		Activity src = (Activity) previewState.getTerminal(true);
-		Activity trg = (Activity) previewState.getTerminal(false);
+		if(previewState.getTerminal(true) instanceof Port){
+			
+			previewState.changeType(Edge.WORKFLOW_TYPE);
 		
-		previewState.changeType(Edge.WORKFLOW_TYPE);
-		
-		if(trg != null){
-			if (src.getType() == Activity.VARIANT_TYPE){
-				previewState.changeType(Edge.VARIANT_RELATIONSHIP_TYPE);
-				previewState.setSource(trg);
-				previewState.setTarget(src);
+			Port srcPort = (Port) previewState.getTerminal(true);
+			Port trgPort = (Port) previewState.getTerminal(false);
+			
+			if(srcPort.getType() == Port.INPUT_TYPE){
+				previewState.setSource(trgPort);
+				previewState.setTarget(srcPort);
 			}
-			else
-				if(trg.getType() == Activity.VARIANT_TYPE){
-					previewState.changeType(Edge.VARIANT_RELATIONSHIP_TYPE);
-				}
+			
 		}
-	}
-
+		else{
+			
+			previewState.changeType(Edge.VARIANT_RELATIONSHIP_TYPE);
+		}
 	
+	}
+		
 	//ExpLine-End
 
 	@Override

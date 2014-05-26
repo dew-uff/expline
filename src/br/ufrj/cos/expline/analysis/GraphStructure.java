@@ -25,6 +25,7 @@ public class GraphStructure extends mxGraphStructure
 		mxIGraphModel model = graph.getModel();
 		
 		//Workaround to add the request edge in the clone graph to verify that makes cycle
+		//TODO: Criar uma conexão a porta de saída e não com a entrada. (Vai funcionar só com atividades com uma porta de entrada e saída.)
 		Object parent = graph.getDefaultParent();
 		Object edge = graph.createEdge(parent, null, "", source, target, "");
 

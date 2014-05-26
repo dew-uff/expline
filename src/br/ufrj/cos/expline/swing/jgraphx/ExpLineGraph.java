@@ -3,6 +3,7 @@ package br.ufrj.cos.expline.swing.jgraphx;
 import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.model.Edge;
 import br.ufrj.cos.expline.model.ExpLine;
+import br.ufrj.cos.expline.model.Port;
 
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
@@ -142,53 +143,29 @@ public class ExpLineGraph extends mxGraph
 	}
 
 	@Override
-	public Object[] removeCells() {
+	public boolean isCellDeletable(Object cell) {
 		// TODO Auto-generated method stub
-		return super.removeCells();
+		
+		if (cell instanceof Port)
+			return false;
+		else
+			return super.isCellDeletable(cell);
+	}
+
+	@Override
+	public boolean isCellSelectable(Object cell) {
+		// TODO Auto-generated method stub
+		
+		if (cell instanceof Port)
+			return false;
+		else
+		return super.isCellSelectable(cell);
 	}
 	
+	
 
-	@Override
-	public Object[] removeCellsFromParent() {
-		// TODO Auto-generated method stub
-		return super.removeCellsFromParent();
-	}
-
-	@Override
-	public Object[] removeCellsFromParent(Object[] cells) {
-		// TODO Auto-generated method stub
-		return super.removeCellsFromParent(cells);
-	}
-
-	@Override
-	public Object[] removeCells(Object[] cells) {
-		// TODO Auto-generated method stub
-		return super.removeCells(cells);
-	}
-
-	@Override
-	public Object[] removeCells(Object[] cells, boolean includeEdges) {
-		// TODO Auto-generated method stub
-		return super.removeCells(cells, includeEdges);
-	}
-
-	@Override
-	public void selectCell(boolean isNext, boolean isParent, boolean isChild) {
-		// TODO Auto-generated method stub
-		super.selectCell(isNext, isParent, isChild);
-	}
-
-	@Override
-	public void selectCells(boolean vertices, boolean edges) {
-		// TODO Auto-generated method stub
-		super.selectCells(vertices, edges);
-	}
-
-	@Override
-	public void selectCells(boolean vertices, boolean edges, Object parent) {
-		// TODO Auto-generated method stub
-		super.selectCells(vertices, edges, parent);
-	}
+	
+	
 	
 	
 	
