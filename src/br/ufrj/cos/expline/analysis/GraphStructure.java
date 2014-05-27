@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import br.ufrj.cos.expline.model.Activity;
+import br.ufrj.cos.expline.model.Edge;
 import br.ufrj.cos.expline.model.Port;
 
 import com.mxgraph.analysis.mxAnalysisGraph;
@@ -54,34 +55,25 @@ public class GraphStructure extends mxGraphStructure
 		ArrayList<Object> cellList = new ArrayList<Object>(Arrays.asList(cells));
 		cellList.add(edge);
 		
+		
 		for (int i = 0; i < cells.length; i++) {
 			mxCell temp = (mxCell)cells[i];
 			
-			if(temp instanceof Activity){
-				Activity actv = (Activity) temp;
+			if(temp instanceof Edge){
+				Edge edge_temp = (Edge) temp;
 				
-				for (int j = 0; j < actv.getChildCount(); j++) {
-					Port port1 = (Port) actv.getChildAt(j);
-					
-					if(port1.getType() == Port.INPUT_TYPE){
-						for (int k = 0; k < actv.getChildCount(); k++) {
-							Port port2 = (Port) actv.getChildAt(k);
-							if(port2.getType() == Port.OUTPUT_TYPE){
-								Object edgeTemp = graph.createEdge(parent, null, "", port1, port2, "");
-								((mxCell)edgeTemp).setSource(port1);
-								((mxCell)edgeTemp).setTarget(port2);
-								cellList.add(edgeTemp);
-								break;
-							}
-						}
-					}
-				}
+				Port port1 = (Port) edge_temp.getSource();
+				Port port2 = (Port) edge_temp.getTarget();
 				
-//				for (Port inputPort : actv.getInputPorts()) {
-//					Object edgeTemp = graph.createEdge(parent, null, "", inputPort, actv.getOutputPort(), "");
-//					
-//					cellList.add(edgeTemp);
-//				} 
+				Activity actv1 = (Activity) port1.getParent();
+				Activity actv2 = (Activity) port2.getParent();
+				
+				Object new_edge = graph.createEdge(parent, null, "", actv1, actv2, "");
+				
+				((mxCell)new_edge).setSource(actv1);
+				((mxCell)new_edge).setTarget(actv2);
+				
+				cellList.add(new_edge);
 			}
 			
 		}
