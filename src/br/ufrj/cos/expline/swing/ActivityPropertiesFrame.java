@@ -123,14 +123,23 @@ public class ActivityPropertiesFrame extends JDialog
 		algebraicPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 		algebraicPanel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 		algebraicPanel.add(new JLabel(mxResources.get("albegraicOperator")+":"));
-		String[] algebraicOperators = new String[6];
-		algebraicOperators[0] = "";
-		algebraicOperators[1] = mxResources.get("map");
-		algebraicOperators[2] = mxResources.get("select");
-		algebraicOperators[3] = mxResources.get("splitMap");
-		algebraicOperators[4] = mxResources.get("reduce");
-		algebraicOperators[5] = mxResources.get("join");
+		String[] algebraicOperators = new String[5];
+		algebraicOperators[0] = mxResources.get("map");
+		algebraicOperators[1] = mxResources.get("select");
+		algebraicOperators[2] = mxResources.get("splitMap");
+		algebraicOperators[3] = mxResources.get("reduce");
+		algebraicOperators[4] = mxResources.get("join");
 		algebraicOperatorsJComboBox = new JComboBox<String>(algebraicOperators);
+		algebraicOperatorsJComboBox.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				Activity activity = (Activity) graph.getSelectionCell();
+				activity.refreshPortsDefinition();
+				
+			}
+		});
+		
 		loadAlgebraicOperator();
 		algebraicPanel.add(algebraicOperatorsJComboBox);
 

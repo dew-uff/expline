@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
+import com.mxgraph.util.mxResources;
 
 public class Activity extends mxCell implements Cloneable, Serializable{
 		
@@ -38,7 +39,7 @@ public class Activity extends mxCell implements Cloneable, Serializable{
 		super(value, geometry, style);
 		
 		this.type = type;
-		this.algebraicOperator = "map";
+		this.algebraicOperator = mxResources.get("map");
 		
 		this.inputPorts = new ArrayList<Port>();
 		
@@ -50,7 +51,7 @@ public class Activity extends mxCell implements Cloneable, Serializable{
 		super(value, geometry, "");
 		
 		this.type = type;
-		this.algebraicOperator = "map";
+		this.algebraicOperator = mxResources.get("map");
 		
 		setStyle(type);
 		
@@ -64,7 +65,7 @@ public class Activity extends mxCell implements Cloneable, Serializable{
 		// TODO Auto-generated constructor stub
 		this.inputPorts = new ArrayList<Port>();
 		
-		this.algebraicOperator = "map";
+		this.algebraicOperator = mxResources.get("map");
 		
 		this.initializeDefaultPorts();
 	}
@@ -84,12 +85,37 @@ public class Activity extends mxCell implements Cloneable, Serializable{
 			this.addInputPort(inputPort);
 			this.setOutputPort(outputPort);
 			
-			if(algebraicOperator.equals("join")){
+			if(algebraicOperator.equals(mxResources.get("join"))){
 				Port inputPort2 = new Port(Port.INPUT_TYPE, this);
 				
 				this.addInputPort(inputPort2);
 			}
 			
+		}
+		
+	}
+	
+	public void refreshPortsDefinition(){
+		
+		
+		if(!algebraicOperator.equals(mxResources.get("join"))){
+			
+			if(inputPorts.size() > 1){
+				inputPorts.remove(1);
+				
+				remove(inputPorts.get(1));
+				
+				inputPorts.get(0).getGeometry().setY(0.5);
+			}			
+		}
+		else{
+			getChildAt(0).getGeometry().setY(0.3);
+			
+			Port inputPort2 = new Port(Port.INPUT_TYPE, this);
+			
+			inputPort2.getGeometry().setY(0.7);
+			
+			this.addInputPort(inputPort2);
 		}
 		
 	}
