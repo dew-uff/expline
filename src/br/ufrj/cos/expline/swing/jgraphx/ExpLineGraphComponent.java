@@ -44,7 +44,8 @@ public class ExpLineGraphComponent extends mxGraphComponent
 		// Sets switches typically used in an editor
 		setPageVisible(false);
 		setGridVisible(false);
-		setTripleBuffered(true);super.createHandlers();
+		setTripleBuffered(true);
+		super.createHandlers();
 		setAntiAlias(true);
 		setToolTips(true);
 		

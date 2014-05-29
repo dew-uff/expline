@@ -1,6 +1,5 @@
 package br.ufrj.cos.expline.swing.jgraphx;
 
-import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.model.Edge;
 import br.ufrj.cos.expline.model.ExpLine;
 import br.ufrj.cos.expline.model.Port;
@@ -106,30 +105,6 @@ public class ExpLineGraph extends mxGraph
 		}
 
 		return super.createEdge(parent, id, value, source, target, style);
-	}
-
-	@Override
-	public Object createVertex(Object parent, String id, Object value,
-			double x, double y, double width, double height, String style) {
-		// TODO Auto-generated method stub
-		return super.createVertex(parent, id, value, x, y, width, height, style);
-	}
-
-	@Override
-	public Object createVertex(Object parent, String id, Object value,
-			double x, double y, double width, double height, String style,
-			boolean relative) {
-		
-		mxGeometry geometry = new mxGeometry(x, y, width, height);
-		geometry.setRelative(relative);
-
-		Activity vertex = new Activity(value, geometry, style, Activity.INVARIANT_TYPE);
-		vertex.setId(id);
-		vertex.setVertex(true);
-		vertex.setConnectable(true);
-
-		return vertex;
-		
 	}
 
 	@Override
