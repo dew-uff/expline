@@ -83,7 +83,9 @@ public class Activity extends mxCell implements Cloneable, Serializable{
 			Port outputPort = new Port(Port.OUTPUT_TYPE, this);
 			
 			this.addInputPort(inputPort);
+			this.insert(inputPort);
 			this.setOutputPort(outputPort);
+			this.insert(outputPort);
 			
 			if(algebraicOperator.equals(mxResources.get("join"))){
 				Port inputPort2 = new Port(Port.INPUT_TYPE, this);
@@ -109,13 +111,15 @@ public class Activity extends mxCell implements Cloneable, Serializable{
 			}			
 		}
 		else{
-			getChildAt(0).getGeometry().setY(0.3);
+			
+			inputPorts.get(0).getGeometry().setY(0.3);
 			
 			Port inputPort2 = new Port(Port.INPUT_TYPE, this);
 			
 			inputPort2.getGeometry().setY(0.7);
 			
 			this.addInputPort(inputPort2);
+			this.insert(inputPort2);
 		}
 		
 	}
@@ -157,14 +161,11 @@ public class Activity extends mxCell implements Cloneable, Serializable{
 
 	public void setOutputPort(Port outputPort) {
 		this.outputPort = outputPort;
-		this.insert(outputPort);
 	}
 
 
 	public void addInputPort(Port inputPort) {
-		this.inputPorts.add(inputPort);
-		this.insert(inputPort);
-		
+		this.inputPorts.add(inputPort);	
 	}
 	
 	public void setStyle(int type){
@@ -190,6 +191,26 @@ public class Activity extends mxCell implements Cloneable, Serializable{
 		}
 		
 	}
+
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		// TODO Auto-generated method stub
+		Activity activity = (Activity) super.clone();
+		
+		for (int i = 0; i < activity.getChildCount(); i++) {
+			Port port = (Port) getChildAt(i);
+			
+			if(port.getType() == Port.INPUT_TYPE)
+				activity.getInputPorts().set(0, port);
+			else
+			if(port.getType() == Port.OUTPUT_TYPE)
+				activity.outputPort = port;
+		}
+		
+		return activity;
+		
+	}
+	
 	
 	
 }

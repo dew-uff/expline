@@ -174,6 +174,11 @@ public class ActivityPropertiesFrame extends JDialog
 		{
 			public void actionPerformed(ActionEvent e)
 			{
+				saveAlgebraicOperator();
+				Activity activity = (Activity) graph.getSelectionCell();
+				activity.refreshPortsDefinition();
+				
+				graph.refresh();
 				setVisible(false);
 			}
 		});
@@ -189,7 +194,7 @@ public class ActivityPropertiesFrame extends JDialog
 				
 				saveAlgebraicOperator();
 			    saveInputRelations();
-				saveOutputRelationAttributes();
+				saveOutputRelationAttributes();		
 				setVisible(false);
 			}
 		});

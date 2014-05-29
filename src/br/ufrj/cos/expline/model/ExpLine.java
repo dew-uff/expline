@@ -2,6 +2,7 @@ package br.ufrj.cos.expline.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.mxgraph.model.mxGraphModel;
 
@@ -42,6 +43,31 @@ public class ExpLine extends mxGraphModel
 	public void clearRules() {
 		rules.clear();
 	}
+
+	@Override
+	protected Object cloneCell(Object cell, Map<Object, Object> mapping,
+			boolean includeChildren) throws CloneNotSupportedException {
+		// TODO Auto-generated method stub
+		Object obj =  super.cloneCell(cell, mapping, includeChildren);
+		
+		if(obj instanceof Activity){
+			Activity actv = (Activity) obj;
+			
+			for (int i = 0; i < actv.getChildCount(); i++) {
+				Port port = (Port) actv.getChildAt(i);
+				
+				if(port.getType() == Port.INPUT_TYPE)
+					actv.getInputPorts().set(0, port);
+				else
+				if(port.getType() == Port.OUTPUT_TYPE)
+					actv.setOutputPort(port);
+			}
+		}
+		
+		return obj;
+	}
 	
 
+	
+	
 }
