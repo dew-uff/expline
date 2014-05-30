@@ -137,10 +137,21 @@ public class ActivityPropertiesFrame extends JDialog
 				Activity activity = (Activity) graph.getSelectionCell();
 				activity.refreshPortsDefinition();
 				
+				
+				
+				
+				
+		       	int index = inputRelationtabbedPane.getTabCount() - 1;
+	        	        	
+	        	RelationSchema relationSchema = activity.getInputPorts().get(1).getRelationSchema();
+	    		inputRelationtabbedPane.addTab(mxResources.get("attributeType")+" "+inputRelationtNextIndex, null, createInputRelationalSchemaPanel(relationSchema, index),
+	                    "");
+	    		
+	    		inputRelationtNextIndex++;
+				
 			}
 		});
 		
-		loadAlgebraicOperator();
 		algebraicPanel.add(algebraicOperatorsJComboBox);
 
         
@@ -161,6 +172,8 @@ public class ActivityPropertiesFrame extends JDialog
         getContentPane().add(middle, BorderLayout.CENTER);
 
 
+        loadAlgebraicOperator();
+        
 
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		buttonPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory
@@ -174,11 +187,6 @@ public class ActivityPropertiesFrame extends JDialog
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				saveAlgebraicOperator();
-				Activity activity = (Activity) graph.getSelectionCell();
-				activity.refreshPortsDefinition();
-				
-				graph.refresh();
 				setVisible(false);
 			}
 		});
@@ -194,7 +202,8 @@ public class ActivityPropertiesFrame extends JDialog
 				
 				saveAlgebraicOperator();
 			    saveInputRelations();
-				saveOutputRelationAttributes();		
+				saveOutputRelationAttributes();
+				graph.refresh();
 				setVisible(false);
 			}
 		});
@@ -269,7 +278,7 @@ public class ActivityPropertiesFrame extends JDialog
 			inputRelationtabbedPane.addTab(mxResources.get("relation")+" "+inputRelationtNextIndex, null, createInputRelationalSchemaPanel(inputRelationSchema, inputRelationtNextIndex-1),
                     "");
   
-			inputRelationtabbedPane.setTabComponentAt(inputRelationtNextIndex-1, createCloseTabPanel());
+//			inputRelationtabbedPane.setTabComponentAt(inputRelationtNextIndex-1, createCloseTabPanel());
 			
 			inputRelationtNextIndex++;
 		}
@@ -281,18 +290,18 @@ public class ActivityPropertiesFrame extends JDialog
 			inputRelationtabbedPane.addTab(mxResources.get("relation")+" 1", null, createInputRelationalSchemaPanel(emptyRelationSchema, 0),
 	                          "");
 	        
-			inputRelationtabbedPane.setTabComponentAt(0, createCloseTabPanel());
+//			inputRelationtabbedPane.setTabComponentAt(0, createCloseTabPanel());
 			
 			inputRelationtNextIndex++;
 		}
 		
         
         
-		inputRelationtabbedPane.addTab(mxResources.get("add"), null, new JPanel(),
-                "");
-
-		inputRelationtabbedPane.setTabComponentAt(inputRelationtNextIndex-1, createAddTabPanel());
-		inputRelationtabbedPane.setEnabledAt(inputRelationtNextIndex-1, false);
+//		inputRelationtabbedPane.addTab(mxResources.get("add"), null, new JPanel(),
+//                "");
+//
+//		inputRelationtabbedPane.setTabComponentAt(inputRelationtNextIndex-1, createAddTabPanel());
+//		inputRelationtabbedPane.setEnabledAt(inputRelationtNextIndex-1, false);
         
 		
 		
@@ -439,23 +448,43 @@ public class ActivityPropertiesFrame extends JDialog
 
 	}
 	
+//	public void saveInputRelations(){
+//
+//		Activity activity = (Activity) graph.getSelectionCell();
+//		
+//		activity.clearInputRelationsSchemas();
+//		
+//		for (JTable inputRelationalSchemaTable : inputRelationalSchemaTables) {
+//			RelationalSchemaTableModel inputRelationalSchemaTableModel = (RelationalSchemaTableModel) inputRelationalSchemaTable.getModel();
+//			
+//			//activity.addInputRelationSchema(inputRelationalSchemaTableModel.getRelationSchema());
+//			
+//			Port inputPort = new Port(Port.INPUT_TYPE, activity);
+//			
+//			inputPort.setRelationSchema(inputRelationalSchemaTableModel.getRelationSchema());
+//			
+//			activity.addInputPort(inputPort);
+//		}
+//	}
+	
 	public void saveInputRelations(){
 
 		Activity activity = (Activity) graph.getSelectionCell();
 		
 		activity.clearInputRelationsSchemas();
 		
-		for (JTable inputRelationalSchemaTable : inputRelationalSchemaTables) {
-			RelationalSchemaTableModel inputRelationalSchemaTableModel = (RelationalSchemaTableModel) inputRelationalSchemaTable.getModel();
+		
+		for (int i = 0; i < inputRelationalSchemaTables.size(); i++) {
 			
-			//activity.addInputRelationSchema(inputRelationalSchemaTableModel.getRelationSchema());
+			RelationalSchemaTableModel inputRelationalSchemaTableModel = (RelationalSchemaTableModel) inputRelationalSchemaTables.get(i).getModel();
 			
-			Port inputPort = new Port(Port.INPUT_TYPE, activity);
+			Port inputPort = activity.getInputPorts().get(i);
 			
 			inputPort.setRelationSchema(inputRelationalSchemaTableModel.getRelationSchema());
 			
 			activity.addInputPort(inputPort);
 		}
+		
 	}
 	
 	public void saveOutputRelationAttributes(){
