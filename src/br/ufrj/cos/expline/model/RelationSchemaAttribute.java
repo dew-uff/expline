@@ -35,5 +35,16 @@ public class RelationSchemaAttribute implements Cloneable, Serializable{
     public void setType(String type) {
         this.type = type;
     }
+    
+	public Object clone()
+	{
+		RelationSchemaAttribute clone = new RelationSchemaAttribute();
+
+		clone.setName(getName());
+		clone.setType(getType());
+		
+		
+		return clone;
+	}
 
 }

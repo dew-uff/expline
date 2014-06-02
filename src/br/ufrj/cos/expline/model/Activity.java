@@ -99,27 +99,29 @@ public class Activity extends mxCell implements Cloneable, Serializable{
 	
 	public void refreshPortsDefinition(){
 		
-		
 		if(!algebraicOperator.equals(mxResources.get("join"))){
 			
 			if(inputPorts.size() > 1){
-				inputPorts.remove(1);
 				
 				remove(inputPorts.get(1));
+				
+				inputPorts.remove(1);
 				
 				inputPorts.get(0).getGeometry().setY(0.5);
 			}			
 		}
 		else{
 			
-			inputPorts.get(0).getGeometry().setY(0.3);
-			
-			Port inputPort2 = new Port(Port.INPUT_TYPE, this);
-			
-			inputPort2.getGeometry().setY(0.7);
-			
-			this.addInputPort(inputPort2);
-			this.insert(inputPort2);
+			if(inputPorts.size() == 1){
+				inputPorts.get(0).getGeometry().setY(0.3);
+				
+				Port inputPort2 = new Port(Port.INPUT_TYPE, this);
+				
+				inputPort2.getGeometry().setY(0.7);
+				
+				this.addInputPort(inputPort2);
+				this.insert(inputPort2);
+			}
 		}
 		
 	}

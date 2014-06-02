@@ -1,16 +1,13 @@
 package br.ufrj.cos.expline.swing;
 
-import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -31,7 +28,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
-import javax.swing.plaf.basic.BasicButtonUI;
 import javax.swing.table.AbstractTableModel;
 
 import br.ufrj.cos.expline.model.Activity;
@@ -130,24 +126,32 @@ public class ActivityPropertiesFrame extends JDialog
 		algebraicOperators[3] = mxResources.get("reduce");
 		algebraicOperators[4] = mxResources.get("join");
 		algebraicOperatorsJComboBox = new JComboBox<String>(algebraicOperators);
+		
+		loadAlgebraicOperator();
+		
 		algebraicOperatorsJComboBox.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				Activity activity = (Activity) graph.getSelectionCell();
-				activity.refreshPortsDefinition();
 				
+				String selectedOperation = (String) algebraicOperatorsJComboBox.getSelectedItem();
 				
-				
-				
-				
-		       	int index = inputRelationtabbedPane.getTabCount() - 1;
-	        	        	
-	        	RelationSchema relationSchema = activity.getInputPorts().get(1).getRelationSchema();
-	    		inputRelationtabbedPane.addTab(mxResources.get("attributeType")+" "+inputRelationtNextIndex, null, createInputRelationalSchemaPanel(relationSchema, index),
-	                    "");
-	    		
-	    		inputRelationtNextIndex++;
+				if(selectedOperation.equals(mxResources.get("join"))){
+					int index = inputRelationtNextIndex - 1;
+    	        	
+		        	RelationSchema relationSchema = new RelationSchema();
+		    		inputRelationtabbedPane.addTab(mxResources.get("relation")+" "+inputRelationtNextIndex, null, createInputRelationalSchemaPanel(relationSchema, index),
+		                    "");
+		    		
+		    		inputRelationtNextIndex++;
+				}
+				else
+				if(inputRelationtabbedPane.getTabCount()>1){
+					inputRelationtabbedPane.remove(1);
+					inputRelationalSchemaTables.remove(1);
+					inputRelationtNextIndex--;
+				}
+
 				
 			}
 		});
@@ -170,9 +174,6 @@ public class ActivityPropertiesFrame extends JDialog
         middle.add(tabbedPane, BorderLayout.CENTER);
         middle.add(algebraicPanel, BorderLayout.NORTH);
         getContentPane().add(middle, BorderLayout.CENTER);
-
-
-        loadAlgebraicOperator();
         
 
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -216,50 +217,7 @@ public class ActivityPropertiesFrame extends JDialog
 		setResizable(true);
 		setSize(400, 400);
 	}
-	
-	public JPanel createCloseTabPanel(){
-		
-        JPanel pnlTab = new JPanel(new GridBagLayout());
-        pnlTab.setOpaque(false);
-        JLabel lblTitle = new JLabel(mxResources.get("relation")+" "+inputRelationtNextIndex);
-        JButton btnClose = new TabCloseButton(inputRelationtNextIndex);
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 1;
-
-        pnlTab.add(lblTitle, gbc);
-        //lblTitle.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
-       // pnlTab.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 1));
-
-        gbc.gridx++;
-        gbc.weightx = 0;
-        pnlTab.add(btnClose, gbc);
-        lblTitle.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 1));
-
-        
-        return pnlTab;
-		
-	}
-	
-	public JPanel createAddTabPanel(){
-		
-        JPanel pnlTab = new JPanel(new GridBagLayout());
-        pnlTab.setOpaque(false);
-        JButton btnAdd = new TabAddButton();
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 0;
-        pnlTab.add(btnAdd, gbc);
-
-        
-        return pnlTab;
-		
-	}
-	
 	public JPanel createInputPanel(){
 		
 		inputRelationtabbedPane = new JTabbedPane();
@@ -273,38 +231,13 @@ public class ActivityPropertiesFrame extends JDialog
 		
 		for (Port inputPort : inputPorts) {
 			
-			RelationSchema inputRelationSchema = inputPort.getRelationSchema();
+			RelationSchema inputRelationSchema = (RelationSchema) inputPort.getRelationSchema().clone();
 			
 			inputRelationtabbedPane.addTab(mxResources.get("relation")+" "+inputRelationtNextIndex, null, createInputRelationalSchemaPanel(inputRelationSchema, inputRelationtNextIndex-1),
                     "");
-  
-//			inputRelationtabbedPane.setTabComponentAt(inputRelationtNextIndex-1, createCloseTabPanel());
 			
 			inputRelationtNextIndex++;
-		}
-		
-		
-		if(inputRelationtNextIndex == 1){
-			RelationSchema emptyRelationSchema = new RelationSchema();
-			
-			inputRelationtabbedPane.addTab(mxResources.get("relation")+" 1", null, createInputRelationalSchemaPanel(emptyRelationSchema, 0),
-	                          "");
-	        
-//			inputRelationtabbedPane.setTabComponentAt(0, createCloseTabPanel());
-			
-			inputRelationtNextIndex++;
-		}
-		
-        
-        
-//		inputRelationtabbedPane.addTab(mxResources.get("add"), null, new JPanel(),
-//                "");
-//
-//		inputRelationtabbedPane.setTabComponentAt(inputRelationtNextIndex-1, createAddTabPanel());
-//		inputRelationtabbedPane.setEnabledAt(inputRelationtNextIndex-1, false);
-        
-		
-		
+		}	
         
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(inputRelationtabbedPane);
@@ -350,7 +283,10 @@ public class ActivityPropertiesFrame extends JDialog
 			{
 				int selected_index = inputRelationtabbedPane.getSelectedIndex();
 				RelationalSchemaTableModel inputRelationalSchemaTableModel = (RelationalSchemaTableModel) inputRelationalSchemaTables.get(selected_index).getModel();
-				inputRelationalSchemaTableModel.removeRow(inputRelationalSchemaTables.get(selected_index).getSelectedRow());
+				
+				int row = inputRelationalSchemaTables.get(selected_index).getSelectedRow();
+				if(row >= 0)
+					inputRelationalSchemaTableModel.removeRow(inputRelationalSchemaTables.get(selected_index).getSelectedRow());
 			}
 		});
 		
@@ -415,8 +351,10 @@ public class ActivityPropertiesFrame extends JDialog
 	public JTable createOutputTable(){
 
 		Activity activity = (Activity) graph.getSelectionCell();
+		
+		RelationSchema outputRelationSchema = (RelationSchema) activity.getOutputPort().getRelationSchema().clone();
 	
-        OutputRelationalSchemaTableModel = new RelationalSchemaTableModel(activity.getOutputPort().getRelationSchema());
+        OutputRelationalSchemaTableModel = new RelationalSchemaTableModel(outputRelationSchema);
         JTable table = new JTable(OutputRelationalSchemaTableModel);
         
 		return table;
@@ -445,34 +383,15 @@ public class ActivityPropertiesFrame extends JDialog
 		AlgebraicOperatorAction action = new AlgebraicOperatorAction((String)algebraicOperatorsJComboBox.getSelectedItem());
 		
 		action.actionPerformed(new ActionEvent(graphComponent, 1, ""));
+		
+		Activity activity = (Activity) graph.getSelectionCell();
+		activity.refreshPortsDefinition();
 
 	}
 	
-//	public void saveInputRelations(){
-//
-//		Activity activity = (Activity) graph.getSelectionCell();
-//		
-//		activity.clearInputRelationsSchemas();
-//		
-//		for (JTable inputRelationalSchemaTable : inputRelationalSchemaTables) {
-//			RelationalSchemaTableModel inputRelationalSchemaTableModel = (RelationalSchemaTableModel) inputRelationalSchemaTable.getModel();
-//			
-//			//activity.addInputRelationSchema(inputRelationalSchemaTableModel.getRelationSchema());
-//			
-//			Port inputPort = new Port(Port.INPUT_TYPE, activity);
-//			
-//			inputPort.setRelationSchema(inputRelationalSchemaTableModel.getRelationSchema());
-//			
-//			activity.addInputPort(inputPort);
-//		}
-//	}
-	
 	public void saveInputRelations(){
 
-		Activity activity = (Activity) graph.getSelectionCell();
-		
-		activity.clearInputRelationsSchemas();
-		
+		Activity activity = (Activity) graph.getSelectionCell();	
 		
 		for (int i = 0; i < inputRelationalSchemaTables.size(); i++) {
 			
@@ -481,8 +400,7 @@ public class ActivityPropertiesFrame extends JDialog
 			Port inputPort = activity.getInputPorts().get(i);
 			
 			inputPort.setRelationSchema(inputRelationalSchemaTableModel.getRelationSchema());
-			
-			activity.addInputPort(inputPort);
+
 		}
 		
 	}
@@ -495,7 +413,7 @@ public class ActivityPropertiesFrame extends JDialog
 		
 		//activity.setOutputRelationSchema(outputRelationSchema);
 		
-		activity.getOutputPort().setRelationSchema(outputRelationSchema);;
+		activity.getOutputPort().setRelationSchema(outputRelationSchema);
 		
 	}
 
@@ -650,127 +568,4 @@ public class ActivityPropertiesFrame extends JDialog
 		}
             
     }
-    
-    private class TabCloseButton extends JButton implements ActionListener {
-        private int index;
-    	public TabCloseButton(int index) {
-    		this.index = index;
-            int size = 17;
-            setPreferredSize(new Dimension(size, size));
-            setToolTipText("close this tab");
-            //Make the button looks the same for all Laf's
-            setUI(new BasicButtonUI());
-            //Make it transparent
-            setContentAreaFilled(false);
-            //No need to be focusable
-            setFocusable(false);
-            setBorder(BorderFactory.createEtchedBorder());
-            setBorderPainted(false);
-            //Making nice rollover effect
-            //we use the same listener for all buttons
-            addMouseListener(null);
-            setRolloverEnabled(true);
-            //Close the proper tab by clicking the button
-            addActionListener(this);
-        }
- 
-        public void actionPerformed(ActionEvent e) {
-        	if(inputRelationtabbedPane.getTabCount()>2){
-	        	int tab_index = inputRelationtabbedPane.indexOfTab(mxResources.get("relation")+" "+index);
-	        	inputRelationtabbedPane.removeTabAt(tab_index);
-	        	inputRelationalSchemaTables.remove(tab_index);
-        	}
-        }
- 
-        //we don't want to update UI for this button
-        public void updateUI() {
-        }
- 
-        //paint the cross
-        protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            Graphics2D g2 = (Graphics2D) g.create();
-            //shift the image for pressed buttons
-            if (getModel().isPressed()) {
-                g2.translate(1, 1);
-            }
-            g2.setStroke(new BasicStroke(2));
-            g2.setColor(Color.BLACK);
-            if (getModel().isRollover()) {
-                g2.setColor(Color.MAGENTA);
-            }
-            int delta = 6;
-            g2.drawLine(delta, delta, getWidth() - delta - 1, getHeight() - delta - 1);
-            g2.drawLine(getWidth() - delta - 1, delta, delta, getHeight() - delta - 1);
-            g2.dispose();
-        }
-    }
-    
-    
-    private class TabAddButton extends JButton implements ActionListener {
-        public TabAddButton() {
-            int size = 17;
-            setPreferredSize(new Dimension(size, size));
-            setToolTipText("create a new tab");
-            //Make the button looks the same for all Laf's
-            setUI(new BasicButtonUI());
-            //Make it transparent
-            setContentAreaFilled(false);
-            //No need to be focusable
-            setFocusable(false);
-            setBorder(BorderFactory.createEtchedBorder());
-            setBorderPainted(false);
-            //Making nice rollover effect
-            //we use the same listener for all buttons
-            addMouseListener(null);
-            setRolloverEnabled(true);
-            //Close the proper tab by clicking the button
-            addActionListener(this);
-        }
- 
-        public void actionPerformed(ActionEvent e) {
-        	int index = inputRelationtabbedPane.getTabCount() - 1;
-        	inputRelationtabbedPane.removeTabAt(index);
-        	        	
-        	RelationSchema relationSchema = new RelationSchema();
-    		inputRelationtabbedPane.addTab(mxResources.get("attributeType")+" "+inputRelationtNextIndex, null, createInputRelationalSchemaPanel(relationSchema, index),
-                    "");
-  
-    		inputRelationtabbedPane.setTabComponentAt(index, createCloseTabPanel());
-    		
-    		
-    		inputRelationtabbedPane.addTab(mxResources.get("add"), null, new JPanel(),
-                    "");
-
-    		inputRelationtabbedPane.setTabComponentAt(index+1, createAddTabPanel());
-    		inputRelationtabbedPane.setEnabledAt(index+1, false);
-    		
-    		inputRelationtNextIndex++;
-        }
- 
-        //we don't want to update UI for this button
-        public void updateUI() {
-        }
- 
-        //paint the cross
-        protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            Graphics2D g2 = (Graphics2D) g.create();
-            //shift the image for pressed buttons
-            if (getModel().isPressed()) {
-                g2.translate(1, 1);
-            }
-            g2.setStroke(new BasicStroke(2));
-            g2.setColor(Color.BLACK);
-            if (getModel().isRollover()) {
-                g2.setColor(Color.MAGENTA);
-            }
-            int delta = 6;
-            g2.drawLine(delta, getHeight()/2, getWidth() - delta - 1, getHeight()/2);
-            g2.drawLine(getWidth()/2, delta, getWidth()/2, getHeight() - delta - 1);
-            g2.dispose();
-        }
-    }
-
-
 }
