@@ -364,7 +364,7 @@ public class ActivityPropertiesFrame extends JDialog
 
 		Activity activity = (Activity) graph.getSelectionCell();
 		
-		String albebraicOperator = activity.getAlgebraicOperator();
+ 		String albebraicOperator = activity.getAlgebraicOperator();
 		
 		for (int i = 0; i < algebraicOperatorsJComboBox.getModel().getSize(); i++) {
 			if (algebraicOperatorsJComboBox.getModel().getElementAt(i).equals(albebraicOperator)){

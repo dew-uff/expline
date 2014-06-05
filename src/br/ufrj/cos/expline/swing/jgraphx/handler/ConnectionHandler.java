@@ -6,6 +6,7 @@ package br.ufrj.cos.expline.swing.jgraphx.handler;
 
 import java.awt.Color;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 
@@ -13,6 +14,9 @@ import br.ufrj.cos.expline.analysis.GraphStructure;
 import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.model.Edge;
 import br.ufrj.cos.expline.model.Port;
+import br.ufrj.cos.expline.model.RelationSchema;
+import br.ufrj.cos.expline.model.RelationSchemaAttribute;
+import br.ufrj.cos.expline.swing.ActivityPropertiesFrame.RelationalSchemaAttribute;
 
 import com.mxgraph.analysis.mxAnalysisGraph;
 import com.mxgraph.model.mxCell;
@@ -152,12 +156,12 @@ public class ConnectionHandler extends mxConnectionHandler
 							return false;
 						}
 						
-						mxAnalysisGraph aGraph = new mxAnalysisGraph();
-						aGraph.setGraph(graphComponent.getGraph());
-						
-						if (GraphStructure.makesCycle(aGraph, source, target))
-							return false;
-						else
+//						mxAnalysisGraph aGraph = new mxAnalysisGraph();
+//						aGraph.setGraph(graphComponent.getGraph());
+//						
+//						if (GraphStructure.makesCycle(aGraph, source, target))
+//							return false;
+//						else
 							return true;
 						
 					}
@@ -183,13 +187,20 @@ public class ConnectionHandler extends mxConnectionHandler
 					if(srcPort.getType() == trgPort.getType())
 						return false;
 					
-					mxAnalysisGraph aGraph = new mxAnalysisGraph();
-					aGraph.setGraph(graphComponent.getGraph());
 					
-					if (GraphStructure.makesCycle(aGraph, source, target))
+					if (!arePortsMatchable(srcPort, trgPort))
 						return false;
-					else
-						return true;
+					else{
+
+//						mxAnalysisGraph aGraph = new mxAnalysisGraph();
+//						aGraph.setGraph(graphComponent.getGraph());
+//						
+//						if (GraphStructure.makesCycle(aGraph, source, target))
+//							return false;
+//						else
+							return true;
+					}
+				
 					
 				}
 				else
@@ -204,6 +215,28 @@ public class ConnectionHandler extends mxConnectionHandler
 	}
 	
 	
+	private boolean arePortsMatchable(Port srcPort, Port trgPort) {
+		// TODO Auto-generated method stub
+		
+		RelationSchema srcPortRelSchema = srcPort.getRelationSchema();
+		RelationSchema trgPortRelSchema = trgPort.getRelationSchema();
+		
+		List<RelationSchemaAttribute> srcRelAttr = srcPortRelSchema.getAttributes();
+		List<RelationSchemaAttribute> trgRelAttr = trgPortRelSchema.getAttributes();
+		
+		if(srcRelAttr.size() == trgRelAttr.size()){
+			
+			for (int i = 0; i < srcPortRelSchema.getAttributes().size(); i++) {
+				if(!srcRelAttr.get(i).getType().equals(trgRelAttr.get(i).getType()))
+					return false;
+			}
+			
+			return true;
+		}
+		else
+			return false;
+	}
+
 	public void defineEdgeType(){
 		
 		Edge previewState = (Edge) connectPreview.getPreviewState().getCell();

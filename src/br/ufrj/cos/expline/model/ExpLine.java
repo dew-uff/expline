@@ -53,11 +53,18 @@ public class ExpLine extends mxGraphModel
 		if(obj instanceof Activity){
 			Activity actv = (Activity) obj;
 			
+			int j = 0;
+			
 			for (int i = 0; i < actv.getChildCount(); i++) {
 				Port port = (Port) actv.getChildAt(i);
 				
-				if(port.getType() == Port.INPUT_TYPE)
-					actv.getInputPorts().set(0, port);
+				printPort(port);
+				
+				if(port.getType() == Port.INPUT_TYPE){printPort(actv.getInputPorts().get(j));
+					port.setRelationSchema(actv.getInputPorts().get(j).getRelationSchema());
+					actv.getInputPorts().set(j, port);
+					j++;
+				}
 				else
 				if(port.getType() == Port.OUTPUT_TYPE)
 					actv.setOutputPort(port);
@@ -67,6 +74,61 @@ public class ExpLine extends mxGraphModel
 		return obj;
 	}
 	
+	
+	
+	@Override
+	protected void restoreClone(Object clone, Object cell,
+			Map<Object, Object> mapping) {
+		// TODO Auto-generated method stub
+		super.restoreClone(clone, cell, mapping);
+		
+		if(clone instanceof Activity){
+			Activity actv = (Activity) clone;
+			
+			int j = 0;
+			
+			for (int i = 0; i < actv.getChildCount(); i++) {
+				Port port = (Port) actv.getChildAt(i);
+				
+				
+				if(port.getType() == Port.INPUT_TYPE){
+					port.setRelationSchema(actv.getInputPorts().get(j).getRelationSchema());
+					actv.getInputPorts().set(j, port);
+					j++;
+				}
+				else
+				if(port.getType() == Port.OUTPUT_TYPE)
+					actv.setOutputPort(port);
+			}
+			
+			
+			Activity actv2 = (Activity) cell;
+			
+			j = 0;
+			
+			for (int i = 0; i < actv2.getChildCount(); i++) {
+				Port port = (Port) actv2.getChildAt(i);
+				
+				
+				if(port.getType() == Port.INPUT_TYPE){
+					port.setRelationSchema(actv2.getInputPorts().get(j).getRelationSchema());
+					actv2.getInputPorts().set(j, port);
+					j++;
+				}
+				else
+				if(port.getType() == Port.OUTPUT_TYPE)
+					actv2.setOutputPort(port);
+			}
+		}
+	}
+
+	public void printPort(Port p){
+		
+		List<RelationSchemaAttribute> attr = p.getRelationSchema().getAttributes();
+		
+		if(!attr.isEmpty())
+			System.out.println(p.getRelationSchema().getAttributes().get(0).getType());
+	}
 
 	
 	

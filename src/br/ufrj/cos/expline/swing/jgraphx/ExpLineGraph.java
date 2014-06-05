@@ -136,14 +136,10 @@ public class ExpLineGraph extends mxGraph
 		else
 		return super.isCellSelectable(cell);
 	}
-	
-	
 
-	
-	
-	
-	
-	
-	
+	@Override
+	public boolean isCellResizable(Object cell) {
+		return false;
+	}
 
 }

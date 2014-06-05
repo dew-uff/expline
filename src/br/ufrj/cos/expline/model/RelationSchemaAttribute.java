@@ -40,8 +40,8 @@ public class RelationSchemaAttribute implements Cloneable, Serializable{
 	{
 		RelationSchemaAttribute clone = new RelationSchemaAttribute();
 
-		clone.setName(getName());
-		clone.setType(getType());
+		clone.setName(new String(getName()));
+		clone.setType(new String(getType()));
 		
 		
 		return clone;

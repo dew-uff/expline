@@ -194,24 +194,29 @@ public class Activity extends mxCell implements Cloneable, Serializable{
 		
 	}
 
-	@Override
-	public Object clone() throws CloneNotSupportedException {
-		// TODO Auto-generated method stub
-		Activity activity = (Activity) super.clone();
-		
-		for (int i = 0; i < activity.getChildCount(); i++) {
-			Port port = (Port) getChildAt(i);
-			
-			if(port.getType() == Port.INPUT_TYPE)
-				activity.getInputPorts().set(0, port);
-			else
-			if(port.getType() == Port.OUTPUT_TYPE)
-				activity.outputPort = port;
-		}
-		
-		return activity;
-		
-	}
+//	@Override
+//	public Object clone() throws CloneNotSupportedException {
+//		// TODO Auto-generated method stub
+//		Activity activity = (Activity) super.clone();
+//		
+//		int j = 0;
+//		
+//		for (int i = 0; i < activity.getChildCount(); i++) {
+//			Port port = (Port) activity.getChildAt(i);
+//			
+//			if(port.getType() == Port.INPUT_TYPE){
+//				port.setRelationSchema(activity.getInputPorts().get(j).getRelationSchema());
+//				activity.getInputPorts().set(j, port);
+//				j++;
+//			}
+//			else
+//			if(port.getType() == Port.OUTPUT_TYPE)
+//				activity.setOutputPort(port);
+//		}
+//		
+//		return activity;
+//		
+//	}
 	
 	
 	
