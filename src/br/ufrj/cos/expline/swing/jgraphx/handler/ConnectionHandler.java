@@ -16,7 +16,6 @@ import br.ufrj.cos.expline.model.Edge;
 import br.ufrj.cos.expline.model.Port;
 import br.ufrj.cos.expline.model.RelationSchema;
 import br.ufrj.cos.expline.model.RelationSchemaAttribute;
-import br.ufrj.cos.expline.swing.ActivityPropertiesFrame.RelationalSchemaAttribute;
 
 import com.mxgraph.analysis.mxAnalysisGraph;
 import com.mxgraph.model.mxCell;
@@ -156,12 +155,12 @@ public class ConnectionHandler extends mxConnectionHandler
 							return false;
 						}
 						
-//						mxAnalysisGraph aGraph = new mxAnalysisGraph();
-//						aGraph.setGraph(graphComponent.getGraph());
-//						
-//						if (GraphStructure.makesCycle(aGraph, source, target))
-//							return false;
-//						else
+						mxAnalysisGraph aGraph = new mxAnalysisGraph();
+						aGraph.setGraph(graphComponent.getGraph());
+						
+						if (GraphStructure.makesCycle(aGraph, source, target))
+							return false;
+						else
 							return true;
 						
 					}
@@ -192,12 +191,12 @@ public class ConnectionHandler extends mxConnectionHandler
 						return false;
 					else{
 
-//						mxAnalysisGraph aGraph = new mxAnalysisGraph();
-//						aGraph.setGraph(graphComponent.getGraph());
-//						
-//						if (GraphStructure.makesCycle(aGraph, source, target))
-//							return false;
-//						else
+						mxAnalysisGraph aGraph = new mxAnalysisGraph();
+						aGraph.setGraph(graphComponent.getGraph());
+						
+						if (GraphStructure.makesCycle(aGraph, source, target))
+							return false;
+						else
 							return true;
 					}
 				
