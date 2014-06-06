@@ -29,10 +29,6 @@ public class Activity extends mxCell implements Cloneable, Serializable{
 	
 	private String algebraicOperator;
 	
-	private List<Port> inputPorts;
-	
-	private Port outputPort;
-	
 	
 	public Activity(Object value, mxGeometry geometry, String style, int type)
 	{
@@ -40,8 +36,6 @@ public class Activity extends mxCell implements Cloneable, Serializable{
 		
 		this.type = type;
 		this.algebraicOperator = mxResources.get("map");
-		
-		this.inputPorts = new ArrayList<Port>();
 		
 		this.initializeDefaultPorts();
 	}
@@ -55,15 +49,13 @@ public class Activity extends mxCell implements Cloneable, Serializable{
 		
 		setStyle(type);
 		
-		this.inputPorts = new ArrayList<Port>();
-		
 		this.initializeDefaultPorts();
 	}
 	
 	
 	public Activity() {
 		// TODO Auto-generated constructor stub
-		this.inputPorts = new ArrayList<Port>();
+//		this.inputPorts = new ArrayList<Port>();
 		
 		this.algebraicOperator = mxResources.get("map");
 		
@@ -73,22 +65,18 @@ public class Activity extends mxCell implements Cloneable, Serializable{
 
 	public void initializeDefaultPorts(){
 		
-		inputPorts.clear();
-		outputPort = null;
-		
 		if(type != Activity.VARIANT_TYPE){
 			
-			Port inputPort = new Port(Port.INPUT_TYPE, this);
+			Port inputPort = new Port(Port.INPUT_TYPE);
 				
-			Port outputPort = new Port(Port.OUTPUT_TYPE, this);
+			Port outputPort = new Port(Port.OUTPUT_TYPE);
 			
 			this.addInputPort(inputPort);
-			this.insert(inputPort);
 			this.setOutputPort(outputPort);
-			this.insert(outputPort);
+			
 			
 			if(algebraicOperator.equals(mxResources.get("join"))){
-				Port inputPort2 = new Port(Port.INPUT_TYPE, this);
+				Port inputPort2 = new Port(Port.INPUT_TYPE);
 				
 				this.addInputPort(inputPort2);
 			}
@@ -101,26 +89,23 @@ public class Activity extends mxCell implements Cloneable, Serializable{
 		
 		if(!algebraicOperator.equals(mxResources.get("join"))){
 			
-			if(inputPorts.size() > 1){
+			if(getInputPorts().size() > 1){
 				
-				remove(inputPorts.get(1));
+				removeInputPort(getInputPort(1));
 				
-				inputPorts.remove(1);
-				
-				inputPorts.get(0).getGeometry().setY(0.5);
+				getInputPort(0).getGeometry().setY(0.5);
 			}			
 		}
 		else{
 			
-			if(inputPorts.size() == 1){
-				inputPorts.get(0).getGeometry().setY(0.3);
+			if(getInputPorts().size() == 1){
+				getInputPort(0).getGeometry().setY(0.3);
 				
-				Port inputPort2 = new Port(Port.INPUT_TYPE, this);
+				Port inputPort2 = new Port(Port.INPUT_TYPE);
 				
 				inputPort2.getGeometry().setY(0.7);
 				
 				this.addInputPort(inputPort2);
-				this.insert(inputPort2);
 			}
 		}
 		
@@ -144,30 +129,84 @@ public class Activity extends mxCell implements Cloneable, Serializable{
 
 
 	public List<Port> getInputPorts() {
+		
+		
+		List<Port> inputPorts = new ArrayList<Port>();
+		
+		for (int i = 0; i < this.getChildCount(); i++) {
+			Port port = (Port) this.getChildAt(i);
+			
+			if(port.getType() == Port.INPUT_TYPE){
+				inputPorts.add(port);
+			}
+
+		}
+		
 		return inputPorts;
 	}
-
-
-	public void setInputPorts(List<Port> inputPorts) {
-		this.inputPorts = inputPorts;
+	
+	public Port getInputPort (int position){
+		return getInputPorts().get(position);
 	}
 	
-	public void clearInputRelationsSchemas() {
-		this.inputPorts.clear();
+	public void addInputPort(Port port){
+		
+		List<Port> inputPorts = getInputPorts();
+		
+		for (Port port2 : inputPorts) {
+			if(port2.equals(port))
+				return;
+		}
+		
+		this.insert(port);
 	}
-
-	public Port getOutputPort() {
-		return outputPort;
+	
+	public void removeInputPort(Port port){
+		remove(port);
 	}
+	
+	public Port getOutputPort (){
+		
+		for (int i = 0; i < this.getChildCount(); i++) {
+			Port port = (Port) this.getChildAt(i);
+			
+			if(port.getType() == Port.OUTPUT_TYPE){
+				return port;
+			}
 
-
-	public void setOutputPort(Port outputPort) {
-		this.outputPort = outputPort;
+		}
+		
+		return null;
 	}
+	
+	public void setOutputPort(Port port){
+		
+		Port port_temp = null;
+		
+		for (int i = 0; i < this.getChildCount(); i++) {
+			port_temp = (Port) this.getChildAt(i);
+			
+			if(port_temp.getType() == Port.OUTPUT_TYPE){
+				
+				if(port_temp.equals(port)){
+					return;
+				}
+				else{
+					removeOutputPort(port_temp);
+					this.insert(port);
+				}
+				
+				return;
+			}
 
+		}
+		
+		this.insert(port);
 
-	public void addInputPort(Port inputPort) {
-		this.inputPorts.add(inputPort);	
+	}
+	
+	public void removeOutputPort(Port port){
+		remove(port);
 	}
 	
 	public void setStyle(int type){
@@ -192,32 +231,5 @@ public class Activity extends mxCell implements Cloneable, Serializable{
 			style = "strokeWidth=5;fillColor=#FF0033;fillColor=#C5D4E1;gradientColor=#C5D4E1;strokeWidth=3;strokeColor=#000000;fontSize=22;fontColor=#000000";
 		}
 		
-	}
-
-//	@Override
-//	public Object clone() throws CloneNotSupportedException {
-//		// TODO Auto-generated method stub
-//		Activity activity = (Activity) super.clone();
-//		
-//		int j = 0;
-//		
-//		for (int i = 0; i < activity.getChildCount(); i++) {
-//			Port port = (Port) activity.getChildAt(i);
-//			
-//			if(port.getType() == Port.INPUT_TYPE){
-//				port.setRelationSchema(activity.getInputPorts().get(j).getRelationSchema());
-//				activity.getInputPorts().set(j, port);
-//				j++;
-//			}
-//			else
-//			if(port.getType() == Port.OUTPUT_TYPE)
-//				activity.setOutputPort(port);
-//		}
-//		
-//		return activity;
-//		
-//	}
-	
-	
-	
+	}	
 }

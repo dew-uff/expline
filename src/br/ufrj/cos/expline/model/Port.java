@@ -26,7 +26,7 @@ public class Port extends mxCell implements Cloneable, Serializable{
 	private RelationSchema relationSchema;
 	
 	
-	public Port(int type, Activity activity){
+	public Port(int type){
 		mxGeometry g = null;
 		if(type == INPUT_TYPE){
 			g = new mxGeometry(0, 0.5, PORT_DIAMETER,
