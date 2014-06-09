@@ -1,6 +1,7 @@
 package br.ufrj.cos.expline.model;
 
 import java.io.Serializable;
+import java.util.List;
 
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
@@ -62,6 +63,27 @@ public class Port extends mxCell implements Cloneable, Serializable{
 
 	public int getType() {
 		return type;
+	}
+	
+	public static boolean arePortsMatchable(Port srcPort, Port trgPort) {
+		
+		RelationSchema srcPortRelSchema = srcPort.getRelationSchema();
+		RelationSchema trgPortRelSchema = trgPort.getRelationSchema();
+		
+		List<RelationSchemaAttribute> srcRelAttr = srcPortRelSchema.getAttributes();
+		List<RelationSchemaAttribute> trgRelAttr = trgPortRelSchema.getAttributes();
+		
+		if(srcRelAttr.size() == trgRelAttr.size()){
+			
+			for (int i = 0; i < srcPortRelSchema.getAttributes().size(); i++) {
+				if(!srcRelAttr.get(i).getType().equals(trgRelAttr.get(i).getType()))
+					return false;
+			}
+			
+			return true;
+		}
+		else
+			return false;
 	}
 	
 }

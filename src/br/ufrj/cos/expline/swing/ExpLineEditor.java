@@ -39,7 +39,6 @@ import br.ufrj.cos.expline.io.EdgeCodec;
 import br.ufrj.cos.expline.io.ExpLineCodec;
 import br.ufrj.cos.expline.io.ExpressionCodec;
 import br.ufrj.cos.expline.model.Activity;
-import br.ufrj.cos.expline.model.Edge;
 import br.ufrj.cos.expline.model.Expression;
 import br.ufrj.cos.expline.model.RelationSchema;
 import br.ufrj.cos.expline.model.RelationSchemaAttribute;
@@ -58,12 +57,10 @@ import com.mxgraph.layout.mxParallelEdgeLayout;
 import com.mxgraph.layout.mxPartitionLayout;
 import com.mxgraph.layout.mxStackLayout;
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
-import com.mxgraph.model.mxCell;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.swing.mxGraphOutline;
 import com.mxgraph.swing.handler.mxKeyboardHandler;
 import com.mxgraph.swing.handler.mxRubberband;
-import com.mxgraph.swing.util.mxGraphTransferable;
 import com.mxgraph.swing.util.mxMorphing;
 import com.mxgraph.swing.util.mxSwingConstants;
 import com.mxgraph.util.mxConstants;
@@ -209,35 +206,9 @@ public class ExpLineEditor extends JPanel
 	}
 	
 	private void initializePalettes(){
-		final mxGraph graph = graphComponent.getGraph();
 
 		// Creates the shapes palette
 		Palette activitiesPalette = insertPalette(mxResources.get("activities"));
-
-		// Sets the edge template to be used for creating new edges if an edge
-		// is clicked in the shape palette
-		activitiesPalette.addListener(mxEvent.SELECT, new mxIEventListener()
-		{
-			public void invoke(Object sender, mxEventObject evt)
-			{
-				Object tmp = evt.getProperty("transferable");
-
-				if (tmp instanceof mxGraphTransferable)
-				{
-					mxGraphTransferable t = (mxGraphTransferable) tmp;
-					Object cell = t.getCells()[0];
-
-					if (graph.getModel().isEdge(cell))
-					{
-//						((ExpLineGraph) graph).setEdgeTemplate(cell);
-
-						Edge edge = new Edge("", ((mxCell)cell).getGeometry(), Edge.WORKFLOW_TYPE);
-						((ExpLineGraph) graph).setEdgeTemplate(edge);
-					}
-				}
-			}
-
-		});
 		
 		
 		// Adds experiment line components in the library

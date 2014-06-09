@@ -1,5 +1,6 @@
 package br.ufrj.cos.expline.swing.jgraphx;
 
+import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.model.Edge;
 import br.ufrj.cos.expline.model.ExpLine;
 import br.ufrj.cos.expline.model.Port;
@@ -13,10 +14,6 @@ import com.mxgraph.view.mxGraph;
  */
 public class ExpLineGraph extends mxGraph
 {
-	/**
-	 * Holds the edge to be used as a template for inserting new edges.
-	 */
-	protected Object edgeTemplate;
 
 	/**
 	 * 
@@ -31,16 +28,20 @@ public class ExpLineGraph extends mxGraph
 		Edge edge = new Edge("", new mxGeometry(), Edge.WORKFLOW_TYPE);
 		edge.getGeometry().setRelative(true);
 		
-		setEdgeTemplate(edge);
-		
 	}
-
-	/**
-	 * Sets the edge template to be used to inserting edges.
-	 */
-	public void setEdgeTemplate(Object template)
-	{
-		edgeTemplate = template;
+	
+	public Edge createWorkflowEdgeTemplate(){
+		Edge edge = new Edge("", new mxGeometry(), Edge.WORKFLOW_TYPE);
+		edge.getGeometry().setRelative(true);
+		
+		return edge;
+	}
+	
+	public Edge createVariantRelationshipEdgeTemplate(){
+		Edge edge = new Edge("", new mxGeometry(), Edge.VARIANT_RELATIONSHIP_TYPE);
+		edge.getGeometry().setRelative(true);
+		
+		return edge;
 	}
 	
 	// Removes the folding icon and disables any folding
@@ -93,20 +94,42 @@ public class ExpLineGraph extends mxGraph
 	 * @param style
 	 * @return
 	 */
+//	public Object createEdge(Object parent, String id, Object value,
+//			Object source, Object target, String style)
+//	{
+//		if (edgeTemplate != null)
+//		{
+//			mxCell edge = (mxCell) cloneCells(new Object[] { edgeTemplate })[0];
+//			edge.setId(id);
+//
+//			return edge;
+//		}
+//
+//		return super.createEdge(parent, id, value, source, target, style);
+//	}
+
 	public Object createEdge(Object parent, String id, Object value,
 			Object source, Object target, String style)
 	{
-		if (edgeTemplate != null)
-		{
-			mxCell edge = (mxCell) cloneCells(new Object[] { edgeTemplate })[0];
+	
+		if (source instanceof Port) {
+			
+			mxCell edge = (mxCell) cloneCells(new Object[] { createWorkflowEdgeTemplate() })[0];
 			edge.setId(id);
-
+			
+			return edge;
+			
+		}
+		else{
+			mxCell edge = (mxCell) cloneCells(new Object[] { createVariantRelationshipEdgeTemplate() })[0];
+			edge.setId(id);
+			
 			return edge;
 		}
-
-		return super.createEdge(parent, id, value, source, target, style);
+	
 	}
-
+	
+	
 	@Override
 	public boolean isCellEditable(Object cell) {
 		
@@ -115,6 +138,24 @@ public class ExpLineGraph extends mxGraph
 			return super.isCellEditable(cell);
 		else
 			return false;
+	}
+	
+	
+
+	@Override
+	public boolean isCellConnectable(Object cell) {
+		// TODO Auto-generated method stub
+		
+		if (cell instanceof Activity) {
+			Activity actv = (Activity) cell;
+			
+			if(actv.getType() != Activity.VARIANT_TYPE && actv.getType() != Activity.VARIATION_POINT_TYPE && actv.getType() != Activity.OPTIONAL_VARIATION_POINT_TYPE)
+				return false;
+			else
+				return super.isCellConnectable(cell);
+			
+		}
+		return super.isCellConnectable(cell);
 	}
 
 	@Override

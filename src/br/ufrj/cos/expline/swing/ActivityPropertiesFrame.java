@@ -31,6 +31,7 @@ import javax.swing.KeyStroke;
 import javax.swing.table.AbstractTableModel;
 
 import br.ufrj.cos.expline.model.Activity;
+import br.ufrj.cos.expline.model.Edge;
 import br.ufrj.cos.expline.model.Port;
 import br.ufrj.cos.expline.model.RelationSchema;
 import br.ufrj.cos.expline.model.RelationSchemaAttribute;
@@ -399,8 +400,27 @@ public class ActivityPropertiesFrame extends JDialog
 			
 			Port inputPort = activity.getInputPorts().get(i);
 			
+			Port temp = new Port(Port.OUTPUT_TYPE);
+			temp.setRelationSchema(inputRelationalSchemaTableModel.getRelationSchema());
+			if(!Port.arePortsMatchable(inputPort, temp)){
+				checkAffectedPorts(inputPort);
+			}
+			
 			inputPort.setRelationSchema(inputRelationalSchemaTableModel.getRelationSchema());
 
+		}
+		
+	}
+	
+	public void checkAffectedPorts(Port port){
+		
+		int portNumbers = graph.getModel().getEdgeCount(port);
+		
+		for (int i = 0; i < portNumbers; i++) {
+			
+			Edge edge = (Edge) graph.getModel().getEdgeAt(port, i);
+			
+			graph.getModel().remove(edge);
 		}
 		
 	}
@@ -411,7 +431,11 @@ public class ActivityPropertiesFrame extends JDialog
 		
 		RelationSchema outputRelationSchema = OutputRelationalSchemaTableModel.getRelationSchema();
 		
-		//activity.setOutputRelationSchema(outputRelationSchema);
+		Port temp = new Port(Port.OUTPUT_TYPE);
+		temp.setRelationSchema(OutputRelationalSchemaTableModel.getRelationSchema());
+		if(!Port.arePortsMatchable(activity.getOutputPort(), temp)){
+			checkAffectedPorts(activity.getOutputPort());
+		}
 		
 		activity.getOutputPort().setRelationSchema(outputRelationSchema);
 		

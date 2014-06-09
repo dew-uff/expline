@@ -28,6 +28,10 @@ public class GraphStructure extends mxGraphStructure
 		mxGraph graph = aGraph.getGraph();
 		mxIGraphModel model = graph.getModel();
 		
+		if (source instanceof Activity) {
+			return false;
+		}
+		
 		//Workaround to add the request edge in the clone graph to verify that makes cycle
 		//TODO: Criar uma conexão a porta de saída e não com a entrada. (Vai funcionar só com atividades com uma porta de entrada e saída.) (Não vai funcionar... Tem que fazer pra todas atividades)
 		Object parent = graph.getDefaultParent();

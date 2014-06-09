@@ -6,7 +6,6 @@ package br.ufrj.cos.expline.swing.jgraphx.handler;
 
 import java.awt.Color;
 import java.awt.event.MouseEvent;
-import java.util.List;
 
 import javax.swing.JOptionPane;
 
@@ -14,8 +13,6 @@ import br.ufrj.cos.expline.analysis.GraphStructure;
 import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.model.Edge;
 import br.ufrj.cos.expline.model.Port;
-import br.ufrj.cos.expline.model.RelationSchema;
-import br.ufrj.cos.expline.model.RelationSchemaAttribute;
 
 import com.mxgraph.analysis.mxAnalysisGraph;
 import com.mxgraph.model.mxCell;
@@ -178,7 +175,7 @@ public class ConnectionHandler extends mxConnectionHandler
 						return "The ports are incompatible!";
 					
 					
-					if (!arePortsMatchable(srcPort, trgPort))
+					if (!Port.arePortsMatchable(srcPort, trgPort))
 						return "The port relation schemas are incompatible!";
 					else{
 
@@ -202,29 +199,6 @@ public class ConnectionHandler extends mxConnectionHandler
 		else
 			return "";
 		
-	}
-	
-	
-	private boolean arePortsMatchable(Port srcPort, Port trgPort) {
-		// TODO Auto-generated method stub
-		
-		RelationSchema srcPortRelSchema = srcPort.getRelationSchema();
-		RelationSchema trgPortRelSchema = trgPort.getRelationSchema();
-		
-		List<RelationSchemaAttribute> srcRelAttr = srcPortRelSchema.getAttributes();
-		List<RelationSchemaAttribute> trgRelAttr = trgPortRelSchema.getAttributes();
-		
-		if(srcRelAttr.size() == trgRelAttr.size()){
-			
-			for (int i = 0; i < srcPortRelSchema.getAttributes().size(); i++) {
-				if(!srcRelAttr.get(i).getType().equals(trgRelAttr.get(i).getType()))
-					return false;
-			}
-			
-			return true;
-		}
-		else
-			return false;
 	}
 
 	public void defineEdgeType(){
