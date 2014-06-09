@@ -7,20 +7,13 @@ import org.w3c.dom.Document;
 
 import br.ufrj.cos.expline.swing.ExpLineEditor;
 import br.ufrj.cos.expline.swing.jgraphx.handler.ConnectionHandler;
-import br.ufrj.cos.expline.swing.jgraphx.handler.EdgeHandler;
-import br.ufrj.cos.expline.swing.jgraphx.handler.ElbowEdgeHandler;
 
 import com.mxgraph.io.mxCodec;
 import com.mxgraph.model.mxICell;
 import com.mxgraph.model.mxIGraphModel;
 import com.mxgraph.swing.mxGraphComponent;
-import com.mxgraph.swing.handler.mxCellHandler;
-import com.mxgraph.swing.handler.mxVertexHandler;
 import com.mxgraph.util.mxUtils;
-import com.mxgraph.view.mxCellState;
-import com.mxgraph.view.mxEdgeStyle;
 import com.mxgraph.view.mxGraph;
-import com.mxgraph.view.mxEdgeStyle.mxEdgeStyleFunction;
 
 /**
  * 
@@ -98,30 +91,5 @@ public class ExpLineGraphComponent extends mxGraphComponent
 	protected ConnectionHandler createConnectionHandler() {
 		// TODO Auto-generated method stub
 		return new ConnectionHandler(this);
-	}
-
-	@Override
-	public mxCellHandler createHandler(mxCellState state) {
-		// TODO Auto-generated method stub
-		if (graph.getModel().isVertex(state.getCell()))
-		{
-			return new mxVertexHandler(this, state);
-		}
-		else if (graph.getModel().isEdge(state.getCell()))
-		{
-			mxEdgeStyleFunction style = graph.getView().getEdgeStyle(state,
-					null, null, null);
-
-			if (graph.isLoop(state) || style == mxEdgeStyle.ElbowConnector
-					|| style == mxEdgeStyle.SideToSide
-					|| style == mxEdgeStyle.TopToBottom)
-			{
-				return new ElbowEdgeHandler(this, state);
-			}
-
-			return new EdgeHandler(this, state);
-		}
-
-		return new mxCellHandler(this, state);
 	}
 }

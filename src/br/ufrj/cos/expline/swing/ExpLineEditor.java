@@ -213,7 +213,6 @@ public class ExpLineEditor extends JPanel
 
 		// Creates the shapes palette
 		Palette activitiesPalette = insertPalette(mxResources.get("activities"));
-		Palette connectionsPalette = insertPalette(mxResources.get("connections"));
 
 		// Sets the edge template to be used for creating new edges if an edge
 		// is clicked in the shape palette
@@ -280,22 +279,6 @@ public class ExpLineEditor extends JPanel
 						ExpLineEditor.class
 								.getResource("/images/rounded.png")),
 				160, 120, "", Activity.VARIANT_TYPE);
-		
-
-		connectionsPalette
-		.addEdgeTemplate(
-				"Workflow edge",
-				new ImageIcon(
-						ExpLineEditor.class
-								.getResource("/images/arrow.png")),
-				100, 100, "", Edge.WORKFLOW_TYPE);
-		connectionsPalette
-		.addEdgeTemplate(
-				"Variant relationship",
-				new ImageIcon(
-						ExpLineEditor.class
-								.getResource("/images/vertical.png")),
-				 120, 120, "", Edge.VARIANT_RELATIONSHIP_TYPE);
 
 	}
 

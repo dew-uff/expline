@@ -224,29 +224,6 @@ public class Palette extends JPanel
 	 * @param height
 	 * @param value
 	 */
-	public void addEdgeTemplate(final String name, ImageIcon icon,
-			int width, int height, Object value, int type)
-	{
-		mxGeometry geometry = new mxGeometry(0, 0, width, height);
-		geometry.setTerminalPoint(new mxPoint(0, height), true);
-		geometry.setTerminalPoint(new mxPoint(width, 0), false);
-		geometry.setRelative(true);
-
-		mxCell cell = new Edge(value, geometry, type);
-		cell.setEdge(true);
-
-		addTemplate(name, icon, cell);
-	}
-
-	/**
-	 * 
-	 * @param name
-	 * @param icon
-	 * @param style
-	 * @param width
-	 * @param height
-	 * @param value
-	 */
 	public void addTemplate(final String name, ImageIcon icon,
 			int width, int height, Object value, int type)
 	{

@@ -141,5 +141,15 @@ public class ExpLineGraph extends mxGraph
 	public boolean isCellResizable(Object cell) {
 		return false;
 	}
+	
+	@Override
+	public boolean isCellMovable(Object cell) {
+		// TODO Auto-generated method stub
+		
+		if (cell instanceof Edge)
+			return false;
+		else
+		return super.isCellSelectable(cell);
+	}
 
 }

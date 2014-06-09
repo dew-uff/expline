@@ -127,7 +127,7 @@ public class ConnectionHandler extends mxConnectionHandler
 	
 	//ExpLine-Begin	
 	
-	public boolean isValidExpLineConnection(mxCell src, mxCell trg)
+	public String isValidExpLineConnection(mxCell src, mxCell trg)
 	{
 		
 		if(src != null){
@@ -138,37 +138,28 @@ public class ConnectionHandler extends mxConnectionHandler
 					
 					if(source != target) {
 						
-						if (source.getType() != Activity.VARIANT_TYPE && source.getType() != Activity.VARIATION_POINT_TYPE){
-							return false;
-						}
-						
-						if (target.getType() != Activity.VARIANT_TYPE && target.getType() != Activity.VARIATION_POINT_TYPE){
-							return false;
-						}
-
-						
 						if (source.getType() == Activity.VARIANT_TYPE && target.getType() != Activity.VARIATION_POINT_TYPE && target.getType() != Activity.OPTIONAL_VARIATION_POINT_TYPE){
-							return false;
+							return "";
 						}
 						
 						if (target.getType() == Activity.VARIANT_TYPE && source.getType() != Activity.VARIATION_POINT_TYPE && source.getType() != Activity.OPTIONAL_VARIATION_POINT_TYPE){
-							return false;
+							return "";
 						}
 						
 						mxAnalysisGraph aGraph = new mxAnalysisGraph();
 						aGraph.setGraph(graphComponent.getGraph());
 						
 						if (GraphStructure.makesCycle(aGraph, source, target))
-							return false;
+							return "Can't create cycle!";
 						else
-							return true;
+							return null;
 						
 					}
 					else
-						return false;
+						return "";
 				}
 				else
-					return false;
+					return "";
 			}
 			else
 			if(src instanceof Port){
@@ -181,35 +172,35 @@ public class ConnectionHandler extends mxConnectionHandler
 					
 					
 					if (source == target)
-						return false;
+						return "";
 					
 					if(srcPort.getType() == trgPort.getType())
-						return false;
+						return "The ports are incompatible!";
 					
 					
 					if (!arePortsMatchable(srcPort, trgPort))
-						return false;
+						return "The port relation schemas are incompatible!";
 					else{
 
 						mxAnalysisGraph aGraph = new mxAnalysisGraph();
 						aGraph.setGraph(graphComponent.getGraph());
 						
 						if (GraphStructure.makesCycle(aGraph, source, target))
-							return false;
+							return "Can't create cycle!";
 						else
-							return true;
+							return null;
 					}
 				
 					
 				}
 				else
-					return false;
+					return "";
 			}
 			else
-				return false;
+				return "";
 		}
 		else
-			return false;
+			return "";
 		
 	}
 	
@@ -276,9 +267,10 @@ public class ConnectionHandler extends mxConnectionHandler
 		}
 		
 		//ExpLine-Begin
-		if(!isValidExpLineConnection((mxCell)source, (mxCell)target))
+		String temp = isValidExpLineConnection((mxCell)source, (mxCell)target);
+		if(temp != null)
 		{	
-			return "";
+			return temp;
 		}
 		//ExpLine-End
 
