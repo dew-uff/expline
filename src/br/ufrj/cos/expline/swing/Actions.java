@@ -436,7 +436,7 @@ public class Actions
 							.substring(filename.lastIndexOf('.') + 1);
 
 					
-					if (ext.equalsIgnoreCase("mxe")
+					if (ext.equalsIgnoreCase("xpl")
 							|| ext.equalsIgnoreCase("xml"))
 					{
 						mxCodec codec = new mxCodec();

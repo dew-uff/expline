@@ -26,6 +26,27 @@ public class Port extends mxCell implements Cloneable, Serializable{
 	
 	private RelationSchema relationSchema;
 	
+	public Port(){
+		mxGeometry g = null;
+		if(type == INPUT_TYPE){
+			g = new mxGeometry(0, 0.5, PORT_DIAMETER,
+			PORT_DIAMETER);
+		}
+		else
+			g = new mxGeometry(1.03, 0.5, PORT_DIAMETER,
+					PORT_DIAMETER);
+		
+		// Because the origin is at upper left corner, need to translate to
+		// position the center of port correctly
+		g.setOffset(new mxPoint(-PORT_RADIUS, -PORT_RADIUS));
+		g.setRelative(true);
+		
+		setGeometry(g);
+		//setStyle("shape=ellipse;perimter=ellipsePerimeter;fillColor=#000000;gradientColor=#000000;strokeColor=#000000");
+		setStyle("triangle;fillColor=#000000;gradientColor=#000000;strokeColor=#000000");
+		setVertex(true);
+		relationSchema = new RelationSchema();
+	}
 	
 	public Port(int type){
 		mxGeometry g = null;
@@ -63,6 +84,10 @@ public class Port extends mxCell implements Cloneable, Serializable{
 
 	public int getType() {
 		return type;
+	}
+	
+	public void setType(int type) {
+		this.type = type;
 	}
 	
 	public static boolean arePortsMatchable(Port srcPort, Port trgPort) {

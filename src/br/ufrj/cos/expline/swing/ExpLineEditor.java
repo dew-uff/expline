@@ -40,6 +40,7 @@ import br.ufrj.cos.expline.io.ExpLineCodec;
 import br.ufrj.cos.expline.io.ExpressionCodec;
 import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.model.Expression;
+import br.ufrj.cos.expline.model.Port;
 import br.ufrj.cos.expline.model.RelationSchema;
 import br.ufrj.cos.expline.model.RelationSchemaAttribute;
 import br.ufrj.cos.expline.model.Rule;
@@ -195,6 +196,11 @@ public class ExpLineEditor extends JPanel
 		mxCodecRegistry.register(new mxObjectCodec(new RelationSchemaAttribute()));
 		mxCodecRegistry.register(new mxObjectCodec(new ArrayList<RelationSchema>()));
 		mxCodecRegistry.register(new mxObjectCodec(new ArrayList<RelationSchemaAttribute>()));
+		mxCodecRegistry.register(new mxObjectCodec(new Port(), null, new String[] { "parent", "source", "target" },
+				null));
+		mxCodecRegistry.register(new mxObjectCodec(new ArrayList<Port>()));
+		mxCodecRegistry.register(new mxObjectCodec(new RelationSchema()));
+		
 		mxCodecRegistry.register(new mxObjectCodec(new Rule()));
 		mxCodecRegistry.register(new ExpressionCodec());
 		mxCodecRegistry.register(new mxObjectCodec(new ArrayList<Rule>()));

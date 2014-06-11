@@ -94,19 +94,6 @@ public class ExpLineGraph extends mxGraph
 	 * @param style
 	 * @return
 	 */
-//	public Object createEdge(Object parent, String id, Object value,
-//			Object source, Object target, String style)
-//	{
-//		if (edgeTemplate != null)
-//		{
-//			mxCell edge = (mxCell) cloneCells(new Object[] { edgeTemplate })[0];
-//			edge.setId(id);
-//
-//			return edge;
-//		}
-//
-//		return super.createEdge(parent, id, value, source, target, style);
-//	}
 
 	public Object createEdge(Object parent, String id, Object value,
 			Object source, Object target, String style)

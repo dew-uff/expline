@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -61,13 +63,31 @@ public class ExpLineCodec extends mxObjectCodec
 	 */
 	protected void encodeObject(mxCodec enc, Object obj, Node node)
 	{
+//		if (obj instanceof ExpLine)
+//		{
+//			Node rootNode = enc.getDocument().createElement("Workflow");
+//			mxGraphModel model = (ExpLine) obj;
+//			enc.encodeCell((mxICell) model.getRoot(), rootNode, true);
+//			node.appendChild(rootNode);
+//		}
+		
 		if (obj instanceof ExpLine)
 		{
-			Node rootNode = enc.getDocument().createElement("root");
+			Node rootNode = enc.getDocument().createElement("Workflow");
 			mxGraphModel model = (ExpLine) obj;
-			enc.encodeCell((mxICell) model.getRoot(), rootNode, true);
+			
+			mxICell root = (mxICell) model.getRoot();
+			root = root.getChildAt(0);
+			
+			for (int i = 0; i < root.getChildCount(); i++) {
+				mxICell element = root.getChildAt(i);
+				
+				enc.encodeCell(element, rootNode, true);
+			}
+			
 			node.appendChild(rootNode);
 		}
+		
 	}
 	
 	/**
@@ -89,12 +109,7 @@ public class ExpLineCodec extends mxObjectCodec
 
 		return node;
 	}
-
-
-	/**
-	 * Reads the cells into the graph model. All cells are children of the root
-	 * element in the node.
-	 */
+	
 	public Node beforeDecode(mxCodec dec, Node node, Object into)
 	{
 		if (node instanceof Element)
@@ -113,8 +128,32 @@ public class ExpLineCodec extends mxObjectCodec
 
 			// Reads the cells into the graph model. All cells
 			// are children of the root element in the node.
-			Node root = elt.getElementsByTagName("root").item(0);
+			Node root = elt.getElementsByTagName("Workflow").item(0);
 			mxICell rootCell = null;
+			
+			Node rootEl1 = elt.getOwnerDocument().createElement("mxCell");
+			
+			Attr id = elt.getOwnerDocument().createAttribute("id");
+			id.setValue("0");
+			NamedNodeMap rootAttr = rootEl1.getAttributes();
+			rootAttr.setNamedItem(id);
+			
+			root.insertBefore(rootEl1, root.getFirstChild());
+			
+			
+			
+			Node rootEl2 = elt.getOwnerDocument().createElement("mxCell");
+			
+			Attr id2 = elt.getOwnerDocument().createAttribute("id");
+			id2.setValue("1");
+			Attr parent = elt.getOwnerDocument().createAttribute("parent");
+			parent.setValue("0");
+			rootAttr = rootEl2.getAttributes();
+			rootAttr.setNamedItem(id2);
+			rootAttr.setNamedItem(parent);
+			
+			root.insertBefore(rootEl2, rootEl1);
+
 
 			if (root != null)
 			{

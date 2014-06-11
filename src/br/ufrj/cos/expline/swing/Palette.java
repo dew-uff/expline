@@ -227,11 +227,13 @@ public class Palette extends JPanel
 	public void addTemplate(final String name, ImageIcon icon,
 			int width, int height, Object value, int type)
 	{
-		mxCell cell = new Activity(value, new mxGeometry(0, 0, width, height),
+		Activity actv = new Activity(value, new mxGeometry(0, 0, width, height),
 				type);
-		cell.setVertex(true);
 		
-		addTemplate(name, icon, cell);
+		actv.initializeDefaultPorts();
+		actv.setVertex(true);
+		
+		addTemplate(name, icon, actv);
 	}
 
 	/**
