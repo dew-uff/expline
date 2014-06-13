@@ -36,8 +36,6 @@ public class Activity extends mxCell implements Cloneable, Serializable{
 		
 		this.type = type;
 		this.algebraicOperator = mxResources.get("map");
-		
-		//this.initializeDefaultPorts();
 	}
 	
 	public Activity(Object value, mxGeometry geometry, int type)
@@ -48,8 +46,6 @@ public class Activity extends mxCell implements Cloneable, Serializable{
 		this.algebraicOperator = mxResources.get("map");
 		
 		setStyle(type);
-		
-		//this.initializeDefaultPorts();
 	}
 	
 	
@@ -57,8 +53,6 @@ public class Activity extends mxCell implements Cloneable, Serializable{
 		// TODO Auto-generated constructor stub
 		
 		this.algebraicOperator = mxResources.get("map");
-		
-		//this.initializeDefaultPorts();
 	}
 
 

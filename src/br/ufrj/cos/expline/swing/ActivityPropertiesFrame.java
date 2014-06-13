@@ -380,12 +380,18 @@ public class ActivityPropertiesFrame extends JDialog
 		
 		//This is a workaround to perform an Action
 		//The correct is to create an class that contains the logic of saving the algebraic operator and this method and the Action itself should reference to it. 
+		Activity activity = (Activity) graph.getSelectionCell();
 		
-		AlgebraicOperatorAction action = new AlgebraicOperatorAction((String)algebraicOperatorsJComboBox.getSelectedItem());
+		String selectedAlgebraicOperation = (String) algebraicOperatorsJComboBox.getSelectedItem();
+		String currentAlgebraicOperation = activity.getAlgebraicOperator();
+		
+		AlgebraicOperatorAction action = new AlgebraicOperatorAction((String)selectedAlgebraicOperation);
 		
 		action.actionPerformed(new ActionEvent(graphComponent, 1, ""));
 		
-		Activity activity = (Activity) graph.getSelectionCell();
+		if(!selectedAlgebraicOperation.equals(mxResources.get("join")) && currentAlgebraicOperation.equals(mxResources.get("join")))
+			checkAffectedPorts(activity.getInputPort(1));
+		
 		activity.refreshPortsDefinition();
 
 	}
