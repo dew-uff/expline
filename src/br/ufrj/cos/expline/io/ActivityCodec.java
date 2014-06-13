@@ -4,9 +4,7 @@
  */
 package br.ufrj.cos.expline.io;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.w3c.dom.Element;
@@ -14,9 +12,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import br.ufrj.cos.expline.model.Activity;
-import br.ufrj.cos.expline.model.ExpLine;
 import br.ufrj.cos.expline.model.Port;
-import br.ufrj.cos.expline.model.Rule;
 
 import com.mxgraph.io.mxCodec;
 import com.mxgraph.io.mxCodecRegistry;
@@ -110,7 +106,8 @@ public class ActivityCodec extends mxObjectCodec
 			}
 			
 			Node portNode = enc.encode(activity.getOutputPort());
-			outputportsNode.appendChild(portNode);
+			if(portNode != null)
+				outputportsNode.appendChild(portNode);
 			
 			node.appendChild(portsNode);
 		}
@@ -276,7 +273,10 @@ public class ActivityCodec extends mxObjectCodec
 			
 		}
 		
-		activity.setOutputPort((Port)dec.decode(outputPortNode));
+		Object port = dec.decode(outputPortNode);
+		
+		if(outputPortNode != null)
+			activity.setOutputPort((Port) port);
 		
 		return obj;
 	}
