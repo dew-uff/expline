@@ -55,6 +55,16 @@ public class Activity extends mxCell implements Cloneable, Serializable{
 		this.algebraicOperator = mxResources.get("map");
 	}
 
+//	@Override
+//	public Object getValue() {
+//		// TODO Auto-generated method stub
+//		String temp = (String) super.getValue();
+//		
+//		if(temp.contains("\n("))
+//			return "\n("+this.algebraicOperator+")";
+//		else
+//			return temp+"\n("+this.algebraicOperator+")";
+//	}
 
 	public void initializeDefaultPorts(){
 		

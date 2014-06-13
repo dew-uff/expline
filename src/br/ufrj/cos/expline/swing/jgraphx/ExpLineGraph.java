@@ -1,12 +1,20 @@
 package br.ufrj.cos.expline.swing.jgraphx;
 
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.awt.Shape;
+
 import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.model.Edge;
 import br.ufrj.cos.expline.model.ExpLine;
 import br.ufrj.cos.expline.model.Port;
 
+import com.mxgraph.canvas.mxGraphics2DCanvas;
+import com.mxgraph.canvas.mxICanvas;
+import com.mxgraph.canvas.mxImageCanvas;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
+import com.mxgraph.view.mxCellState;
 import com.mxgraph.view.mxGraph;
 
 /**
@@ -163,6 +171,98 @@ public class ExpLineGraph extends mxGraph
 			return false;
 		else
 		return super.isCellSelectable(cell);
+	}
+	
+	/**
+	 * Draws the cell state with the given label onto the canvas. No
+	 * children or descendants are painted here. This method invokes
+	 * cellDrawn after the cell, but not its descendants have been
+	 * painted.
+	 * 
+	 * @param canvas Canvas onto which the cell should be drawn.
+	 * @param state State of the cell to be drawn.
+	 * @param drawLabel Indicates if the label should be drawn.
+	 */
+	public void drawState(mxICanvas canvas, mxCellState state, boolean drawLabel)
+	{
+		Object cell = (state != null) ? state.getCell() : null;
+
+		if (cell != null && cell != view.getCurrentRoot()
+				&& cell != model.getRoot()
+				&& (model.isVertex(cell) || model.isEdge(cell)))
+		{
+			Object obj = canvas.drawCell(state);
+			Object lab = null;
+
+			// Holds the current clipping region in case the label will
+			// be clipped
+			Shape clip = null;
+			Rectangle newClip = state.getRectangle();
+
+			// Indirection for image canvas that contains a graphics canvas
+			mxICanvas clippedCanvas = (isLabelClipped(state.getCell())) ? canvas
+					: null;
+
+			if (clippedCanvas instanceof mxImageCanvas)
+			{
+				clippedCanvas = ((mxImageCanvas) clippedCanvas)
+						.getGraphicsCanvas();
+				// TODO: Shift newClip to match the image offset
+				//Point pt = ((mxImageCanvas) canvas).getTranslate();
+				//newClip.translate(-pt.x, -pt.y);
+			}
+
+			if (clippedCanvas instanceof mxGraphics2DCanvas)
+			{
+				Graphics g = ((mxGraphics2DCanvas) clippedCanvas).getGraphics();
+				clip = g.getClip();
+				
+				// Ensure that our new clip resides within our old clip
+				if (clip instanceof Rectangle)
+				{
+					g.setClip(newClip.intersection((Rectangle) clip));
+				}
+				// Otherwise, default to original implementation
+				else
+				{
+					g.setClip(newClip);
+				}
+			}
+
+			if (drawLabel)
+			{
+				Object cell_tmp = state.getCell();
+				
+				String label = state.getLabel();
+				
+				if (cell_tmp instanceof Activity) {
+					Activity actv = (Activity) cell_tmp;
+					String algebraicOperator = actv.getAlgebraicOperator();
+					label = label + "\n(" +algebraicOperator +")";
+				}
+				
+				
+
+				if (label != null && state.getLabelBounds() != null)
+				{
+					lab = canvas.drawLabel(label, state, isHtmlLabel(cell));
+				}
+			}
+
+			// Restores the previous clipping region
+			if (clippedCanvas instanceof mxGraphics2DCanvas)
+			{
+				((mxGraphics2DCanvas) clippedCanvas).getGraphics()
+						.setClip(clip);
+			}
+
+			// Invokes the cellDrawn callback with the object which was created
+			// by the canvas to represent the cell graphically
+			if (obj != null)
+			{
+				cellDrawn(canvas, state, obj, lab);
+			}
+		}
 	}
 
 	@Override
