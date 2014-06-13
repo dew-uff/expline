@@ -14,7 +14,9 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.model.ExpLine;
+import br.ufrj.cos.expline.model.Port;
 import br.ufrj.cos.expline.model.Rule;
 
 import com.mxgraph.io.mxCodec;
@@ -82,7 +84,8 @@ public class ExpLineCodec extends mxObjectCodec
 			for (int i = 0; i < root.getChildCount(); i++) {
 				mxICell element = root.getChildAt(i);
 				
-				enc.encodeCell(element, rootNode, true);
+//				if (element instanceof Activity) 
+					enc.encodeCell(element, rootNode, false);
 			}
 			
 			node.appendChild(rootNode);

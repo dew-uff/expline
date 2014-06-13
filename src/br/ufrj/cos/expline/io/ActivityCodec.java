@@ -4,13 +4,19 @@
  */
 package br.ufrj.cos.expline.io;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import br.ufrj.cos.expline.model.Activity;
+import br.ufrj.cos.expline.model.ExpLine;
+import br.ufrj.cos.expline.model.Port;
+import br.ufrj.cos.expline.model.Rule;
 
 import com.mxgraph.io.mxCodec;
 import com.mxgraph.io.mxCodecRegistry;
@@ -90,6 +96,23 @@ public class ActivityCodec extends mxObjectCodec
 				((Element) node).setAttribute("id", id);
 				tmp.removeAttribute("id");
 			}
+			
+			Node portsNode = enc.getDocument().createElement("Ports");
+			Node inputportsNode = enc.getDocument().createElement("InputPorts");
+			portsNode.appendChild(inputportsNode);
+			
+			Node outputportsNode = enc.getDocument().createElement("OutputPorts");
+			portsNode.appendChild(outputportsNode);
+			
+			for (Port port : activity.getInputPorts()) {
+				Node portNode = enc.encode(port);
+				inputportsNode.appendChild(portNode);
+			}
+			
+			Node portNode = enc.encode(activity.getOutputPort());
+			outputportsNode.appendChild(portNode);
+			
+			node.appendChild(portsNode);
 		}
 
 		return node;
@@ -232,6 +255,30 @@ public class ActivityCodec extends mxObjectCodec
 		}
 
 		return inner;
+	}
+	
+	@Override
+	public Object afterDecode(mxCodec dec, Node node, Object obj) {
+		
+		Activity activity = (Activity) obj;
+				
+		Node portsNode = node.getLastChild();
+		
+		Node inputPortsNode = portsNode.getFirstChild();
+		
+		Node outputPortNode = portsNode.getLastChild().getFirstChild();
+		
+		NodeList inputPortsList = inputPortsNode.getChildNodes();
+		
+		for (int i = 0; i < inputPortsList.getLength(); i++) {
+			Port port = (Port) dec.decode(inputPortsList.item(i));
+			activity.addInputPort(port);
+			
+		}
+		
+		activity.setOutputPort((Port)dec.decode(outputPortNode));
+		
+		return obj;
 	}
 
 }
