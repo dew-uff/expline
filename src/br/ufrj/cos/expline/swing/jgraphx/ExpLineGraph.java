@@ -237,8 +237,11 @@ public class ExpLineGraph extends mxGraph
 				
 				if (cell_tmp instanceof Activity) {
 					Activity actv = (Activity) cell_tmp;
-					String algebraicOperator = actv.getAlgebraicOperator();
-					label = label.trim() + "\n(" +algebraicOperator +")";
+					
+					if (actv.getType() != Activity.VARIANT_TYPE) {
+						String algebraicOperator = actv.getAlgebraicOperator();
+						label = label.trim() + "\n(" +algebraicOperator +")";
+					}
 				}
 				
 				
