@@ -215,7 +215,21 @@ public class MenuBar extends JMenuBar
 		
 		menu.addSeparator();
 		
-		menu.add(new JMenuItem("Derive abstract workflow"));
+//		menu.add(new JMenuItem("Derive abstract workflow"));
+		
+		item = menu.add(new JMenuItem("Derive abstract workflow"));
+		item.addActionListener(new ActionListener()
+		{
+			/*
+			 * (non-Javadoc)
+			 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+			 */
+			public void actionPerformed(ActionEvent e)
+			{
+				editor.derivation();
+			}
+		});
+		
 		menu.add(new JMenuItem("Derive and run workflow"));
 
 		
