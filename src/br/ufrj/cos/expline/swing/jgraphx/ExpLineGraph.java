@@ -270,7 +270,7 @@ public class ExpLineGraph extends mxGraph
 
 	@Override
 	public boolean isCellResizable(Object cell) {
-		return false;
+		return true;
 	}
 	
 	@Override
