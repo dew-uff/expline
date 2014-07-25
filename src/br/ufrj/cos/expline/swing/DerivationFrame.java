@@ -1,13 +1,11 @@
 package br.ufrj.cos.expline.swing;
 
 import java.awt.BorderLayout;
-import java.awt.Frame;
 import java.awt.Panel;
 
-import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JTabbedPane;
 
 import br.ufrj.cos.expline.derivation.ExpLineDerivationGraph;
@@ -15,7 +13,6 @@ import br.ufrj.cos.expline.derivation.ExpLineDerivationGraphComponent;
 
 import com.mxgraph.model.mxCell;
 import com.mxgraph.swing.mxGraphComponent;
-import com.mxgraph.util.mxResources;
 import com.mxgraph.view.mxGraph;
 
 public class DerivationFrame extends Panel
@@ -33,25 +30,19 @@ public class DerivationFrame extends Panel
 	protected int inputRelationtNextIndex = 0;
 	
 
-
-	protected final Frame owner;
-
 	/**
 	 * 
 	 */
-	public DerivationFrame(Frame owner, mxGraphComponent graphComponent)
+	public DerivationFrame(mxGraphComponent graphComponent)
 	{
 		super();
 		
-		this.owner = owner;
 		
 		this.graphComponent = graphComponent;
 		this.graph = graphComponent.getGraph();
 		
-		//setTitle(mxResources.get("properties"));
 		setLayout(new BorderLayout());
 
-		//setResizable(true);
 		setSize(400, 400);
 		
 		
@@ -84,30 +75,18 @@ public class DerivationFrame extends Panel
 		JMenuBar menuBar = new JMenuBar();
 		JMenu temp = new JMenu("Derivate");
 		menuBar.add(temp);
-		temp.add(new JMenu("Execute"));
-		temp.add(new JMenu("Validate"));
-		temp.add(new JMenu("Cancel"));
+		temp.add(new JMenuItem("Execute"));
+		temp.add(new JMenuItem("Validate"));
+		temp.add(new JMenuItem("Cancel"));
 		
 		temp = new JMenu("View");
 		menuBar.add(temp);
-		temp.add(new JMenu("Show Possibilities"));
-		temp.add(new JMenu("Show Conflicts"));
-		temp.add(new JMenu("Show Legends"));
-		temp.add(new JMenu("Zoom"));
+		temp.add(new JMenuItem("Show Possibilities"));
+		temp.add(new JMenuItem("Show Conflicts"));
+		temp.add(new JMenuItem("Show Legends"));
+		temp.add(new JMenuItem("Zoom"));
 		
-		menuBar.add(new JMenu("Exit"));
-		
-		
-		JFrame frame = new JFrame();
-		frame.getContentPane().add(this);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setJMenuBar(menuBar);
-		frame.setSize(870, 640);
-		
-		frame.setVisible(true);
-		
-		// Updates the frame title
-		//updateTitle();
+		menuBar.add(new JMenuItem("Exit"));
 		
 		
 	}

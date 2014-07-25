@@ -2,6 +2,7 @@ package br.ufrj.cos.expline.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Panel;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -147,6 +148,12 @@ public class ExpLineEditor extends JPanel
 	 * 
 	 */
 	protected mxKeyboardHandler keyboardHandler;
+	
+	protected JFrame frame; 
+	
+	protected JSplitPane outer;
+	
+	protected Panel derivationPanel;
 
 	/**
 	 * 
@@ -208,7 +215,8 @@ public class ExpLineEditor extends JPanel
 
 		initializePalettes();
 		
-		this.createFrame(new MenuBar(this)).setVisible(true);
+		frame = this.createFrame(new MenuBar(this));
+		frame.setVisible(true);
 	}
 	
 	private void initializePalettes(){
@@ -314,7 +322,7 @@ public class ExpLineEditor extends JPanel
 
 		// Creates the outer split pane that contains the inner split pane and
 		// the graph component on the right side of the window
-		JSplitPane outer = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, inner,
+		outer = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, inner,
 				graphComponent);
 		outer.setOneTouchExpandable(true);
 		outer.setDividerLocation(200);
@@ -833,24 +841,24 @@ public class ExpLineEditor extends JPanel
 		}
 	}
 	
-	public void derivation()
-	{
-		JFrame frame = (JFrame) SwingUtilities.windowForComponent(this);
-
-		if (frame != null)
-		{
-			DerivationFrame about = new DerivationFrame(frame, this.graphComponent);
-			//about.setModal(true);
-
-			// Centers inside the application frame
-			int x = frame.getX() + (frame.getWidth() - about.getWidth()) / 2;
-			int y = frame.getY() + (frame.getHeight() - about.getHeight()) / 2;
-			about.setLocation(x, y);
-
-			// Shows the modal dialog and waits
-			about.setVisible(true);
-		}
-	}
+//	public void derivation()
+//	{
+//		JFrame frame = (JFrame) SwingUtilities.windowForComponent(this);
+//
+//		if (frame != null)
+//		{
+//			DerivationFrame about = new DerivationFrame(frame, this.graphComponent);
+//			//about.setModal(true);
+//
+//			// Centers inside the application frame
+//			int x = frame.getX() + (frame.getWidth() - about.getWidth()) / 2;
+//			int y = frame.getY() + (frame.getHeight() - about.getHeight()) / 2;
+//			about.setLocation(x, y);
+//
+//			// Shows the modal dialog and waits
+//			about.setVisible(true);
+//		}
+//	}
 	
 	public void rules()
 	{

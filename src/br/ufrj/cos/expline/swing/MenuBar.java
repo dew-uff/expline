@@ -1,5 +1,7 @@
 package br.ufrj.cos.expline.swing;
 
+import java.awt.BorderLayout;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -226,7 +228,29 @@ public class MenuBar extends JMenuBar
 			 */
 			public void actionPerformed(ActionEvent e)
 			{
-				editor.derivation();
+				editor.frame.setJMenuBar(new DerivationMenuBar(editor));
+				
+				DerivationFrame derivationPanel = new DerivationFrame(editor.graphComponent);
+				editor.derivationPanel = derivationPanel;
+				
+				editor.remove(editor.outer);
+				editor.add(derivationPanel, BorderLayout.CENTER);
+				
+				
+				
+				//editor.frame.getContentPane().validate();
+				
+				Rectangle bounds = editor.frame.getBounds();
+				editor.frame.pack();
+				
+				editor.frame.setBounds(bounds);
+				//editor.frame.getContentPane().repaint();
+//				editor.frame.getContentPane().getParent().validate();
+//				editor.frame.getContentPane().getParent().repaint();
+				//editor.derivation();
+				
+				
+				//TODO: Falta associar a barra de status com o painel de derivação 
 			}
 		});
 		
