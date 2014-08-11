@@ -841,24 +841,28 @@ public class ExpLineEditor extends JPanel
 		}
 	}
 	
-//	public void derivation()
-//	{
-//		JFrame frame = (JFrame) SwingUtilities.windowForComponent(this);
-//
-//		if (frame != null)
-//		{
-//			DerivationFrame about = new DerivationFrame(frame, this.graphComponent);
-//			//about.setModal(true);
-//
-//			// Centers inside the application frame
-//			int x = frame.getX() + (frame.getWidth() - about.getWidth()) / 2;
-//			int y = frame.getY() + (frame.getHeight() - about.getHeight()) / 2;
-//			about.setLocation(x, y);
-//
-//			// Shows the modal dialog and waits
-//			about.setVisible(true);
-//		}
-//	}
+	public void derivation()
+	{
+		JFrame frame = (JFrame) SwingUtilities.windowForComponent(this);
+
+		if (frame != null)
+		{
+			DerivationFrame about = new DerivationFrame(frame, this.graphComponent);
+			about.setModal(true);
+			
+			about.setJMenuBar(new DerivationMenuBar(this));
+
+			// Centers inside the application frame
+			int x = frame.getX() + (frame.getWidth() - about.getWidth()) / 2;
+			int y = frame.getY() + (frame.getHeight() - about.getHeight()) / 2;
+			about.setLocation(x, y);
+
+			// Shows the modal dialog and waits
+			about.setVisible(true);
+			
+			
+		}
+	}
 	
 	public void rules()
 	{
