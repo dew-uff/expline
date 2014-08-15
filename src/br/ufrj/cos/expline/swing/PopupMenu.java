@@ -100,19 +100,19 @@ public class PopupMenu extends JPopupMenu
 									
 								}
 								else{				
-									JOptionPane.showMessageDialog(editor.graphComponent,
+									JOptionPane.showMessageDialog(editor.editionGraphComponent,
 											mxResources.get("noActivitySelected"));	
 								}
 								
 							}
 							else{
-								JOptionPane.showMessageDialog(editor.graphComponent,
+								JOptionPane.showMessageDialog(editor.editionGraphComponent,
 										mxResources.get("moreThanOneSected"));	
 							}
 							
 						}
 						else{
-							JOptionPane.showMessageDialog(editor.graphComponent,
+							JOptionPane.showMessageDialog(editor.editionGraphComponent,
 									mxResources.get("noActivitySelected"));	
 						}
 						

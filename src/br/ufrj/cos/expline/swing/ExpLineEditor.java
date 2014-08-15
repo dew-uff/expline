@@ -2,8 +2,8 @@ package br.ufrj.cos.expline.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Panel;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -35,6 +35,8 @@ import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import br.ufrj.cos.expline.derivation.ExpLineDerivationGraph;
+import br.ufrj.cos.expline.derivation.ExpLineDerivationGraphComponent;
 import br.ufrj.cos.expline.io.ActivityCodec;
 import br.ufrj.cos.expline.io.EdgeCodec;
 import br.ufrj.cos.expline.io.ExpLineCodec;
@@ -59,6 +61,7 @@ import com.mxgraph.layout.mxParallelEdgeLayout;
 import com.mxgraph.layout.mxPartitionLayout;
 import com.mxgraph.layout.mxStackLayout;
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
+import com.mxgraph.model.mxCell;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.swing.mxGraphOutline;
 import com.mxgraph.swing.handler.mxKeyboardHandler;
@@ -102,7 +105,17 @@ public class ExpLineEditor extends JPanel
 	/**
 	 * 
 	 */
-	protected mxGraphComponent graphComponent;
+	protected mxGraphComponent editionGraphComponent;
+	
+	/**
+	 * 
+	 */
+	protected mxGraphComponent derivationGraphComponent;
+	
+	/**
+	 * 
+	 */
+	protected mxGraphComponent currentGraphComponent;
 
 	/**
 	 * 
@@ -128,7 +141,7 @@ public class ExpLineEditor extends JPanel
 	 * 
 	 */
 	protected JLabel statusBar;
-
+	
 	/**
 	 * 
 	 */
@@ -153,7 +166,8 @@ public class ExpLineEditor extends JPanel
 	
 	protected JSplitPane outer;
 	
-	protected Panel derivationPanel;
+	protected JToolBar toolbar;
+	
 
 	/**
 	 * 
@@ -276,8 +290,9 @@ public class ExpLineEditor extends JPanel
 		this.appTitle = appTitle;
 
 		// Stores a reference to the graph and creates the command history
-		graphComponent = component;
-		final mxGraph graph = graphComponent.getGraph();
+		editionGraphComponent = component;
+		currentGraphComponent = component;
+		final mxGraph graph = editionGraphComponent.getGraph();
 		undoManager = createUndoManager();
 
 		// Do not change the scale and translation after files have been loaded
@@ -306,7 +321,7 @@ public class ExpLineEditor extends JPanel
 		undoManager.addListener(mxEvent.REDO, undoHandler);
 
 		// Creates the graph outline component
-		graphOutline = new mxGraphOutline(graphComponent);
+		graphOutline = new mxGraphOutline(editionGraphComponent);
 
 		// Creates the library pane that contains the tabs with the palettes
 		libraryPane = new JTabbedPane();
@@ -323,7 +338,7 @@ public class ExpLineEditor extends JPanel
 		// Creates the outer split pane that contains the inner split pane and
 		// the graph component on the right side of the window
 		outer = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, inner,
-				graphComponent);
+				editionGraphComponent);
 		outer.setOneTouchExpandable(true);
 		outer.setDividerLocation(200);
 		outer.setDividerSize(6);
@@ -339,7 +354,9 @@ public class ExpLineEditor extends JPanel
 		setLayout(new BorderLayout());
 		add(outer, BorderLayout.CENTER);
 		add(statusBar, BorderLayout.SOUTH);
-		installToolBar();
+		
+		toolbar = new ToolBar(this, JToolBar.HORIZONTAL);
+		add(toolbar, BorderLayout.NORTH);
 
 		// Installs rubberband selection and handling for some special
 		// keystrokes such as F2, Control-C, -V, X, A etc.
@@ -361,16 +378,29 @@ public class ExpLineEditor extends JPanel
 	 */
 	protected void installHandlers()
 	{
-		rubberband = new mxRubberband(graphComponent);
-		keyboardHandler = new KeyboardHandler(graphComponent);
+		rubberband = new mxRubberband(editionGraphComponent);
+		keyboardHandler = new KeyboardHandler(editionGraphComponent);
 	}
 
 	/**
 	 * 
 	 */
-	protected void installToolBar()
+	protected void installEditionToolBar()
 	{
-		add(new ToolBar(this, JToolBar.HORIZONTAL), BorderLayout.NORTH);
+		remove(toolbar);
+		toolbar = new ToolBar(this, JToolBar.HORIZONTAL);
+		add(toolbar, BorderLayout.NORTH);
+	}
+	
+	/**
+	 * 
+	 */
+	protected void installDerivationToolBar()
+	{
+		remove(toolbar);
+		toolbar = new DerivationToolBar(this, JToolBar.HORIZONTAL);
+		add(toolbar, BorderLayout.NORTH);
+		
 	}
 
 	/**
@@ -389,12 +419,12 @@ public class ExpLineEditor extends JPanel
 	 */
 	protected void installRepaintListener()
 	{
-		graphComponent.getGraph().addListener(mxEvent.REPAINT,
+		editionGraphComponent.getGraph().addListener(mxEvent.REPAINT,
 				new mxIEventListener()
 				{
 					public void invoke(Object source, mxEventObject evt)
 					{
-						String buffer = (graphComponent.getTripleBuffer() != null) ? ""
+						String buffer = (editionGraphComponent.getTripleBuffer() != null) ? ""
 								: " (unbuffered)";
 						mxRectangle dirty = (mxRectangle) evt
 								.getProperty("region");
@@ -450,17 +480,18 @@ public class ExpLineEditor extends JPanel
 	 */
 	protected void mouseWheelMoved(MouseWheelEvent e)
 	{
+		
 		if (e.getWheelRotation() < 0)
 		{
-			graphComponent.zoomIn();
+			currentGraphComponent.zoomIn();
 		}
 		else
 		{
-			graphComponent.zoomOut();
+			currentGraphComponent.zoomOut();
 		}
 
 		status(mxResources.get("scale") + ": "
-				+ (int) (100 * graphComponent.getGraph().getView().getScale())
+				+ (int) (100 * currentGraphComponent.getGraph().getView().getScale())
 				+ "%");
 	}
 
@@ -470,7 +501,7 @@ public class ExpLineEditor extends JPanel
 	protected void showOutlinePopupMenu(MouseEvent e)
 	{
 		Point pt = SwingUtilities.convertPoint(e.getComponent(), e.getPoint(),
-				graphComponent);
+				editionGraphComponent);
 		JCheckBoxMenuItem item = new JCheckBoxMenuItem(
 				mxResources.get("magnifyPage"));
 		item.setSelected(graphOutline.isFitPage());
@@ -523,7 +554,7 @@ public class ExpLineEditor extends JPanel
 		menu.add(item);
 		menu.add(item2);
 		menu.add(item3);
-		menu.show(graphComponent, pt.x, pt.y);
+		menu.show(editionGraphComponent, pt.x, pt.y);
 
 		e.consume();
 	}
@@ -534,9 +565,9 @@ public class ExpLineEditor extends JPanel
 	protected void showGraphPopupMenu(MouseEvent e)
 	{
 		Point pt = SwingUtilities.convertPoint(e.getComponent(), e.getPoint(),
-				graphComponent);
+				editionGraphComponent);
 		PopupMenu menu = new PopupMenu(ExpLineEditor.this);
-		menu.show(graphComponent, pt.x, pt.y);
+		menu.show(editionGraphComponent, pt.x, pt.y);
 
 		e.consume();
 	}
@@ -573,7 +604,7 @@ public class ExpLineEditor extends JPanel
 
 		// Handles mouse wheel events in the outline and graph component
 		graphOutline.addMouseWheelListener(wheelTracker);
-		graphComponent.addMouseWheelListener(wheelTracker);
+		editionGraphComponent.addMouseWheelListener(wheelTracker);
 
 		// Installs the popup menu in the outline
 		graphOutline.addMouseListener(new MouseAdapter()
@@ -602,7 +633,7 @@ public class ExpLineEditor extends JPanel
 		});
 
 		// Installs the popup menu in the graph component
-		graphComponent.getGraphControl().addMouseListener(new MouseAdapter()
+		editionGraphComponent.getGraphControl().addMouseListener(new MouseAdapter()
 		{
 
 			/**
@@ -628,7 +659,7 @@ public class ExpLineEditor extends JPanel
 		});
 
 		// Installs a mouse motion listener to display the mouse location
-		graphComponent.getGraphControl().addMouseMotionListener(
+		editionGraphComponent.getGraphControl().addMouseMotionListener(
 				new MouseMotionListener()
 				{
 
@@ -652,6 +683,146 @@ public class ExpLineEditor extends JPanel
 
 				});
 	}
+	
+	
+	protected void changeToDerivationView(){
+		
+		ExpLineDerivationGraph expLineDer = new ExpLineDerivationGraph();
+		
+		expLineDer.getModel().setRoot(editionGraphComponent.getGraph().getModel().getRoot());
+		
+		
+		derivationGraphComponent = new ExpLineDerivationGraphComponent(expLineDer);
+		
+		currentGraphComponent = derivationGraphComponent;
+		
+		
+		mxCell root =  (mxCell) expLineDer.getModel().getRoot();
+		root = (mxCell) root.getChildAt(0);
+		
+		for (int i = 0; i < root.getChildCount(); i++) {
+			
+//			root.getChildAt(i).setStyle("strokeWidth=6;strokeColor=#66CC00");
+//			root.getChildAt(i).setStyle("strokeWidth=6;strokeColor=#FF0000");
+			root.getChildAt(i).setStyle(root.getChildAt(i).getStyle() + ";opacity=20");
+			
+		}
+		
+		this.remove(this.outer);
+		this.add(derivationGraphComponent, BorderLayout.CENTER);
+		
+		
+		this.frame.setJMenuBar(new DerivationMenuBar(this));
+		
+		installDerivationToolBar();
+		
+		
+		installDerivationGraphComponentListeners();
+		
+		derivationGraphComponent.refresh();
+		
+		Rectangle bounds = this.frame.getBounds();
+		this.frame.pack();
+		
+		this.frame.setBounds(bounds);
+	}
+	
+	protected void changeToEditionView(){
+		
+		currentGraphComponent = editionGraphComponent;
+		
+		this.remove(this.derivationGraphComponent);
+		this.add(this.outer, BorderLayout.CENTER);
+		
+		
+		this.frame.setJMenuBar(new MenuBar(this));
+		
+		installEditionToolBar();
+		
+		derivationGraphComponent.refresh();
+		
+		Rectangle bounds = this.frame.getBounds();
+		this.frame.pack();
+		
+		this.frame.setBounds(bounds);
+	}
+	
+	/**
+	 * 
+	 */
+	protected void installDerivationGraphComponentListeners()
+	{
+		// Installs mouse wheel listener for zooming
+		MouseWheelListener wheelTracker = new MouseWheelListener()
+		{
+			/**
+			 * 
+			 */
+			public void mouseWheelMoved(MouseWheelEvent e)
+			{
+				if (e.isControlDown())
+				{
+					ExpLineEditor.this.mouseWheelMoved(e);
+				}
+			}
+
+		};
+
+		derivationGraphComponent.addMouseWheelListener(wheelTracker);
+		
+
+		// Installs the popup menu in the graph component
+		derivationGraphComponent.getGraphControl().addMouseListener(new MouseAdapter()
+		{
+
+			/**
+			 * 
+			 */
+			public void mousePressed(MouseEvent e)
+			{
+				// Handles context menu on the Mac where the trigger is on mousepressed
+				mouseReleased(e);
+			}
+
+			/**
+			 * 
+			 */
+			public void mouseReleased(MouseEvent e)
+			{
+				if (e.isPopupTrigger())
+				{
+					showGraphPopupMenu(e);
+				}
+			}
+
+		});
+
+		// Installs a mouse motion listener to display the mouse location
+		derivationGraphComponent.getGraphControl().addMouseMotionListener(
+				new MouseMotionListener()
+				{
+
+					/*
+					 * (non-Javadoc)
+					 * @see java.awt.event.MouseMotionListener#mouseDragged(java.awt.event.MouseEvent)
+					 */
+					public void mouseDragged(MouseEvent e)
+					{
+						mouseLocationChanged(e);
+					}
+
+					/*
+					 * (non-Javadoc)
+					 * @see java.awt.event.MouseMotionListener#mouseMoved(java.awt.event.MouseEvent)
+					 */
+					public void mouseMoved(MouseEvent e)
+					{
+						mouseDragged(e);
+					}
+
+				});
+	}
+	
 
 	/**
 	 * 
@@ -708,7 +879,15 @@ public class ExpLineEditor extends JPanel
 	 */
 	public mxGraphComponent getGraphComponent()
 	{
-		return graphComponent;
+		return editionGraphComponent;
+	}
+	
+	/**
+	 * 
+	 */
+	public mxGraphComponent getCurrentGraphComponent()
+	{
+		return currentGraphComponent;
 	}
 
 	/**
@@ -776,7 +955,7 @@ public class ExpLineEditor extends JPanel
 	 */
 	public void status(String msg)
 	{
-		statusBar.setText(msg);
+			statusBar.setText(msg);
 	}
 
 	/**
@@ -828,7 +1007,7 @@ public class ExpLineEditor extends JPanel
 
 		if (frame != null)
 		{
-			ActivityPropertiesFrame about = new ActivityPropertiesFrame(frame, this.graphComponent);
+			ActivityPropertiesFrame about = new ActivityPropertiesFrame(frame, this.editionGraphComponent);
 			about.setModal(true);
 
 			// Centers inside the application frame
@@ -838,29 +1017,6 @@ public class ExpLineEditor extends JPanel
 
 			// Shows the modal dialog and waits
 			about.setVisible(true);
-		}
-	}
-	
-	public void derivation()
-	{
-		JFrame frame = (JFrame) SwingUtilities.windowForComponent(this);
-
-		if (frame != null)
-		{
-			DerivationFrame about = new DerivationFrame(frame, this.graphComponent);
-			about.setModal(true);
-			
-			about.setJMenuBar(new DerivationMenuBar(this));
-
-			// Centers inside the application frame
-			int x = frame.getX() + (frame.getWidth() - about.getWidth()) / 2;
-			int y = frame.getY() + (frame.getHeight() - about.getHeight()) / 2;
-			about.setLocation(x, y);
-
-			// Shows the modal dialog and waits
-			about.setVisible(true);
-			
-			
 		}
 	}
 	
@@ -870,7 +1026,7 @@ public class ExpLineEditor extends JPanel
 
 		if (frame != null)
 		{
-			ListRulesFrame about = new ListRulesFrame(frame, (ExpLineGraphComponent)this.graphComponent);
+			ListRulesFrame about = new ListRulesFrame(frame, (ExpLineGraphComponent)this.editionGraphComponent);
 			about.setModal(true);
 
 			// Centers inside the application frame
@@ -911,7 +1067,7 @@ public class ExpLineEditor extends JPanel
 				SwingUtilities.updateComponentTreeUI(frame);
 
 				// Needs to assign the key bindings again
-				keyboardHandler = new KeyboardHandler(graphComponent);
+				keyboardHandler = new KeyboardHandler(editionGraphComponent);
 			}
 			catch (Exception e1)
 			{
@@ -955,7 +1111,7 @@ public class ExpLineEditor extends JPanel
 			{
 				public void actionPerformed(ActionEvent e)
 				{
-					final mxGraph graph = graphComponent.getGraph();
+					final mxGraph graph = editionGraphComponent.getGraph();
 					Object cell = graph.getSelectionCell();
 
 					if (cell == null
@@ -974,7 +1130,7 @@ public class ExpLineEditor extends JPanel
 					}
 					finally
 					{
-						mxMorphing morph = new mxMorphing(graphComponent, 20,
+						mxMorphing morph = new mxMorphing(editionGraphComponent, 20,
 								1.2, 20);
 
 						morph.addListener(mxEvent.DONE, new mxIEventListener()
@@ -1001,7 +1157,7 @@ public class ExpLineEditor extends JPanel
 
 				public void actionPerformed(ActionEvent e)
 				{
-					JOptionPane.showMessageDialog(graphComponent,
+					JOptionPane.showMessageDialog(editionGraphComponent,
 							mxResources.get("noLayout"));
 				}
 
@@ -1018,7 +1174,7 @@ public class ExpLineEditor extends JPanel
 
 		if (ident != null)
 		{
-			mxGraph graph = graphComponent.getGraph();
+			mxGraph graph = editionGraphComponent.getGraph();
 
 			if (ident.equals("verticalHierarchical"))
 			{
@@ -1058,7 +1214,7 @@ public class ExpLineEditor extends JPanel
 					 */
 					public mxRectangle getContainerSize()
 					{
-						return graphComponent.getLayoutAreaSize();
+						return editionGraphComponent.getLayoutAreaSize();
 					}
 				};
 			}
@@ -1072,7 +1228,7 @@ public class ExpLineEditor extends JPanel
 					 */
 					public mxRectangle getContainerSize()
 					{
-						return graphComponent.getLayoutAreaSize();
+						return editionGraphComponent.getLayoutAreaSize();
 					}
 				};
 			}
@@ -1086,7 +1242,7 @@ public class ExpLineEditor extends JPanel
 					 */
 					public mxRectangle getContainerSize()
 					{
-						return graphComponent.getLayoutAreaSize();
+						return editionGraphComponent.getLayoutAreaSize();
 					}
 				};
 			}
@@ -1100,7 +1256,7 @@ public class ExpLineEditor extends JPanel
 					 */
 					public mxRectangle getContainerSize()
 					{
-						return graphComponent.getLayoutAreaSize();
+						return editionGraphComponent.getLayoutAreaSize();
 					}
 				};
 			}

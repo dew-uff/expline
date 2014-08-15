@@ -1,7 +1,5 @@
 package br.ufrj.cos.expline.swing;
 
-import java.awt.BorderLayout;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -228,10 +226,10 @@ public class MenuBar extends JMenuBar
 			 */
 			public void actionPerformed(ActionEvent e)
 			{
-				
-				editor.derivation();
-
+				editor.changeToDerivationView();			
 			}
+			
+
 		});
 		
 		menu.add(new JMenuItem("Derive and run workflow"));

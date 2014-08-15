@@ -1,5 +1,10 @@
 package br.ufrj.cos.expline.swing;
 
+import java.awt.BorderLayout;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -31,6 +36,19 @@ public class DerivationMenuBar extends JMenuBar
 		temp.add(new JMenuItem("Show Conflicts"));
 		temp.add(new JMenuItem("Show Legends"));
 		temp.add(new JMenuItem("Zoom"));
+		
+		temp = this.add(new JMenu("Exit"));
+		temp.add(new JMenuItem("Exit")).addActionListener(new ActionListener()
+		{
+			/*
+			 * (non-Javadoc)
+			 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+			 */
+			public void actionPerformed(ActionEvent e)
+			{
+				editor.changeToEditionView();
+			}
+		});
 		
 		
 	}
