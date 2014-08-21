@@ -3,6 +3,8 @@ package br.ufrj.cos.expline.derivation;
 import java.io.File;
 import java.util.HashMap;
 
+import br.ufrj.cos.expline.model.Activity;
+
 public interface Derivation {
 
 	
@@ -16,25 +18,25 @@ public interface Derivation {
 	 * Retorna as implicações na seleção do workflow baseado nas atividades selecionadas e desselecionadas.
 	 * 
 	 */
-	public HashMap<String, Boolean> getImpliedSteps(HashMap<String, Boolean> activitySelectionChangeList);
+	public HashMap<Activity, Boolean> getImpliedSteps(HashMap<Activity, Boolean> activitySelectionChangeList);
 	
 	/*
 	 * Valida se as atividades selecionadas e desselecionadas geram um estado válido.
 	 * 
 	 */
-	public boolean generatesValidState(HashMap<String, Boolean> activitySelectionChangeList);
+	public boolean generatesValidState(HashMap<Activity, Boolean> activitySelectionChangeList);
 	
 	/*
 	 * Registra as atividades selecionadas e desselecionadas na linha de experimento
 	 * 
 	 */
-	public boolean setActivitySelectionChangeList(HashMap<String, Boolean> activitySelectionChangeList);
+	public boolean setActivitySelectionChangeList(HashMap<Activity, Boolean> activitySelectionChangeList);
 	
 	/*
 	 * Lista as atividades conflitantes baseado nas atividades selecionadas e desselecionadas. 
 	 * 
 	 */
-	public String[] getActivityConflictList(HashMap<String, Boolean> activitySelectionChangeList);
+	public Activity[] getActivityConflictList(HashMap<Activity, Boolean> activitySelectionChangeList);
 	
 	/*
 	 * Lista as atividades conflitantes de acordo com o estado atual de seleção.  

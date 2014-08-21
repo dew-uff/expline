@@ -1,7 +1,5 @@
 package br.ufrj.cos.expline.swing;
 
-import java.awt.BorderLayout;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -9,7 +7,10 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
+import br.ufrj.cos.expline.swing.Actions.ScaleAction;
+
 import com.mxgraph.swing.mxGraphComponent;
+import com.mxgraph.util.mxResources;
 
 public class DerivationMenuBar extends JMenuBar
 {
@@ -24,21 +25,12 @@ public class DerivationMenuBar extends JMenuBar
 		final mxGraphComponent graphComponent = editor.getGraphComponent();
 
 		// Creates the file menu
-		JMenu temp = new JMenu("Derivate");
+		JMenu temp = new JMenu("Derivation");
 		this.add(temp);
-		temp.add(new JMenuItem("Execute"));
 		temp.add(new JMenuItem("Validate"));
-		temp.add(new JMenuItem("Cancel"));
-		
-		temp = new JMenu("View");
-		this.add(temp);
-		temp.add(new JMenuItem("Show Possibilities"));
-		temp.add(new JMenuItem("Show Conflicts"));
-		temp.add(new JMenuItem("Show Legends"));
-		temp.add(new JMenuItem("Zoom"));
-		
-		temp = this.add(new JMenu("Exit"));
-		temp.add(new JMenuItem("Exit")).addActionListener(new ActionListener()
+		temp.add(new JMenuItem("Generate abstract workflow"));
+		temp.add(new JMenuItem("Run"));
+		temp.add(new JMenuItem("Cancel")).addActionListener(new ActionListener()
 		{
 			/*
 			 * (non-Javadoc)
@@ -49,6 +41,22 @@ public class DerivationMenuBar extends JMenuBar
 				editor.changeToEditionView();
 			}
 		});
+		
+		
+		temp = new JMenu("View");
+		this.add(temp);
+		temp.add(new JMenuItem("Show Possibilities"));
+		temp.add(new JMenuItem("Show Conflicts"));
+		temp.add(new JMenuItem("Show Legends"));
+		
+		JMenu submenu = (JMenu) temp.add(new JMenu(mxResources.get("zoom")));
+
+		submenu.add(editor.bind("400%", new ScaleAction(4)));
+		submenu.add(editor.bind("200%", new ScaleAction(2)));
+		submenu.add(editor.bind("150%", new ScaleAction(1.5)));
+		submenu.add(editor.bind("100%", new ScaleAction(1)));
+		submenu.add(editor.bind("75%", new ScaleAction(0.75)));
+		submenu.add(editor.bind("50%", new ScaleAction(0.5)));
 		
 		
 	}

@@ -35,6 +35,8 @@ import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import br.ufrj.cos.expline.derivation.Derivation;
+import br.ufrj.cos.expline.derivation.DerivationImp;
 import br.ufrj.cos.expline.derivation.ExpLineDerivationGraph;
 import br.ufrj.cos.expline.derivation.ExpLineDerivationGraphComponent;
 import br.ufrj.cos.expline.io.ActivityCodec;
@@ -61,7 +63,6 @@ import com.mxgraph.layout.mxParallelEdgeLayout;
 import com.mxgraph.layout.mxPartitionLayout;
 import com.mxgraph.layout.mxStackLayout;
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
-import com.mxgraph.model.mxCell;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.swing.mxGraphOutline;
 import com.mxgraph.swing.handler.mxKeyboardHandler;
@@ -167,6 +168,8 @@ public class ExpLineEditor extends JPanel
 	protected JSplitPane outer;
 	
 	protected JToolBar toolbar;
+	
+	protected DerivationImp derivation;
 	
 
 	/**
@@ -687,7 +690,7 @@ public class ExpLineEditor extends JPanel
 	
 	protected void changeToDerivationView(){
 		
-		ExpLineDerivationGraph expLineDer = new ExpLineDerivationGraph();
+		ExpLineDerivationGraph expLineDer = new ExpLineDerivationGraph(this);
 		
 		expLineDer.getModel().setRoot(editionGraphComponent.getGraph().getModel().getRoot());
 		
@@ -697,16 +700,20 @@ public class ExpLineEditor extends JPanel
 		currentGraphComponent = derivationGraphComponent;
 		
 		
-		mxCell root =  (mxCell) expLineDer.getModel().getRoot();
-		root = (mxCell) root.getChildAt(0);
+//		mxCell root =  (mxCell) expLineDer.getModel().getRoot();
+//		root = (mxCell) root.getChildAt(0);
+//		
+//		for (int i = 0; i < root.getChildCount(); i++) {
+//			
+////			root.getChildAt(i).setStyle("strokeWidth=6;strokeColor=#66CC00");
+////			root.getChildAt(i).setStyle("strokeWidth=6;strokeColor=#FF0000");
+//			root.getChildAt(i).setStyle(root.getChildAt(i).getStyle() + ";opacity=20");
+//			
+//		}
 		
-		for (int i = 0; i < root.getChildCount(); i++) {
-			
-//			root.getChildAt(i).setStyle("strokeWidth=6;strokeColor=#66CC00");
-//			root.getChildAt(i).setStyle("strokeWidth=6;strokeColor=#FF0000");
-			root.getChildAt(i).setStyle(root.getChildAt(i).getStyle() + ";opacity=20");
-			
-		}
+		derivation = new DerivationImp(derivationGraphComponent);
+		
+		derivation.startDerivation();
 		
 		this.remove(this.outer);
 		this.add(derivationGraphComponent, BorderLayout.CENTER);
@@ -877,9 +884,18 @@ public class ExpLineEditor extends JPanel
 	/**
 	 * 
 	 */
+	public Derivation getDerivation()
+	{
+		return derivation;
+	}
+	
+	/**
+	 * 
+	 */
 	public mxGraphComponent getGraphComponent()
 	{
-		return editionGraphComponent;
+		//return editionGraphComponent;
+		return currentGraphComponent;
 	}
 	
 	/**

@@ -217,7 +217,7 @@ public class MenuBar extends JMenuBar
 		
 //		menu.add(new JMenuItem("Derive abstract workflow"));
 		
-		item = menu.add(new JMenuItem("Derive abstract workflow"));
+		item = menu.add(new JMenuItem("Derive..."));
 		item.addActionListener(new ActionListener()
 		{
 			/*
@@ -230,25 +230,6 @@ public class MenuBar extends JMenuBar
 			}
 			
 
-		});
-		
-		menu.add(new JMenuItem("Derive and run workflow"));
-
-		
-		// Creates the help menu
-		menu = add(new JMenu(mxResources.get("help")));
-
-		item = menu.add(new JMenuItem(mxResources.get("aboutExpLine")));
-		item.addActionListener(new ActionListener()
-		{
-			/*
-			 * (non-Javadoc)
-			 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-			 */
-			public void actionPerformed(ActionEvent e)
-			{
-				editor.about();
-			}
 		});
 	};
 };

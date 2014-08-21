@@ -3,17 +3,20 @@ package br.ufrj.cos.expline.derivation;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.util.HashMap;
 
 import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.model.Edge;
 import br.ufrj.cos.expline.model.ExpLine;
 import br.ufrj.cos.expline.model.Port;
+import br.ufrj.cos.expline.swing.ExpLineEditor;
 
 import com.mxgraph.canvas.mxGraphics2DCanvas;
 import com.mxgraph.canvas.mxICanvas;
 import com.mxgraph.canvas.mxImageCanvas;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
+import com.mxgraph.model.mxICell;
 import com.mxgraph.view.mxCellState;
 import com.mxgraph.view.mxGraph;
 
@@ -23,15 +26,20 @@ import com.mxgraph.view.mxGraph;
 public class ExpLineDerivationGraph extends mxGraph
 {
 
+	
+	ExpLineEditor editor; 
+	
 	/**
 	 * 
 	 * 
 	 */
-	public ExpLineDerivationGraph()
+	public ExpLineDerivationGraph(ExpLineEditor editor)
 	{
 		
 		super(new ExpLine());
 		setMultigraph(false);
+		
+		this.editor = editor; 
 		
 		Edge edge = new Edge("", new mxGeometry(), Edge.WORKFLOW_TYPE);
 		edge.getGeometry().setRelative(true);
@@ -151,11 +159,93 @@ public class ExpLineDerivationGraph extends mxGraph
 	public boolean isCellSelectable(Object cell) {
 		// TODO Auto-generated method stub
 		
+		if (cell instanceof Activity ){
+			
+			mxICell cell_ = (mxICell) cell;
+			
+//			if(cell_.getStyle().contains(";opacity=20")){
+//				cell_.setStyle(cell_.getStyle().replace(";opacity=20", ""));
+//			}
+//			else
+//				cell_.setStyle(cell_.getStyle()+";opacity=20");
+			
+//			JOptionPane.showMessageDialog(editor,
+//					"ok");
+			
+			this.refresh();
+			
+			Activity actv = (Activity) cell_;
+			
+			HashMap<Activity, Boolean> activitySelectionChangeList = new HashMap<Activity, Boolean>();
+			if(cell_.getStyle().contains(";opacity=20")){
+				activitySelectionChangeList.put(actv, true);
+			}
+			else
+				activitySelectionChangeList.put(actv, false);
+			
+			Derivation derivation = editor.getDerivation();
+			
+			if(derivation.generatesValidState(activitySelectionChangeList)){
+				
+				derivation.setActivitySelectionChangeList(activitySelectionChangeList);
+				
+				updateExpLineDerivationGraph(activitySelectionChangeList);
+			}
+			
+			
+		}
 		
 		return false;
-
 	}
 	
+	private void updateExpLineDerivationGraph(
+			HashMap<Activity, Boolean> activitySelectionChangeList) {
+		// TODO Auto-generated method stub
+		
+		for (Activity activity : activitySelectionChangeList.keySet()) {
+			if(activitySelectionChangeList.get(activity)){
+				
+				activity.setStyle(activity.getStyle().replace(";opacity=20", ""));
+				
+				editor.status((String)activity.getValue()+" is selected");
+			
+			}
+			else{
+				if(!activity.getStyle().contains(";opacity=20"))
+					activity.setStyle(activity.getStyle()+";opacity=20");
+			}
+				
+				
+		}
+		
+		
+		Derivation derivation = editor.getDerivation();
+		
+		HashMap<Activity, Boolean> impliedSteps = derivation.getImpliedSteps(activitySelectionChangeList);
+		
+		
+		for (Activity activity : impliedSteps.keySet()) {
+			if(impliedSteps.get(activity)){
+				
+				activity.setStyle(activity.getStyle().replace(";opacity=20", ""));
+			
+			}
+			else{
+				if(!activity.getStyle().contains(";opacity=20"))
+					activity.setStyle(activity.getStyle()+";opacity=20");
+			}
+				
+				
+		}
+		
+		Activity[] conflictActivities  = derivation.getActivityConflictList(activitySelectionChangeList);
+		
+		for (Activity activity : conflictActivities) {
+			activity.setStyle(activity.getStyle().replace(";strokeColor=#000000", ";strokeColor=#CC0000"));
+		}
+		
+	}
+
 	/**
 	 * Draws the cell state with the given label onto the canvas. No
 	 * children or descendants are painted here. This method invokes

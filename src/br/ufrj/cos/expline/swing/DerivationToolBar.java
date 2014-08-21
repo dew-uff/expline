@@ -4,13 +4,14 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
 
 import com.mxgraph.swing.mxGraphComponent;
-import com.mxgraph.swing.util.mxGraphActions;
 import com.mxgraph.util.mxEvent;
 import com.mxgraph.util.mxEventObject;
 import com.mxgraph.util.mxEventSource.mxIEventListener;
@@ -120,7 +121,16 @@ public class DerivationToolBar extends JToolBar
 
 		addSeparator();
 		
-		add(editor.bind("Delete", mxGraphActions.getDeleteAction(),
+		Action changeToEditionView = new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				editor.changeToEditionView();
+			}
+		};
+		
+		add(editor.bind("Cancel", changeToEditionView,
 				"/images/delete.gif"));
 		
 	}
