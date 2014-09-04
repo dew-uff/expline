@@ -166,9 +166,11 @@ public class ConnectionHandler extends mxConnectionHandler
 					
 					Port srcPort = (Port) src;
 					Port trgPort = (Port) trg;
-					
-					
+							
 					if (source == target)
+						return "";
+					
+					if (isAlreadyConnected(srcPort, trgPort))
 						return "";
 					
 					if(srcPort.getType() == trgPort.getType())
@@ -199,6 +201,44 @@ public class ConnectionHandler extends mxConnectionHandler
 		else
 			return "";
 		
+	}
+	
+	public boolean isAlreadyConnected(Port srcPort, Port trgPort){
+		
+		int count = srcPort.getEdgeCount() + trgPort.getEdgeCount(); 
+		
+//		int count = 0;
+//		
+//		//System.out.println(srcPort.getEdgeCount());
+//		Object[] temp1 = this.graphComponent.getGraph().getEdges(srcPort);
+//		//System.out.println(temp1.length);
+//		
+//		count = temp1.length;
+//		for (int i = 0; i < temp1.length; i++) {
+//			if(temp1[i] == trgPort){
+//				count--;
+//				break;
+//			}
+//		}
+//		
+//		//System.out.println(trgPort.getEdgeCount());
+//		Object[] temp2 = this.graphComponent.getGraph().getEdges(trgPort);
+//		
+//		count += temp2.length;
+//		for (int i = 0; i < temp2.length; i++) {
+//			if(temp2[i] == srcPort){
+//				count--;
+//				break;
+//			}
+//		}
+		
+		//System.out.println(temp2.length);
+		
+//		System.out.println(count);
+		
+		if(count > 1)
+			return true;
+		return false;
 	}
 
 	public void defineEdgeType(){
