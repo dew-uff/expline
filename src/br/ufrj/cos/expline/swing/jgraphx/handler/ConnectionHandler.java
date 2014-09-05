@@ -205,7 +205,8 @@ public class ConnectionHandler extends mxConnectionHandler
 	
 	public boolean isAlreadyConnected(Port srcPort, Port trgPort){
 		
-		int count = srcPort.getEdgeCount() + trgPort.getEdgeCount(); 
+//		int count = srcPort.getEdgeCount() + trgPort.getEdgeCount(); 
+		int count = trgPort.getEdgeCount();
 		
 //		int count = 0;
 //		
@@ -236,7 +237,7 @@ public class ConnectionHandler extends mxConnectionHandler
 		
 //		System.out.println(count);
 		
-		if(count > 1)
+		if(count > 0)
 			return true;
 		return false;
 	}

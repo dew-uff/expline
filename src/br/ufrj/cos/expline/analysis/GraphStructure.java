@@ -28,9 +28,9 @@ public class GraphStructure extends mxGraphStructure
 		mxGraph graph = aGraph.getGraph();
 		mxIGraphModel model = graph.getModel();
 		
-		if (source instanceof Activity) {
-			return false;
-		}
+//		if (source instanceof Activity) {
+//			return false;
+//		}
 		
 		//Workaround to add the request edge in the clone graph to verify that makes cycle
 		//TODO: Criar uma conexão a porta de saída e não com a entrada. (Vai funcionar só com atividades com uma porta de entrada e saída.) (Não vai funcionar... Tem que fazer pra todas atividades)
@@ -97,7 +97,7 @@ public class GraphStructure extends mxGraphStructure
 
 		do
 		{
-			leaf[0] = getDirectedLeaf(aGraphCopy, parentCopy);
+			leaf[0] = getUndirectedLeaf(aGraphCopy);
 
 			if (leaf[0] != null)
 			{
@@ -116,6 +116,27 @@ public class GraphStructure extends mxGraphStructure
 		{
 			return false;
 		}
+	}
+	
+	private static Object getUndirectedLeaf(mxAnalysisGraph aGraph)
+	{
+		Object parent = aGraph.getGraph().getDefaultParent();
+		Object[] vertices = aGraph.getChildVertices(parent);
+		int vertexNum = vertices.length;
+		Object currVertex;
+
+		for (int i = 0; i < vertexNum; i++)
+		{
+			currVertex = vertices[i];
+			int edgeCount = aGraph.getEdges(currVertex, parent, true, true, false, true).length;
+
+			if (edgeCount <= 1)
+			{
+				return currVertex;
+			}
+		}
+
+		return null;
 	}
 	
 }
