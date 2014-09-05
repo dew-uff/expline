@@ -115,6 +115,10 @@ public class Actions
 			
 			activity.setAlgebraicOperator(algebraicOperator);
 			
+			activity.refreshPortsDefinition();
+			
+			graph.refresh();
+			
 			
 		}
 	}
