@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 import br.ufrj.cos.expline.swing.Actions.ScaleAction;
 
@@ -27,7 +28,27 @@ public class DerivationMenuBar extends JMenuBar
 		// Creates the file menu
 		JMenu temp = new JMenu("Derivation");
 		this.add(temp);
-		temp.add(new JMenuItem("Validate"));
+		temp.add(new JMenuItem("Validate")).addActionListener(new ActionListener()
+		{
+			/*
+			 * (non-Javadoc)
+			 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+			 */
+			public void actionPerformed(ActionEvent e)
+			{
+				boolean result = editor.getDerivation().validatesDerivedWorklfow();
+				
+				if(result)
+					JOptionPane.showMessageDialog(graphComponent,
+							"Derivation is valid");	
+				else
+					JOptionPane.showMessageDialog(graphComponent,
+							"Derivation is not valid");	
+				
+			}
+		});
+
+		
 		temp.add(new JMenuItem("Generate abstract workflow"));
 		temp.add(new JMenuItem("Run"));
 		temp.add(new JMenuItem("Cancel")).addActionListener(new ActionListener()

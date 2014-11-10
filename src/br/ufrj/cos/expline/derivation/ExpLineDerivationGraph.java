@@ -172,26 +172,48 @@ public class ExpLineDerivationGraph extends mxGraph
 //			JOptionPane.showMessageDialog(editor,
 //					"ok");
 			
-			this.refresh();
+			
 			
 			Activity actv = (Activity) cell_;
 			
-			HashMap<Activity, Boolean> activitySelectionChangeList = new HashMap<Activity, Boolean>();
-			if(cell_.getStyle().contains(";opacity=20")){
-				activitySelectionChangeList.put(actv, true);
-			}
-			else
-				activitySelectionChangeList.put(actv, false);
+			
+			
 			
 			Derivation derivation = editor.getDerivation();
 			
-			if(derivation.generatesValidState(activitySelectionChangeList)){
-				
-				derivation.setActivitySelectionChangeList(activitySelectionChangeList);
-				
-				updateExpLineDerivationGraph(activitySelectionChangeList);
-			}
+			boolean selected = derivation.isActivitySelected(actv);
 			
+//			if(cell_.getStyle().contains(";opacity=20")){
+//				activitySelectionChangeList.put(actv, true);
+//			}
+//			else
+//				activitySelectionChangeList.put(actv, false);
+			
+			derivation.beginSelection();
+			
+			boolean isSelectionOk;
+			
+			if(selected){
+				isSelectionOk = derivation.unselectActivity(actv);
+			}
+			else
+				isSelectionOk = derivation.selectActivity(actv);
+			
+			
+			if(isSelectionOk)
+				derivation.commitSelection();
+			else
+				derivation.rollbackSelection();
+			
+			
+//			if(derivation.generatesValidState(activitySelectionChangeList)){
+//				
+//				derivation.setActivitySelectionChangeList(activitySelectionChangeList);
+//				
+//				updateExpLineDerivationGraph(activitySelectionChangeList);
+//			}
+			
+			this.refresh();
 			
 		}
 		

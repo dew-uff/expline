@@ -74,4 +74,21 @@ public interface Derivation {
 	 */
 	public boolean getDerivedWorkflow();
 	
+	
+	/*
+	 * Retorna o workflow derivado.  
+	 * 
+	 */
+	public boolean isActivitySelected(Activity activity);
+	
+	public boolean selectActivity(Activity activity);
+	
+	public boolean unselectActivity(Activity activity);
+	
+	public void beginSelection();
+	
+	public void commitSelection();
+	
+	public void rollbackSelection();
+	
 }

@@ -25,5 +25,13 @@
 	<classpathentry kind="lib" path="lib/slf4j-log4j12-1.7.6.jar"/>
 	<classpathentry kind="lib" path="lib/xercesImpl-2.11.0.jar"/>
 	<classpathentry kind="lib" path="lib/xml-apis-1.4.01.jar"/>
+	<classpathentry kind="lib" path="lib/2p.jar"/>
+	<classpathentry kind="lib" path="lib/tuprolog-extensions.jar"/>
+	<classpathentry kind="lib" path="lib/tuprolog-ide.jar"/>
+	<classpathentry kind="lib" path="lib/tuprolog.jar"/>
+	<classpathentry kind="lib" path="lib/charon.jar"/>
+	<classpathentry kind="lib" path="lib/jmi-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/jmi-spem-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/mdrapi-200507110943.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
