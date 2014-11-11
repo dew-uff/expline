@@ -463,6 +463,190 @@ public class Actions
 			}
 		}
 	}
+	
+	
+	/**
+	 *
+	 */
+	@SuppressWarnings("serial")
+	public static class GenerateAbstractWorkflowAction extends AbstractAction
+	{
+		/**
+		 * 
+		 */
+		protected boolean showDialog;
+
+		/**
+		 * 
+		 */
+		protected String lastDir = null;
+
+		/**
+		 * 
+		 */
+		public GenerateAbstractWorkflowAction(boolean showDialog)
+		{
+			this.showDialog = showDialog;
+		}
+
+		/**
+		 * Saves XML+PNG format.
+		 */
+		protected void saveXmlPng(ExpLineEditor editor, String filename,
+				Color bg) throws IOException
+		{
+			mxGraphComponent graphComponent = editor.getGraphComponent();
+			mxGraph graph = graphComponent.getGraph();
+
+			// Creates the image for the PNG file
+			BufferedImage image = mxCellRenderer.createBufferedImage(graph,
+					null, 1, bg, graphComponent.isAntiAlias(), null,
+					graphComponent.getCanvas());
+
+			// Creates the URL-encoded XML data
+			mxCodec codec = new mxCodec();
+			String xml = URLEncoder.encode(
+					mxXmlUtils.getXml(codec.encode(graph.getModel())), "UTF-8");
+			mxPngEncodeParam param = mxPngEncodeParam
+					.getDefaultEncodeParam(image);
+			param.setCompressedText(new String[] { "mxGraphModel", xml });
+
+			// Saves as a PNG file
+			FileOutputStream outputStream = new FileOutputStream(new File(
+					filename));
+			try
+			{
+				mxPngImageEncoder encoder = new mxPngImageEncoder(outputStream,
+						param);
+
+				if (image != null)
+				{
+					encoder.encode(image);
+
+					editor.setModified(false);
+					editor.setCurrentFile(new File(filename));
+				}
+				else
+				{
+					JOptionPane.showMessageDialog(graphComponent,
+							mxResources.get("noImageData"));
+				}
+			}
+			finally
+			{
+				outputStream.close();
+			}
+		}
+
+		/**
+		 * 
+		 */
+		public void actionPerformed(ActionEvent e)
+		{
+			ExpLineEditor editor = getEditor(e);
+
+			if (editor != null)
+			{
+				mxGraphComponent graphComponent = editor.getGraphComponent();
+				mxGraph graph = graphComponent.getGraph();
+				FileFilter selectedFilter = null;
+				DefaultFileFilter mxeFilter = new DefaultFileFilter(".xpl",
+						"ExpLine Editor " + mxResources.get("file")
+						+ " (.xpl)");
+				String filename = null;
+				boolean dialogShown = false;
+
+				if (showDialog || editor.getCurrentFile() == null)
+				{
+					String wd;
+
+					if (lastDir != null)
+					{
+						wd = lastDir;
+					}
+					else if (editor.getCurrentFile() != null)
+					{
+						wd = editor.getCurrentFile().getParent();
+					}
+					else
+					{
+						wd = System.getProperty("user.dir");
+					}
+
+					JFileChooser fc = new JFileChooser(wd);
+
+					// Adds the default file format
+					FileFilter defaultFilter = mxeFilter;
+					fc.addChoosableFileFilter(defaultFilter);
+
+					fc.setFileFilter(defaultFilter);
+					int rc = fc.showDialog(null, mxResources.get("save"));
+					dialogShown = true;
+
+					if (rc != JFileChooser.APPROVE_OPTION)
+					{
+						return;
+					}
+					else
+					{
+						lastDir = fc.getSelectedFile().getParent();
+					}
+
+					filename = fc.getSelectedFile().getAbsolutePath();
+					selectedFilter = fc.getFileFilter();
+
+					if (selectedFilter instanceof DefaultFileFilter)
+					{
+						String ext = ((DefaultFileFilter) selectedFilter)
+								.getExtension();
+
+						if (!filename.toLowerCase().endsWith(ext))
+						{
+							filename += ext;
+						}
+					}
+
+					if (new File(filename).exists()
+							&& JOptionPane.showConfirmDialog(graphComponent,
+									mxResources.get("overwriteExistingFile")) != JOptionPane.YES_OPTION)
+					{
+						return;
+					}
+				}
+				else
+				{
+					filename = editor.getCurrentFile().getAbsolutePath();
+				}
+
+				try
+				{
+					String ext = filename
+							.substring(filename.lastIndexOf('.') + 1);
+
+					
+					if (ext.equalsIgnoreCase("xpl")
+							|| ext.equalsIgnoreCase("xml"))
+					{
+						mxCodec codec = new mxCodec();
+						String xml = mxXmlUtils.getXml(codec.encode(graph
+								.getModel()));
+
+						mxUtils.writeFile(xml, filename);
+
+						editor.setModified(false);
+						editor.setCurrentFile(new File(filename));
+					}
+				}
+				catch (Throwable ex)
+				{
+					ex.printStackTrace();
+					JOptionPane.showMessageDialog(graphComponent,
+							ex.toString(), mxResources.get("error"),
+							JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		}
+	}
 
 	/**
 	 *

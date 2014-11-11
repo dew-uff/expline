@@ -1,10 +1,15 @@
 package br.ufrj.cos.expline.derivation;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.model.Edge;
+import br.ufrj.cos.expline.model.ExpLine;
+import br.ufrj.cos.expline.model.Expression;
+import br.ufrj.cos.expline.model.Rule;
 import br.ufrj.cos.lens.odyssey.tools.charon.Charon;
 import br.ufrj.cos.lens.odyssey.tools.charon.CharonAPI;
 import br.ufrj.cos.lens.odyssey.tools.charon.CharonException;
@@ -118,7 +123,40 @@ public class DerivationImp implements Derivation {
 				e.printStackTrace();
 			}
 		}
+		
+		
+
+		ExpLine model = (ExpLine) derivationGraphComponent.getGraph().getModel();
+		
+//		insertRules(model.getRules());
+		
 	}
+
+	private void insertRules(List<Rule> rules) {
+		
+		
+		for (Rule rule : rules) {
+			
+			for (Expression exp : rule.getConditions()){
+			
+				
+				List<String> activityIds = new ArrayList<>();
+				
+				for (Activity activity : exp.getActivities()) {
+					
+					activityIds.add(activity.getId());
+				}
+				
+//				charon.getCharonAPI().insertRule(exp.getOperation(),   exp.getModifier(), activityIds);
+				
+			}
+		}
+		
+	}
+
+
+
+
 
 	@Override
 	public HashMap<Activity, Boolean> getImpliedSteps(
