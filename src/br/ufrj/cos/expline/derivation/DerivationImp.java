@@ -9,7 +9,9 @@ import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.model.Edge;
 import br.ufrj.cos.expline.model.ExpLine;
 import br.ufrj.cos.expline.model.Expression;
+import br.ufrj.cos.expline.model.Port;
 import br.ufrj.cos.expline.model.Rule;
+import br.ufrj.cos.expline.model.Workflow;
 import br.ufrj.cos.lens.odyssey.tools.charon.Charon;
 import br.ufrj.cos.lens.odyssey.tools.charon.CharonAPI;
 import br.ufrj.cos.lens.odyssey.tools.charon.CharonException;
@@ -340,10 +342,6 @@ public class DerivationImp implements Derivation {
 
 	}
 
-
-
-
-
 	@Override
 	public void rollbackSelection() {
 
@@ -356,6 +354,113 @@ public class DerivationImp implements Derivation {
 			e.printStackTrace();
 		}
 		
+	}
+
+	@Override
+	public Workflow derive() {
+		
+		
+		ExpLine expline = (ExpLine)  derivationGraphComponent.getGraph().getModel();
+			
+		Workflow workflow = new Workflow();
+		
+		workflow.setRoot(expline.getRoot());
+		
+		
+		
+		if(validatesDerivedWorklfow()){
+			
+			mxCell root =  (mxCell) workflow.getRoot();
+			root = (mxCell) root.getChildAt(0);
+			
+			CharonAPI charonAPI = charon.getCharonAPI();
+			
+			for (int i = 0; i < root.getChildCount(); i++) {
+							
+				mxICell cell = root.getChildAt(i);
+				
+				try{
+				
+					if(cell.isVertex()){	
+					
+						if (cell instanceof Activity) {
+							Activity actv = (Activity) cell;
+							
+
+							if(actv.getType() == Activity.OPTIONAL_INVARIANT_TYPE){
+								charonAPI.insertOptional(actv.getId());
+								
+								if(!charonAPI.isElementSelected(actv.getId())){
+									
+									if(!actv.getAlgebraicOperator().equals("Join")){
+										Port inputPort = actv.getInputPort(0);
+										Port outputPort = actv.getOutputPort();
+										
+										Object[] edges = derivationGraphComponent.getGraph().getEdges(inputPort, null);
+										
+										Port earlyPort = null;
+										earlyPort = (Port)((Edge)edges[0]).getSource();
+										
+										if(earlyPort.getId().equals(inputPort.getId())){
+											
+											earlyPort = (Port)((Edge)edges[0]).getTarget();
+										}
+										
+										
+										edges = derivationGraphComponent.getGraph().getEdges(outputPort, null);
+										
+										Port afterPort = null;
+										afterPort = (Port)((Edge)edges[0]).getTarget();
+										
+										if(afterPort.getId().equals(outputPort.getId())){
+											
+											afterPort = (Port)((Edge)edges[0]).getSource();
+										}
+										
+										
+										derivationGraphComponent.getGraph().insertEdge(actv.getParent(), null, "", earlyPort, afterPort);
+										
+										
+										derivationGraphComponent.getGraph().removeCells(new Object[]{actv}, true);
+										
+										
+										workflow = new Workflow();
+										
+										workflow.setRoot(expline.getRoot());
+										
+										
+										
+									}
+									
+								}
+								
+							}
+							if(actv.getType() == Activity.OPTIONAL_VARIATION_POINT_TYPE){
+								
+								if(!charonAPI.isElementSelected(actv.getId())){
+									
+								}
+
+							}
+							else
+							if(actv.getType() == Activity.VARIATION_POINT_TYPE){
+
+							}	
+							
+						}
+		
+					}		
+				}
+				catch(CharonException e){
+					e.printStackTrace();
+				}
+			}
+
+			
+			return workflow;
+		}
+		else
+			return null;
 	}
 
 }

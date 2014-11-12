@@ -53,7 +53,6 @@ public class DerivationMenuBar extends JMenuBar
 		});
 
 		
-		mxCodecRegistry.register(new WorkflowCodec());
 		temp.add(editor.bind("Generate abstract workflow", new GenerateAbstractWorkflowAction(true)));
 		
 //		temp.add(new JMenuItem("Generate abstract workflow"));

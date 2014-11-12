@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 
 import br.ufrj.cos.expline.model.Activity;
+import br.ufrj.cos.expline.model.Workflow;
 
 public interface Derivation {
 
@@ -90,5 +91,7 @@ public interface Derivation {
 	public void commitSelection();
 	
 	public void rollbackSelection();
+
+	public Workflow derive();
 	
 }

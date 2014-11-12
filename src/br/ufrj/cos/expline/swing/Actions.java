@@ -29,11 +29,19 @@ import javax.swing.filechooser.FileFilter;
 
 import org.w3c.dom.Document;
 
+import br.ufrj.cos.expline.derivation.Derivation;
+import br.ufrj.cos.expline.io.Activity2Codec;
+import br.ufrj.cos.expline.io.ActivityCodec;
 import br.ufrj.cos.expline.model.Activity;
+import br.ufrj.cos.expline.model.Edge;
 import br.ufrj.cos.expline.model.ExpLine;
+import br.ufrj.cos.expline.model.Port;
+import br.ufrj.cos.expline.model.Workflow;
 
 import com.mxgraph.io.mxCodec;
+import com.mxgraph.io.mxCodecRegistry;
 import com.mxgraph.io.mxGdCodec;
+import com.mxgraph.io.mxObjectCodec;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGraphModel;
 import com.mxgraph.swing.mxGraphComponent;
@@ -490,55 +498,6 @@ public class Actions
 		}
 
 		/**
-		 * Saves XML+PNG format.
-		 */
-		protected void saveXmlPng(ExpLineEditor editor, String filename,
-				Color bg) throws IOException
-		{
-			mxGraphComponent graphComponent = editor.getGraphComponent();
-			mxGraph graph = graphComponent.getGraph();
-
-			// Creates the image for the PNG file
-			BufferedImage image = mxCellRenderer.createBufferedImage(graph,
-					null, 1, bg, graphComponent.isAntiAlias(), null,
-					graphComponent.getCanvas());
-
-			// Creates the URL-encoded XML data
-			mxCodec codec = new mxCodec();
-			String xml = URLEncoder.encode(
-					mxXmlUtils.getXml(codec.encode(graph.getModel())), "UTF-8");
-			mxPngEncodeParam param = mxPngEncodeParam
-					.getDefaultEncodeParam(image);
-			param.setCompressedText(new String[] { "mxGraphModel", xml });
-
-			// Saves as a PNG file
-			FileOutputStream outputStream = new FileOutputStream(new File(
-					filename));
-			try
-			{
-				mxPngImageEncoder encoder = new mxPngImageEncoder(outputStream,
-						param);
-
-				if (image != null)
-				{
-					encoder.encode(image);
-
-					editor.setModified(false);
-					editor.setCurrentFile(new File(filename));
-				}
-				else
-				{
-					JOptionPane.showMessageDialog(graphComponent,
-							mxResources.get("noImageData"));
-				}
-			}
-			finally
-			{
-				outputStream.close();
-			}
-		}
-
-		/**
 		 * 
 		 */
 		public void actionPerformed(ActionEvent e)
@@ -627,9 +586,23 @@ public class Actions
 					if (ext.equalsIgnoreCase("xpl")
 							|| ext.equalsIgnoreCase("xml"))
 					{
+						
+						
+						Derivation derivation = editor.getDerivation();
+						
+						derivation.derive();
+						
+						Workflow workflow = derivation.derive();	
+						
+						
+						mxCodecRegistry.register(new Activity2Codec());
+						mxCodecRegistry.register(new mxObjectCodec(new Port(), new String[] { "type", "parent", "geometry" }, new String[] { "parent", "source", "target" },
+								null));
+						mxCodecRegistry.register(new mxObjectCodec(new Edge(), new String[] { "edge", "value", "type", "style", "parent", "geometry", "vertex" }, new String[] { "parent", "source", "target" },
+								null));
+						
 						mxCodec codec = new mxCodec();
-						String xml = mxXmlUtils.getXml(codec.encode(graph
-								.getModel()));
+						String xml = mxXmlUtils.getXml(codec.encode(workflow));
 
 						mxUtils.writeFile(xml, filename);
 

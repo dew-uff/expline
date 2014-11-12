@@ -4,20 +4,15 @@
  */
 package br.ufrj.cos.expline.io;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
-import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.model.ExpLine;
-import br.ufrj.cos.expline.model.Port;
-import br.ufrj.cos.expline.model.Rule;
+import br.ufrj.cos.expline.model.Workflow;
 
 import com.mxgraph.io.mxCodec;
 import com.mxgraph.io.mxObjectCodec;
@@ -37,7 +32,7 @@ public class WorkflowCodec extends mxObjectCodec
 	 */
 	public WorkflowCodec()
 	{
-		this(new ExpLine(), new String[] { "rules" }, null,
+		this(new Workflow(), null, null,
 				null);
 	}
 
@@ -63,20 +58,13 @@ public class WorkflowCodec extends mxObjectCodec
 	 * of cell nodes as produced by the mxCellCodec. The sequence is
 	 * wrapped-up in a node with the name root.
 	 */
-	public Node beforeEncode(mxCodec enc, Object obj, Node node)
+	protected void encodeObject(mxCodec enc, Object obj, Node node)
 	{
-//		if (obj instanceof ExpLine)
-//		{
-//			Node rootNode = enc.getDocument().createElement("Workflow");
-//			mxGraphModel model = (ExpLine) obj;
-//			enc.encodeCell((mxICell) model.getRoot(), rootNode, true);
-//			node.appendChild(rootNode);
-//		}
+
 		
-		if (obj instanceof ExpLine)
+		if (obj instanceof Workflow)
 		{
-			Node rootNode = enc.getDocument().createElement("Workflow");
-			mxGraphModel model = (ExpLine) obj;
+			mxGraphModel model = (Workflow) obj;
 			
 			mxICell root = (mxICell) model.getRoot();
 			root = root.getChildAt(0);
@@ -85,39 +73,30 @@ public class WorkflowCodec extends mxObjectCodec
 				mxICell element = root.getChildAt(i);
 				
 //				if (element instanceof Activity) 
-					enc.encodeCell(element, rootNode, false);
+					enc.encodeCell(element, node, false);
 			}
 			
-			node.appendChild(rootNode);
+//			node.appendChild(rootNode);
 		}
 		
-		return node;
 		
 	}
 	
-	
-	
-	
-	@Override
-	protected void encodeObject(mxCodec enc, Object obj, Node node) {
-		// TODO Auto-generated method stub
-		//super.encodeObject(enc, obj, node);
-	}
 
 	public Node beforeDecode(mxCodec dec, Node node, Object into)
 	{
 		if (node instanceof Element)
 		{
 			Element elt = (Element) node;
-			ExpLine model = null;
+			Workflow model = null;
 
-			if (into instanceof ExpLine)
+			if (into instanceof Workflow)
 			{
-				model = (ExpLine) into;
+				model = (Workflow) into;
 			}
 			else
 			{
-				model = new ExpLine();
+				model = new Workflow();
 			}
 
 			// Reads the cells into the graph model. All cells
