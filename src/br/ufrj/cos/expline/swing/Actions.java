@@ -32,6 +32,7 @@ import org.w3c.dom.Document;
 import br.ufrj.cos.expline.derivation.Derivation;
 import br.ufrj.cos.expline.io.Activity2Codec;
 import br.ufrj.cos.expline.io.ActivityCodec;
+import br.ufrj.cos.expline.io.EdgeCodec;
 import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.model.Edge;
 import br.ufrj.cos.expline.model.ExpLine;
@@ -494,7 +495,7 @@ public class Actions
 		 */
 		public GenerateAbstractWorkflowAction(boolean showDialog)
 		{
-			this.showDialog = showDialog;
+			this.showDialog= showDialog;
 		}
 
 		/**
@@ -503,15 +504,25 @@ public class Actions
 		public void actionPerformed(ActionEvent e)
 		{
 			ExpLineEditor editor = getEditor(e);
+			
+			Derivation derivation = editor.getDerivation();
+			
+			if(!derivation.validatesDerivedWorklfow()){
+				
+				JOptionPane.showMessageDialog(editor,
+						"Derivation Status: Selection is not Valid");
+				
+				return;
+			}
+			
 
 			if (editor != null)
 			{
 				mxGraphComponent graphComponent = editor.getGraphComponent();
-				mxGraph graph = graphComponent.getGraph();
 				FileFilter selectedFilter = null;
-				DefaultFileFilter mxeFilter = new DefaultFileFilter(".xpl",
-						"ExpLine Editor " + mxResources.get("file")
-						+ " (.xpl)");
+				DefaultFileFilter mxeFilter = new DefaultFileFilter(".xml",
+						"Abstract Workflow " + mxResources.get("file")
+						+ " (.xml)");
 				String filename = null;
 				boolean dialogShown = false;
 
@@ -583,12 +594,11 @@ public class Actions
 							.substring(filename.lastIndexOf('.') + 1);
 
 					
-					if (ext.equalsIgnoreCase("xpl")
-							|| ext.equalsIgnoreCase("xml"))
+					if (ext.equalsIgnoreCase("xml"))
 					{
 						
 						
-						Derivation derivation = editor.getDerivation();
+						derivation = editor.getDerivation();
 						
 						derivation.derive();
 						
@@ -603,11 +613,20 @@ public class Actions
 						
 						mxCodec codec = new mxCodec();
 						String xml = mxXmlUtils.getXml(codec.encode(workflow));
+						
+						mxCodecRegistry.register(new ActivityCodec());
+						mxCodecRegistry.register(new mxObjectCodec(new Port(), null, new String[] { "parent", "source", "target" },
+								null));
+						mxCodecRegistry.register(new EdgeCodec());
+						
 
 						mxUtils.writeFile(xml, filename);
 
-						editor.setModified(false);
-						editor.setCurrentFile(new File(filename));
+						
+						JOptionPane.showMessageDialog(editor,
+								"Derivation Status: Workflow Derived Successfully");
+						
+						
 					}
 				}
 				catch (Throwable ex)

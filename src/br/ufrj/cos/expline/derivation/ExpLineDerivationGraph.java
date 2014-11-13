@@ -152,7 +152,7 @@ public class ExpLineDerivationGraph extends mxGraph
 	public boolean isCellDeletable(Object cell) {
 		// TODO Auto-generated method stub
 		
-		return false;
+		return true;
 	}
 	
 	@Override

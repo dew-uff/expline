@@ -702,17 +702,6 @@ public class ExpLineEditor extends JPanel
 		currentGraphComponent = derivationGraphComponent;
 		
 		
-//		mxCell root =  (mxCell) expLineDer.getModel().getRoot();
-//		root = (mxCell) root.getChildAt(0);
-//		
-//		for (int i = 0; i < root.getChildCount(); i++) {
-//			
-////			root.getChildAt(i).setStyle("strokeWidth=6;strokeColor=#66CC00");
-////			root.getChildAt(i).setStyle("strokeWidth=6;strokeColor=#FF0000");
-//			root.getChildAt(i).setStyle(root.getChildAt(i).getStyle() + ";opacity=20");
-//			
-//		}
-		
 		derivation = new DerivationImp(derivationGraphComponent);
 		
 		derivation.startDerivation();

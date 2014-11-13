@@ -53,9 +53,6 @@ public class DerivationImp implements Derivation {
 		
 		for (int i = 0; i < root.getChildCount(); i++) {
 			
-//			root.getChildAt(i).setStyle("strokeWidth=6;strokeColor=#66CC00");
-//			root.getChildAt(i).setStyle("strokeWidth=6;strokeColor=#FF0000");
-			
 			mxICell cell = root.getChildAt(i);
 			
 			try{
@@ -356,11 +353,19 @@ public class DerivationImp implements Derivation {
 		
 	}
 
-	@Override
+	
 	public Workflow derive() {
 		
 		
-		ExpLine expline = (ExpLine)  derivationGraphComponent.getGraph().getModel();
+		
+		//Creating temporary graph structure to derivate the workflow to not propagate to the original one that is being manipulated by the user on the screen.
+		//
+		ExpLineDerivationGraph expLineDerGraphTemp = new ExpLineDerivationGraph(null);
+		
+		expLineDerGraphTemp.getModel().setRoot(derivationGraphComponent.getGraph().getModel().getRoot());
+		
+		
+		ExpLine expline = (ExpLine)  expLineDerGraphTemp.getModel();
 			
 		Workflow workflow = new Workflow();
 		
@@ -393,35 +398,47 @@ public class DerivationImp implements Derivation {
 								if(!charonAPI.isElementSelected(actv.getId())){
 									
 									if(!actv.getAlgebraicOperator().equals("Join")){
+										
 										Port inputPort = actv.getInputPort(0);
 										Port outputPort = actv.getOutputPort();
 										
-										Object[] edges = derivationGraphComponent.getGraph().getEdges(inputPort, null);
+										Object[] edges = expLineDerGraphTemp.getEdges(inputPort, null);
 										
 										Port earlyPort = null;
-										earlyPort = (Port)((Edge)edges[0]).getSource();
-										
-										if(earlyPort.getId().equals(inputPort.getId())){
-											
-											earlyPort = (Port)((Edge)edges[0]).getTarget();
-										}
-										
-										
-										edges = derivationGraphComponent.getGraph().getEdges(outputPort, null);
-										
 										Port afterPort = null;
-										afterPort = (Port)((Edge)edges[0]).getTarget();
 										
-										if(afterPort.getId().equals(outputPort.getId())){
+										
+										if(edges.length > 0){
+										
+											earlyPort = (Port)((Edge)edges[0]).getSource();
 											
-											afterPort = (Port)((Edge)edges[0]).getSource();
+											if(earlyPort.getId().equals(inputPort.getId())){
+												
+												earlyPort = (Port)((Edge)edges[0]).getTarget();
+											}
 										}
 										
 										
-										derivationGraphComponent.getGraph().insertEdge(actv.getParent(), null, "", earlyPort, afterPort);
+										
+										edges = expLineDerGraphTemp.getEdges(outputPort, null);
 										
 										
-										derivationGraphComponent.getGraph().removeCells(new Object[]{actv}, true);
+										if(edges.length > 0){
+										
+											afterPort = (Port)((Edge)edges[0]).getTarget();
+											
+											if(afterPort.getId().equals(outputPort.getId())){
+												
+												afterPort = (Port)((Edge)edges[0]).getSource();
+											}
+										}
+										
+										
+										if(earlyPort != null && afterPort != null)
+											expLineDerGraphTemp.insertEdge(actv.getParent(), null, "", earlyPort, afterPort);
+										
+										
+										expLineDerGraphTemp.removeCells(new Object[]{actv}, true);
 										
 										
 										workflow = new Workflow();
@@ -437,7 +454,88 @@ public class DerivationImp implements Derivation {
 							}
 							if(actv.getType() == Activity.OPTIONAL_VARIATION_POINT_TYPE){
 								
+								charonAPI.insertOptional(actv.getId());
+								
 								if(!charonAPI.isElementSelected(actv.getId())){
+									
+									if(!actv.getAlgebraicOperator().equals("Join")){
+										
+										Port inputPort = actv.getInputPort(0);
+										Port outputPort = actv.getOutputPort();
+										
+										Object[] edges = expLineDerGraphTemp.getEdges(inputPort, null);
+										
+										Port earlyPort = null;
+										Port afterPort = null;
+										
+										
+										if(edges.length > 0){
+										
+											earlyPort = (Port)((Edge)edges[0]).getSource();
+											
+											if(earlyPort.getId().equals(inputPort.getId())){
+												
+												earlyPort = (Port)((Edge)edges[0]).getTarget();
+											}
+										}
+										
+										
+										
+										edges = expLineDerGraphTemp.getEdges(outputPort, null);
+										
+										
+										if(edges.length > 0){
+										
+											afterPort = (Port)((Edge)edges[0]).getTarget();
+											
+											if(afterPort.getId().equals(outputPort.getId())){
+												
+												afterPort = (Port)((Edge)edges[0]).getSource();
+											}
+										}
+										
+										
+										if(earlyPort != null && afterPort != null)
+											expLineDerGraphTemp.insertEdge(actv.getParent(), null, "", earlyPort, afterPort);
+										
+										
+										expLineDerGraphTemp.removeCells(new Object[]{actv}, true);
+										
+										
+										workflow = new Workflow();
+										
+										workflow.setRoot(expline.getRoot());
+										
+										
+										
+									}
+									
+								}
+								else{
+									
+									Object[] edges = expLineDerGraphTemp.getEdges(actv, null);
+									
+									for (Object object : edges) {
+										Edge edge = (Edge) object;
+										
+										if(!(edge.getSource() instanceof Port) && !(edge.getTarget() instanceof Port)){
+											
+											Activity variant = (Activity) edge.getSource();
+											
+											if(variant.getType() != Activity.VARIANT_TYPE)
+												variant = (Activity) edge.getTarget();
+																						
+											if(charonAPI.isElementSelected(variant.getId())){
+												
+												actv.setValue(((String)actv.getValue())+" ("+((String)variant.getValue()) +")");
+												
+											}
+											
+											expLineDerGraphTemp.removeCells(new Object[]{variant}, true);
+
+										}
+										
+									}
 									
 								}
 
@@ -445,6 +543,29 @@ public class DerivationImp implements Derivation {
 							else
 							if(actv.getType() == Activity.VARIATION_POINT_TYPE){
 
+								Object[] edges = expLineDerGraphTemp.getEdges(actv, null);
+								
+								for (Object object : edges) {
+									Edge edge = (Edge) object;
+									
+									if(!(edge.getSource() instanceof Port) && !(edge.getTarget() instanceof Port)){
+										
+										Activity variant = (Activity) edge.getSource();
+										
+										if(variant.getType() != Activity.VARIANT_TYPE)
+											variant = (Activity) edge.getTarget();
+										
+										if(charonAPI.isElementSelected(variant.getId())){
+																					
+											actv.setValue(((String)actv.getValue())+" ("+((String)variant.getValue()) +")");
+											
+										}
+										
+										expLineDerGraphTemp.removeCells(new Object[]{variant}, true);
+
+									}
+									
+								}
 							}	
 							
 						}
@@ -463,4 +584,5 @@ public class DerivationImp implements Derivation {
 			return null;
 	}
 
+	
 }
