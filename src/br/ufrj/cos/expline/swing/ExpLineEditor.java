@@ -64,6 +64,8 @@ import com.mxgraph.layout.mxParallelEdgeLayout;
 import com.mxgraph.layout.mxPartitionLayout;
 import com.mxgraph.layout.mxStackLayout;
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
+import com.mxgraph.model.mxGraphModel;
+import com.mxgraph.model.mxIGraphModel;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.swing.mxGraphOutline;
 import com.mxgraph.swing.handler.mxKeyboardHandler;
@@ -690,7 +692,54 @@ public class ExpLineEditor extends JPanel
 	}
 	
 	
-	protected void changeToDerivationView(){
+protected void changeToDerivationView(){
+		
+		
+		mxGraph graph = editionGraphComponent.getGraph();
+		mxIGraphModel model = graph.getModel();
+		Object[] cells = model.cloneCells(graph.getChildCells(graph.getDefaultParent(), true, true), true);
+		
+		mxGraphModel modelCopy = new mxGraphModel();
+		mxGraph graphCopy = new mxGraph(modelCopy);
+		graphCopy.addCells(cells);
+		
+		
+		ExpLineDerivationGraph expLineDer = new ExpLineDerivationGraph(this);
+		
+		expLineDer.getModel().setRoot(graphCopy.getModel().getRoot());
+		
+		
+		derivationGraphComponent = new ExpLineDerivationGraphComponent(expLineDer);
+		
+		currentGraphComponent = derivationGraphComponent;
+		
+		
+		derivation = new DerivationImp(derivationGraphComponent);
+		
+		derivation.startDerivation();
+		
+		this.remove(this.outer);
+		this.add(derivationGraphComponent, BorderLayout.CENTER);
+		
+		
+		this.frame.setJMenuBar(new DerivationMenuBar(this));
+		
+		installDerivationToolBar();
+		
+		
+		installDerivationGraphComponentListeners();
+		
+		derivationGraphComponent.refresh();
+		
+		Rectangle bounds = this.frame.getBounds();
+		this.frame.pack();
+		
+		this.frame.setBounds(bounds);
+	}
+	
+	
+	protected void changeToDerivationView2(){
+		
 		
 		ExpLineDerivationGraph expLineDer = new ExpLineDerivationGraph(this);
 		
