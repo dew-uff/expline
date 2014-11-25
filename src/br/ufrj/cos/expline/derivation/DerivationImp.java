@@ -65,11 +65,8 @@ public class DerivationImp implements Derivation {
 						if(actv.getType() == Activity.INVARIANT_TYPE){
 							charonAPI.insertMandatory(actv.getId());
 							
-							beginSelection();
-							
-							System.out.println(selectActivity(actv));
+							selectActivity(actv);
 						
-							commitSelection();
 						}
 						else
 						if(actv.getType() == Activity.OPTIONAL_INVARIANT_TYPE){
@@ -107,11 +104,8 @@ public class DerivationImp implements Derivation {
 						if(actv.getType() == Activity.VARIATION_POINT_TYPE){
 							charonAPI.insertVariationPoint(actv.getId(), true);
 							
-							beginSelection();
-							
 							selectActivity(actv);
-						
-							commitSelection();
+
 						}	
 						
 					}
