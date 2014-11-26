@@ -31,6 +31,7 @@ public class DerivationImp implements Derivation {
 		this.derivationGraphComponent = derivationGraphComponent;
 		
 		try {
+
 			charon = new Charon("doc");
 		} catch (CharonException e) {
 			// TODO Auto-generated catch block

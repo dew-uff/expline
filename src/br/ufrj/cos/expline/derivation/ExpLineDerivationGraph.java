@@ -189,7 +189,6 @@ public class ExpLineDerivationGraph extends mxGraph
 //			else
 //				activitySelectionChangeList.put(actv, false);
 			
-			derivation.beginSelection();
 			
 			boolean isSelectionOk;
 			
@@ -198,12 +197,6 @@ public class ExpLineDerivationGraph extends mxGraph
 			}
 			else
 				isSelectionOk = derivation.selectActivity(actv);
-			
-			
-			if(isSelectionOk)
-				derivation.commitSelection();
-			else
-				derivation.rollbackSelection();
 			
 			
 //			if(derivation.generatesValidState(activitySelectionChangeList)){
