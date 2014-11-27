@@ -4,6 +4,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.swing.JOptionPane;
 
 import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.model.Edge;
@@ -122,29 +125,138 @@ public class DerivationImp implements Derivation {
 
 		ExpLine model = (ExpLine) derivationGraphComponent.getGraph().getModel();
 		
-//		insertRules(model.getRules());
+		insertRules(model.getRules());
 		
 	}
 
 	private void insertRules(List<Rule> rules) {
+		mxCell root =  (mxCell) derivationGraphComponent.getGraph().getModel().getRoot();
+		root = (mxCell) root.getChildAt(0);
 		
+		List<String> expressionList = new ArrayList<String>();
 		
-		for (Rule rule : rules) {
+		String variableList = "";
+		String variableInstantiation = "";
+		
+		for (int i = 0; i < root.getChildCount(); i++) {
 			
-			for (Expression exp : rule.getConditions()){
+			mxICell cell = root.getChildAt(i);
 			
+				if(cell.isVertex()){	
 				
-				List<String> activityIds = new ArrayList<>();
+					if (cell instanceof Activity) {
+						Activity actv = (Activity) cell;
+						
+
+						if(actv.getType() == Activity.OPTIONAL_VARIATION_POINT_TYPE || actv.getType() == Activity.VARIATION_POINT_TYPE){
+							
+							Object[] edges = derivationGraphComponent.getGraph().getEdges(actv, null);
+							
+							String variationPointExp = "";
+							
+							if(edges.length>1){
+								
+								Activity temp = (Activity)((Edge)edges[0]).getSource();
+								
+								Activity variant1 = null;
+								
+								if(temp.getType() == Activity.VARIANT_TYPE)
+									variant1 = temp;
+								else
+									variant1 = (Activity)((Edge)edges[0]).getTarget();
+								
+								
+								temp = (Activity)((Edge)edges[1]).getSource();
+								
+								Activity variant2 = null;
+								
+								if(temp.getType() == Activity.VARIANT_TYPE)
+									variant2 = temp;
+								else
+									variant2 = (Activity)((Edge)edges[1]).getTarget();
+								
+								variationPointExp = variationPointExp + "";
+								
+								variationPointExp = "xor(A"+variant1.getId()+", A" + variant2.getId() +")";
+								
+								
+								variableList = variableList + "A"+variant1.getId() + ", A"+variant2.getId()+", ";
+								
+								variableInstantiation = variableInstantiation + "boolean"+variant1.getId()+"(A"+variant1.getId() + "), boolean"+variant2.getId()+"(A"+variant2.getId()+"), ";
+							}
+							for (int j=2; j<edges.length; j++) {
+								
+								Activity temp = (Activity)((Edge)edges[j]).getSource();
+								
+								Activity variant = null;
+								
+								if(temp.getType() == Activity.VARIANT_TYPE)
+									variant = temp;
+								else
+									variant = (Activity)((Edge)edges[j]).getTarget();
+								
+								variationPointExp = "xor(" +variationPointExp + ", A"+variant.getId()+")";
+								
+								variableList = variableList +"A" + variant.getId() +", ";
+								
+								variableInstantiation = variableInstantiation+ "boolean"+variant.getId()+"(A"+variant.getId() + "), ";
+								
+							}
+							
+							
+							expressionList.add(variationPointExp);
+							
+						}
+	
+						
+					}
+	
+				}		
+		}
+		
+		String expression = "";
+		
+		if(expressionList.size()>0){
+			if(expressionList.size()>1){
+				expression = "and("+expressionList.get(0)+", " + expressionList.get(1) +")";
 				
-				for (Activity activity : exp.getActivities()) {
+				for (int j=2; j<expressionList.size(); j++) {
 					
-					activityIds.add(activity.getId());
+					expression = "and("+ expression + ", "+expressionList.get(j)+")";
+					
 				}
 				
-//				charon.getCharonAPI().insertRule(exp.getOperation(),   exp.getModifier(), activityIds);
 				
 			}
+			else
+				expressionList.get(0);
 		}
+
+		System.out.println(expression);
+		
+		expression = "evaluateState(" + variableList +"E) :- "+ variableInstantiation + " evaluate(E, Result).";
+		
+		System.out.println(expression);
+		
+		
+		
+		
+//		for (Rule rule : rules) {
+//			
+//			for (Expression exp : rule.getConditions()){
+//			
+//				
+//				List<String> activityIds = new ArrayList<>();
+//				
+//				for (Activity activity : exp.getActivities()) {
+//					
+//					activityIds.add(activity.getId());
+//				}
+//				
+////				charon.getCharonAPI().insertRule(exp.getOperation(),   exp.getModifier(), activityIds);
+//				
+//			}
+//		}
 		
 	}
 
@@ -272,6 +384,82 @@ public class DerivationImp implements Derivation {
 		}	
 		
 		return result;
+	}
+	
+	@Override
+	public void simulateSelection(Activity activity) {
+		
+		CharonAPI charonAPI = charon.getCharonAPI();
+		
+		try {
+			
+			List<Map<String, Object>> results = null;
+			
+			if(activity.getType() != activity.INVARIANT_TYPE || activity.getType() != activity.VARIATION_POINT_TYPE){
+//				results = charonAPI
+				charonAPI.selectElement(activity.getId());
+			}
+			
+			
+			if(results != null){
+				
+				if(!results.isEmpty()){
+					
+					//abrir tela que lista opções de seleção
+					
+					JOptionPane.showMessageDialog(derivationGraphComponent,
+							"Derivation Status: Selection is Valid");	
+				}
+				else{
+					activity.setStyle(activity.getStyle().replace(";opacity=20", ""));
+				}
+				
+			}
+				
+			
+		} catch (CharonException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+	
+	@Override
+	public void simulateDesselection(Activity activity) {
+		
+		CharonAPI charonAPI = charon.getCharonAPI();
+		
+		try {
+			
+			List<Map<String, Object>> results = null;
+			
+			if(activity.getType() != activity.INVARIANT_TYPE || activity.getType() != activity.VARIATION_POINT_TYPE){
+//				results = charonAPI
+				charonAPI.selectElement(activity.getId());
+			}
+			
+			
+			if(results != null){
+				
+				if(!results.isEmpty()){
+					
+					//abrir tela que lista opções de seleção
+					
+					JOptionPane.showMessageDialog(derivationGraphComponent,
+							"Derivation Status: Selection is Valid");	
+				}
+				else{
+					activity.setStyle(activity.getStyle() + ";opacity=20");
+				}
+				
+			}
+				
+			
+		} catch (CharonException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 

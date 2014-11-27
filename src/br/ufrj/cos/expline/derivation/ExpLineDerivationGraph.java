@@ -190,13 +190,10 @@ public class ExpLineDerivationGraph extends mxGraph
 //				activitySelectionChangeList.put(actv, false);
 			
 			
-			boolean isSelectionOk;
-			
-			if(selected){
-				isSelectionOk = derivation.unselectActivity(actv);
-			}
+			if(selected)
+				derivation.simulateDesselection(actv);
 			else
-				isSelectionOk = derivation.selectActivity(actv);
+				derivation.simulateSelection(actv);
 			
 			
 //			if(derivation.generatesValidState(activitySelectionChangeList)){

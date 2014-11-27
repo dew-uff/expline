@@ -93,5 +93,9 @@ public interface Derivation {
 	public void rollbackSelection();
 
 	public Workflow derive();
+
+	void simulateSelection(Activity activity);
+
+	void simulateDesselection(Activity activity);
 	
 }
