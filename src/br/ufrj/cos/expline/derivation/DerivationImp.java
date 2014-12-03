@@ -1,6 +1,10 @@
 package br.ufrj.cos.expline.derivation;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +15,6 @@ import javax.swing.JOptionPane;
 import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.model.Edge;
 import br.ufrj.cos.expline.model.ExpLine;
-import br.ufrj.cos.expline.model.Expression;
 import br.ufrj.cos.expline.model.Port;
 import br.ufrj.cos.expline.model.Rule;
 import br.ufrj.cos.expline.model.Workflow;
@@ -28,15 +31,41 @@ public class DerivationImp implements Derivation {
 	private mxGraphComponent derivationGraphComponent;
 	
 	private Charon charon;
+	
+	private String query;
+	
+	private Map<String, Activity> currentState;
 		
 	public DerivationImp(mxGraphComponent derivationGraphComponent) {
 		// TODO Auto-generated constructor stub
 		this.derivationGraphComponent = derivationGraphComponent;
 		
+		currentState = new HashMap<String, Activity>();
+		
 		try {
 
-			charon = new Charon("doc");
+			InputStream is = new FileInputStream(new File("doc/ExpLine.pl"));
+			
+	        byte[] info = new byte[is.available()];
+	        is.read(info);
+	        String theory = new String(info);
+			
+			
+			ExpLine model = (ExpLine) derivationGraphComponent.getGraph().getModel();
+			String rules = createRules(model.getRules());
+			
+			
+			charon = new Charon(theory+"\n"+rules);
+			
+			startDerivation();
+			
 		} catch (CharonException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -70,6 +99,10 @@ public class DerivationImp implements Derivation {
 							charonAPI.insertMandatory(actv.getId());
 							
 							selectActivity(actv);
+							
+							actv.setSelected(true);
+							
+							currentState.put(actv.getId(), actv);
 						
 						}
 						else
@@ -123,13 +156,14 @@ public class DerivationImp implements Derivation {
 		
 		
 
-		ExpLine model = (ExpLine) derivationGraphComponent.getGraph().getModel();
-		
-		insertRules(model.getRules());
+//		ExpLine model = (ExpLine) derivationGraphComponent.getGraph().getModel();
+//		
+//		insertRules(model.getRules());
 		
 	}
 
-	private void insertRules(List<Rule> rules) {
+	private String createRules(List<Rule> rules) {
+		
 		mxCell root =  (mxCell) derivationGraphComponent.getGraph().getModel().getRoot();
 		root = (mxCell) root.getChildAt(0);
 		
@@ -137,6 +171,155 @@ public class DerivationImp implements Derivation {
 		
 		String variableList = "";
 		String variableInstantiation = "";
+		String assertzBooleanValues = "";
+		
+		for (int i = 0; i < root.getChildCount(); i++) {
+			
+			mxICell cell = root.getChildAt(i);
+			
+				if(cell.isVertex()){	
+				
+					if (cell instanceof Activity) {
+						Activity actv = (Activity) cell;
+						
+
+						if(actv.getType() == Activity.OPTIONAL_VARIATION_POINT_TYPE || actv.getType() == Activity.VARIATION_POINT_TYPE){
+							
+							Object[] edges = derivationGraphComponent.getGraph().getEdges(actv, null);
+							
+							String variationPointExp1 = "";
+							String variationPointExp2 = "";
+							
+							
+							if(edges.length>1){
+								
+								Activity temp = (Activity)((Edge)edges[0]).getSource();
+								
+								Activity variant1 = null;
+								
+								if(temp.getType() == Activity.VARIANT_TYPE)
+									variant1 = temp;
+								else
+									variant1 = (Activity)((Edge)edges[0]).getTarget();
+								
+								
+								temp = (Activity)((Edge)edges[1]).getSource();
+								
+								Activity variant2 = null;
+								
+								if(temp.getType() == Activity.VARIANT_TYPE)
+									variant2 = temp;
+								else
+									variant2 = (Activity)((Edge)edges[1]).getTarget();
+								
+								variationPointExp1 = "xor(A"+variant1.getId()+", A" + variant2.getId() +")";
+								variationPointExp2 = "or(A"+variant1.getId()+", A" + variant2.getId() +")";
+								
+								
+								variableList = variableList + "A"+variant1.getId() + ", A"+variant2.getId()+", ";
+								
+								variableInstantiation = variableInstantiation + "boolean"+variant1.getId()+"(A"+variant1.getId() + "), boolean"+variant2.getId()+"(A"+variant2.getId()+"), ";
+								
+								assertzBooleanValues = assertzBooleanValues + "boolean"+variant1.getId()+"(true).\nboolean"+variant1.getId()+"(false).\nboolean"+variant2.getId()+"(true).\nboolean"+variant2.getId()+"(false).\n";
+							}
+							else
+								variationPointExp1 = "false";
+								variationPointExp2 = "false";
+								
+							for (int j=2; j<edges.length; j++) {
+								
+								Activity temp = (Activity)((Edge)edges[j]).getSource();
+								
+								Activity variant = null;
+								
+								if(temp.getType() == Activity.VARIANT_TYPE)
+									variant = temp;
+								else
+									variant = (Activity)((Edge)edges[j]).getTarget();
+								
+								variationPointExp1 = "xor(" +variationPointExp1 + ", A"+variant.getId()+")";
+								variationPointExp2 = "or(" +variationPointExp2 + ", A"+variant.getId()+")";
+								
+								variableList = variableList +"A" + variant.getId() +", ";
+								
+								variableInstantiation = variableInstantiation+ "boolean"+variant.getId()+"(A"+variant.getId() + "), ";
+								
+								assertzBooleanValues = assertzBooleanValues+ "boolean"+variant.getId()+"(true).\nboolean"+variant.getId()+"(false).\n";
+								
+							}
+							
+							
+							expressionList.add("or("+variationPointExp1+", not "+variationPointExp2+")");
+							
+						}
+	
+						
+					}
+	
+				}		
+		}
+		
+		query = "";
+		
+		if(expressionList.size()>0){
+			if(expressionList.size()>1){
+				query = "and("+expressionList.get(0)+", " + expressionList.get(1) +")";
+				
+				for (int j=2; j<expressionList.size(); j++) {
+					
+					query = "and("+ query + ", "+expressionList.get(j)+")";
+					
+				}
+				
+				
+			}
+			else
+				query = expressionList.get(0);
+		}
+		
+		String expression = assertzBooleanValues+ "\nevaluateState(" + variableList +"E) :- "+ variableInstantiation + " evaluate(E, Result).";
+		
+		query = "evaluateState(" + variableList +query+").";
+		
+		System.out.println(expression);
+		
+		System.out.println(query);
+		
+		
+		return expression;
+		
+//		for (Rule rule : rules) {
+//			
+//			for (Expression exp : rule.getConditions()){
+//			
+//				
+//				List<String> activityIds = new ArrayList<>();
+//				
+//				for (Activity activity : exp.getActivities()) {
+//					
+//					activityIds.add(activity.getId());
+//				}
+//				
+////				charon.getCharonAPI().insertRule(exp.getOperation(),   exp.getModifier(), activityIds);
+//				
+//			}
+//		}
+		
+	}
+	
+	
+	private void insertRules2(List<Rule> rules) {
+		
+		CharonAPI charonAPI = charon.getCharonAPI();
+		
+		mxCell root =  (mxCell) derivationGraphComponent.getGraph().getModel().getRoot();
+		root = (mxCell) root.getChildAt(0);
+		
+		List<String> expressionList = new ArrayList<String>();
+		
+		String variableList = "";
+		String variableInstantiation = "";
+		String assertzBooleanValues = "";
 		
 		for (int i = 0; i < root.getChildCount(); i++) {
 			
@@ -183,6 +366,8 @@ public class DerivationImp implements Derivation {
 								variableList = variableList + "A"+variant1.getId() + ", A"+variant2.getId()+", ";
 								
 								variableInstantiation = variableInstantiation + "boolean"+variant1.getId()+"(A"+variant1.getId() + "), boolean"+variant2.getId()+"(A"+variant2.getId()+"), ";
+								
+								assertzBooleanValues = assertzBooleanValues + "assertz(boolean"+variant1.getId()+"(true)), assertz(boolean"+variant1.getId()+"(false)), assertz(boolean"+variant2.getId()+"(true)), assertz(boolean"+variant2.getId()+"(false)), ";
 							}
 							for (int j=2; j<edges.length; j++) {
 								
@@ -200,6 +385,8 @@ public class DerivationImp implements Derivation {
 								variableList = variableList +"A" + variant.getId() +", ";
 								
 								variableInstantiation = variableInstantiation+ "boolean"+variant.getId()+"(A"+variant.getId() + "), ";
+								
+								assertzBooleanValues = assertzBooleanValues+ "assertz(boolean"+variant.getId()+"(true), assertz(boolean"+variant.getId()+"(false)), ";
 								
 							}
 							
@@ -231,14 +418,17 @@ public class DerivationImp implements Derivation {
 			else
 				expressionList.get(0);
 		}
-
-		System.out.println(expression);
 		
-		expression = "evaluateState(" + variableList +"E) :- "+ variableInstantiation + " evaluate(E, Result).";
+		expression = assertzBooleanValues+ "assertz(evaluateState(" + variableList +"E) :- "+ variableInstantiation + " evaluate(E, Result)).";
 		
 		System.out.println(expression);
 		
-		
+		try {
+			System.out.println(charonAPI.insertRules(expression));
+		} catch (CharonException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		
 //		for (Rule rule : rules) {
@@ -329,7 +519,7 @@ public class DerivationImp implements Derivation {
 		boolean result = false;
 		
 		try {
-			result = charonAPI.isValidDerivatedWorkflow();
+			result = charonAPI.isValidDerivedWorkflow();
 		} catch (CharonException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -393,24 +583,30 @@ public class DerivationImp implements Derivation {
 		
 		try {
 			
-			List<Map<String, Object>> results = null;
+			List<Map<String, Object>> selectImplications = null;
 			
-			if(activity.getType() != activity.INVARIANT_TYPE || activity.getType() != activity.VARIATION_POINT_TYPE){
-//				results = charonAPI
-				charonAPI.selectElement(activity.getId());
+			if(activity.getType() != Activity.INVARIANT_TYPE && activity.getType() != Activity.VARIATION_POINT_TYPE){
+				
+				//TODO: fazer uma verificação se a configuração atual é válida pra não checar tudo...
+				if(!charonAPI.isValidPreliminaryDerivedWorkflow(query, activity.getId(), true))
+					selectImplications = listImplications(activity);
+				else
+					selectImplications = new ArrayList<Map<String, Object>>();
 			}
 			
 			
-			if(results != null){
+			if(selectImplications != null){
 				
-				if(!results.isEmpty()){
+				if(!selectImplications.isEmpty()){
 					
 					//abrir tela que lista opções de seleção
+					processImplications(selectImplications);
 					
 					JOptionPane.showMessageDialog(derivationGraphComponent,
 							"Derivation Status: Selection is Valid");	
 				}
 				else{
+					//charonAPI.selectElement(activity.getId());
 					activity.setStyle(activity.getStyle().replace(";opacity=20", ""));
 				}
 				
@@ -424,6 +620,54 @@ public class DerivationImp implements Derivation {
 
 	}
 	
+	public void processImplications(List<Map<String, Object>> selectImplications){
+		
+		CharonAPI charonAPI = charon.getCharonAPI();
+		
+		//getCurrentState();
+		
+		for (Map<String, Object> implication : selectImplications) {
+			
+			for (String elementId : implication.keySet()) {
+				
+				elementId.substring(1, elementId.length());
+			}
+		}
+		
+	}
+	
+	public void getCurrentState(){
+		//derivationGraphComponent.get
+	}
+	
+	private List<Map<String, Object>> listImplications(Activity activity) throws CharonException {
+		// TODO Auto-generated method stub
+		
+		//verifico se essa configuração é valida
+		//se sim, retorno uma lista vazia
+		//se não é, verifico se exista  eu coleto as implicações necessárias
+		
+		CharonAPI charonAPI = charon.getCharonAPI();
+		List<Map<String, Object>> solutions = charonAPI.listValidConfigurations(query, activity.getId(), true);
+		
+		for (Map<String, Object> solution : solutions) {
+			for (String key : solution.keySet()) {
+				
+				System.out.print(key+"="+solution.get(key)+" ");
+				//charon
+			}
+			System.out.println();
+		}
+		
+		//listo todas as configurações validas
+		//verifica alguma configuração que nao tem nenuhuma implicação
+		//se sim, retorno lista vazia
+		//se não, retorno todas a lista com todas as configurações validas para o usuário selecionar
+		
+		return null;
+	}
+
+
 	@Override
 	public void simulateDesselection(Activity activity) {
 		

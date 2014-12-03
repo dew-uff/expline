@@ -29,6 +29,8 @@ public class Activity extends mxCell implements Cloneable, Serializable{
 	
 	private String algebraicOperator;
 	
+	boolean selected;
+	
 	
 	public Activity(Object value, mxGeometry geometry, String style, int type)
 	{
@@ -234,5 +236,16 @@ public class Activity extends mxCell implements Cloneable, Serializable{
 			style = "strokeWidth=5;fillColor=#FF0033;fillColor=#C5D4E1;gradientColor=#C5D4E1;strokeWidth=3;strokeColor=#000000;fontSize=22;fontColor=#000000";
 		}
 		
+	}
+
+	public void setSelected(boolean b) {
+		// TODO Auto-generated method stub
+		selected = b;
 	}	
+	
+	
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
+		return selected;
+	}
 }

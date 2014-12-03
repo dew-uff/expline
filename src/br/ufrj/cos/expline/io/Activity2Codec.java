@@ -31,7 +31,7 @@ public class Activity2Codec extends mxObjectCodec
 	 */
 	public Activity2Codec()
 	{
-		this(new Activity(), new String[] { "type", "style", "parent", "geometry", "vertex" }, new String[] { "parent", "source", "target" },
+		this(new Activity(), new String[] { "type", "style", "parent", "geometry", "vertex", "selected" }, new String[] { "parent", "source", "target" },
 				null);
 	}
 
