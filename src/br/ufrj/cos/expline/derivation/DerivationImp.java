@@ -94,15 +94,12 @@ public class DerivationImp implements Derivation {
 				
 					if (cell instanceof Activity) {
 						Activity actv = (Activity) cell;
+						currentState.put(actv.getId(), actv);
 						
 						if(actv.getType() == Activity.INVARIANT_TYPE){
 							charonAPI.insertMandatory(actv.getId());
 							
 							selectActivity(actv);
-							
-							actv.setSelected(true);
-							
-							currentState.put(actv.getId(), actv);
 						
 						}
 						else
@@ -222,9 +219,10 @@ public class DerivationImp implements Derivation {
 								
 								assertzBooleanValues = assertzBooleanValues + "boolean"+variant1.getId()+"(true).\nboolean"+variant1.getId()+"(false).\nboolean"+variant2.getId()+"(true).\nboolean"+variant2.getId()+"(false).\n";
 							}
-							else
+							else{
 								variationPointExp1 = "false";
 								variationPointExp2 = "false";
+							}
 								
 							for (int j=2; j<edges.length; j++) {
 								
@@ -535,9 +533,6 @@ public class DerivationImp implements Derivation {
 	}
 
 
-
-
-
 	@Override
 	public boolean isActivitySelected(Activity activity) {
 		CharonAPI charonAPI = charon.getCharonAPI();
@@ -571,6 +566,7 @@ public class DerivationImp implements Derivation {
 		
 		if(result){
 			activity.setStyle(activity.getStyle().replace(";opacity=20", ""));
+			activity.setSelected(true);
 		}	
 		
 		return result;
@@ -587,7 +583,6 @@ public class DerivationImp implements Derivation {
 			
 			if(activity.getType() != Activity.INVARIANT_TYPE && activity.getType() != Activity.VARIATION_POINT_TYPE){
 				
-				//TODO: fazer uma verificação se a configuração atual é válida pra não checar tudo...
 				if(!charonAPI.isValidPreliminaryDerivedWorkflow(query, activity.getId(), true))
 					selectImplications = listImplications(activity);
 				else
@@ -600,10 +595,12 @@ public class DerivationImp implements Derivation {
 				if(!selectImplications.isEmpty()){
 					
 					//abrir tela que lista opções de seleção
-					processImplications(selectImplications);
+					List<Map<String, Boolean>> processedImplications = processImplications(selectImplications);
+					
+					System.out.println(processedImplications);
 					
 					JOptionPane.showMessageDialog(derivationGraphComponent,
-							"Derivation Status: Selection is Valid");	
+							"Derivation Status: Selection is Valid");
 				}
 				else{
 					//charonAPI.selectElement(activity.getId());
@@ -620,24 +617,29 @@ public class DerivationImp implements Derivation {
 
 	}
 	
-	public void processImplications(List<Map<String, Object>> selectImplications){
+	public List<Map<String, Boolean>> processImplications(List<Map<String, Object>> selectImplications){
 		
-		CharonAPI charonAPI = charon.getCharonAPI();
+		List<Map<String, Boolean>> processedImplications = new ArrayList<Map<String, Boolean>>();
 		
-		//getCurrentState();
-		
+				
 		for (Map<String, Object> implication : selectImplications) {
+			
+			Map<String, Boolean> processedImplication = new HashMap<String, Boolean>();
+			
 			
 			for (String elementId : implication.keySet()) {
 				
-				elementId.substring(1, elementId.length());
+				String id = elementId.substring(1, elementId.length());
+				
+				if(!implication.get(elementId).equals(currentState.get(id).isSelected()))
+					processedImplication.put(elementId, currentState.get(id).isSelected());	
 			}
+			
+			processedImplications.add(processedImplication);
 		}
 		
-	}
-	
-	public void getCurrentState(){
-		//derivationGraphComponent.get
+		
+		return processedImplications;
 	}
 	
 	private List<Map<String, Object>> listImplications(Activity activity) throws CharonException {
@@ -650,21 +652,23 @@ public class DerivationImp implements Derivation {
 		CharonAPI charonAPI = charon.getCharonAPI();
 		List<Map<String, Object>> solutions = charonAPI.listValidConfigurations(query, activity.getId(), true);
 		
-		for (Map<String, Object> solution : solutions) {
-			for (String key : solution.keySet()) {
-				
-				System.out.print(key+"="+solution.get(key)+" ");
-				//charon
-			}
-			System.out.println();
-		}
+		return solutions;
+		
+//		for (Map<String, Object> solution : solutions) {
+//			for (String key : solution.keySet()) {
+//				
+//				System.out.print(key+"="+solution.get(key)+" ");
+//				//charon
+//			}
+//			System.out.println();
+//		}
 		
 		//listo todas as configurações validas
 		//verifica alguma configuração que nao tem nenuhuma implicação
 		//se sim, retorno lista vazia
 		//se não, retorno todas a lista com todas as configurações validas para o usuário selecionar
 		
-		return null;
+//		return null;
 	}
 
 
