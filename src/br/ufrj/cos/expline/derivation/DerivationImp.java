@@ -35,6 +35,11 @@ public class DerivationImp implements Derivation {
 	private String query;
 	
 	private Map<String, Activity> currentState;
+	
+	Map<String, List<Map<String, Object>>> selectedOptions;
+	
+	Map<String, List<Map<String, Object>>> desselectedOptions;
+
 		
 	public DerivationImp(mxGraphComponent derivationGraphComponent) {
 		// TODO Auto-generated constructor stub
@@ -43,6 +48,8 @@ public class DerivationImp implements Derivation {
 		currentState = new HashMap<String, Activity>();
 		
 		try {
+			
+			//query = "evaluateState(A34, A35, A36, A37, A38, A39, A40, A41, A42, A43, A26, A27, A28, or(xor(xor(xor(xor(A34, A35), A36), A37), A38), not or(or(or(or(A34, A35), A36), A37), A38))).";
 
 			InputStream is = new FileInputStream(new File("doc/ExpLine.pl"));
 			
@@ -58,6 +65,22 @@ public class DerivationImp implements Derivation {
 			charon = new Charon(theory+"\n"+rules);
 			
 			startDerivation();
+			
+			listValidConfigurations();
+			
+//			Object solution = charon.getCharonAPI().listValidConfigurations(query, "26", true);
+			
+			
+			
+//			System.out.println("passei");
+//
+//			charon.getCharonAPI().selectElement("26");
+//			
+//			charon.getCharonAPI().listValidConfigurations(query, "26", true);
+//			
+//			System.out.println("passei");
+//			
+//			charon.getCharonAPI().listValidConfigurations(query, "26", true);
 			
 		} catch (CharonException e) {
 			// TODO Auto-generated catch block
@@ -75,6 +98,55 @@ public class DerivationImp implements Derivation {
 	
 	
 	
+
+	private void listValidConfigurations() {
+
+		List<Map<String, Object>> solutions = null;
+		
+		try {
+			solutions = charon.getCharonAPI().listValidConfigurations(query, "26", true);
+		} catch (CharonException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		Map<String, List<Map<String, Object>>> selectedOptions = new HashMap<String, List<Map<String, Object>>>();
+		Map<String, List<Map<String, Object>>> desselectedOptions = new HashMap<String, List<Map<String, Object>>>();
+		
+		for (String id : currentState.keySet()) {
+			
+			Activity actv = currentState.get(id);
+			
+			if(actv.getType() != Activity.INVARIANT_TYPE && actv.getType() != actv.VARIANT_TYPE){
+				selectedOptions.put(id, new ArrayList<Map<String,Object>>());
+				desselectedOptions.put(id, new ArrayList<Map<String,Object>>());
+
+			}
+		}
+
+		
+		for (Map<String, Object> solution : solutions) {
+			for (String elementId : solution.keySet()) {
+				String id = elementId.substring(1, elementId.length());
+				
+				String booleanValue = (String)solution.get(elementId);
+				
+				if(booleanValue.equals("true")){
+					selectedOptions.get(id).add(solution);
+				}
+				else{
+					desselectedOptions.get(id).add(solution);
+				}
+					
+
+			}
+		}
+		
+	}
+
+
+
+
 
 	@Override
 	public void startDerivation() {
@@ -589,21 +661,21 @@ public class DerivationImp implements Derivation {
 					selectImplications = new ArrayList<Map<String, Object>>();
 			}
 			
-			
+			System.out.println("passei");
 			if(selectImplications != null){
 				
 				if(!selectImplications.isEmpty()){
 					
-					//abrir tela que lista opções de seleção
-					List<Map<String, Boolean>> processedImplications = processImplications(selectImplications);
-					
-					System.out.println(processedImplications);
+					//abrir tela que lista opï¿½ï¿½es de seleï¿½ï¿½o
+//					List<Map<String, Boolean>> processedImplications = processImplications(selectImplications);
+//					
+//					System.out.println(processedImplications);
 					
 					JOptionPane.showMessageDialog(derivationGraphComponent,
 							"Derivation Status: Selection is Valid");
 				}
 				else{
-					//charonAPI.selectElement(activity.getId());
+					charonAPI.selectElement(activity.getId());
 					activity.setStyle(activity.getStyle().replace(";opacity=20", ""));
 				}
 				
@@ -642,33 +714,49 @@ public class DerivationImp implements Derivation {
 		return processedImplications;
 	}
 	
+	public List<Map<String, String>> processImplications2(Activity actv, boolean selected){
+	
+		Map<String, List<Map<String, Object>>> options;
+		
+		List<Map<String, String>> implications = new ArrayList<Map<String,String>>();
+
+		
+		if(selected)
+			options = selectedOptions;
+		else
+			options = desselectedOptions;
+		
+					
+		for (Map<String, Object> option : options.get(actv.getId())) {
+			
+			Map<String, String> implication = new HashMap<String, String>();
+			
+			
+			for (String elementId : option.keySet()) {
+				
+				if(!option.get(elementId).equals(String.valueOf(currentState.get(elementId).isSelected())) && !elementId.equals(actv.getId()))
+					implication.put(elementId, String.valueOf(currentState.get(elementId).isSelected()));	
+			}
+			
+			implications.add(implication);
+		}
+		
+		
+		return implications;
+	}
+	
 	private List<Map<String, Object>> listImplications(Activity activity) throws CharonException {
 		// TODO Auto-generated method stub
 		
-		//verifico se essa configuração é valida
+		//verifico se essa configuraï¿½ï¿½o ï¿½ valida
 		//se sim, retorno uma lista vazia
-		//se não é, verifico se exista  eu coleto as implicações necessárias
+		//se nï¿½o ï¿½, verifico se exista  eu coleto as implicaï¿½ï¿½es necessï¿½rias
 		
 		CharonAPI charonAPI = charon.getCharonAPI();
 		List<Map<String, Object>> solutions = charonAPI.listValidConfigurations(query, activity.getId(), true);
 		
 		return solutions;
 		
-//		for (Map<String, Object> solution : solutions) {
-//			for (String key : solution.keySet()) {
-//				
-//				System.out.print(key+"="+solution.get(key)+" ");
-//				//charon
-//			}
-//			System.out.println();
-//		}
-		
-		//listo todas as configurações validas
-		//verifica alguma configuração que nao tem nenuhuma implicação
-		//se sim, retorno lista vazia
-		//se não, retorno todas a lista com todas as configurações validas para o usuário selecionar
-		
-//		return null;
 	}
 
 
@@ -691,7 +779,7 @@ public class DerivationImp implements Derivation {
 				
 				if(!results.isEmpty()){
 					
-					//abrir tela que lista opções de seleção
+					//abrir tela que lista opï¿½ï¿½es de seleï¿½ï¿½o
 					
 					JOptionPane.showMessageDialog(derivationGraphComponent,
 							"Derivation Status: Selection is Valid");	
