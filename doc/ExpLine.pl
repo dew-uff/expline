@@ -4,8 +4,8 @@ selectElement([[E, true], Path]) :- write(E),
     write(' notSelected '),
     write(Path),
     assertz(currentSelection(E,Path, true)),
-%    write('Before flag '),
-%    flagAsIncomplete(Path),
+    write('Before flag '),
+    flagAsIncomplete(Path),
     write('Selected '),
     rule([[E, true]|Path]), write('EndSelect ').
 
@@ -15,8 +15,8 @@ selectElement([[E, false], Path]) :- write(E),
     write(' notSelected '),
     write(Path),
     assertz(currentDesselection(E,Path, true)),
-%    write('Before flag '),
-%    flagAsIncomplete(Path),
+    write('Before flag '),
+    flagAsIncomplete(Path),
     write('Selected '),
     rule([[E, true]|Path]), write('EndSelect ').    
 
@@ -43,7 +43,7 @@ isDesselected(E,[Head|Path]) :-
     isDesselected(E,Path).
    
 rule(Path) :- write('rule1 '),
-    (abstractWorkflow('B1') ; isSelected('B1',Path)) -> (add_to_queue([['E1', true], Path]) ; add_to_queue([['D1', true], Path])). 
+    (abstractWorkflow('B1') ; isSelected('B1',Path)) -> (add_to_queue([['E1', true], Path]) , add_to_queue([['D1', true], Path])). 
 rule(Path) :- write('rule2 '),
     (abstractWorkflow('D1') ; isSelected('D1',Path)) -> add_to_queue([['F1', true], Path]).
 rule(Path) :- write('rule3 '),
@@ -51,8 +51,7 @@ rule(Path) :- write('rule3 '),
 rule(Path).
 
 %queue([]).
-queue([[['B1', true], []]]).  
-%queue([[['B1'], []], [['D1'], ['B1']], [['F1'], ['D1', 'B1']]]).
+queue([[['B1', true], []]]).
 
 add_to_queue(E) :- write('adicionando '), write(E), retract(queue(Queue)), add_to_queue2(E, Queue, NewQueue), assertz(queue(NewQueue)), !.
 add_to_queue2(E, [], [E]).
@@ -62,5 +61,5 @@ next_from_queue(E) :- write('proximo '), retract(queue(Queue)), next_from_queue2
        
 next_from_queue2(E, [E|T], T).            
 processImplications(_) :- write('BeforeQueue1 '), next_from_queue(Next), write('AfterQueue '), selectElement(Next).
-%processImplications(_) :- write('BeforeQueue1 '), next_from_queue([[E, true], Path]), write('AfterQueue '), flagAsIncomplete(Path), selectElement([[E, true], Path]).
 processImplications(_). 
+
