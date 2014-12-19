@@ -28,12 +28,6 @@ public interface Derivation {
 	public boolean generatesValidState(HashMap<Activity, Boolean> activitySelectionChangeList);
 	
 	/*
-	 * Registra as atividades selecionadas e desselecionadas na linha de experimento
-	 * 
-	 */
-	public boolean setActivitySelectionChangeList(HashMap<Activity, Boolean> activitySelectionChangeList);
-	
-	/*
 	 * Lista as atividades conflitantes baseado nas atividades selecionadas e desselecionadas. 
 	 * 
 	 */
@@ -82,20 +76,8 @@ public interface Derivation {
 	 */
 	public boolean isActivitySelected(Activity activity);
 	
-	public boolean selectActivity(Activity activity);
-	
-	public boolean unselectActivity(Activity activity);
-	
-	public void beginSelection();
-	
-	public void commitSelection();
-	
-	public void rollbackSelection();
+	public boolean selectActivity(Activity activity, boolean selected);
 
 	public Workflow derive();
 
-	void simulateSelection(Activity activity);
-
-	void simulateDesselection(Activity activity);
-	
 }

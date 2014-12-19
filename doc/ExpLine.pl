@@ -1,4 +1,4 @@
-selectElement([[E, true], Path]) :- write(E),
+selectElement([[E, true, Rule], Path]) :- write(E),
     not isSelected(E,Path),
     not isDesselected(E,Path),
     write(' notSelected '),
@@ -7,9 +7,13 @@ selectElement([[E, true], Path]) :- write(E),
     write('Before flag '),
     flagAsIncomplete(Path),
     write('Selected '),
-    rule([[E, true]|Path]), write('EndSelect ').
+    rule([[E, true, Rule]|Path]), !, write('EndSelect ').
 
-selectElement([[E, false], Path]) :- write(E),
+selectElement([[E, true, Rule], Path]) :- write(E),
+    isDesselected(E,Path),
+    flagAsIncomplete(Path).
+       
+selectElement([[E, false, Rule], Path]) :- write(E),
     not isDesselected(E,Path),
     not isSelected(E,Path),
     write(' notSelected '),
@@ -18,48 +22,73 @@ selectElement([[E, false], Path]) :- write(E),
     write('Before flag '),
     flagAsIncomplete(Path),
     write('Selected '),
-    rule([[E, true]|Path]), write('EndSelect ').    
+    rule([[E, false, Rule]|Path]), !, write('EndSelect ').
+   
+selectElement([[E, false, Rule], Path]) :- write(E),
+    isSelected(E,Path),
+    flagAsIncomplete(Path).
 
-flagAsIncomplete([[E, true]| Path]):- write('flag1.1 '), write(E), retract(currentSelection(E, Path, true)), write('flag1.2 '), assertz(currentSelection(E, Path, false)), !.
-flagAsIncomplete([[E, true]| Path]):- write('flag1a.1 '), currentSelection(E, Path, false), write('flag1a.2 '), !.
-flagAsIncomplete([[E, false]| Path]):- write('flag2.1 '), retract(currentDesselection(E, Path, true)), write('flag2.2 '), assertz(currentDesselection(E, Path, false)), !.
-flagAsIncomplete([[E, false]| Path]):- write('flag2a.1 '), currentDesselection(E, Path, false), write('flag2a.2 '), !.
+flagAsIncomplete([[E, true, _]| Path]):- write('flag1.1 '), write(E), retract(currentSelection(E, Path, true)), write('flag1.2 '), assertz(currentSelection(E, Path, false)), !.
+flagAsIncomplete([[E, true, _]| Path]):- write('flag1a.1 '), currentSelection(E, Path, false), write('flag1a.2 '), !.
+flagAsIncomplete([[E, false, _]| Path]):- write('flag2.1 '), retract(currentDesselection(E, Path, true)), write('flag2.2 '), assertz(currentDesselection(E, Path, false)), !.
+flagAsIncomplete([[E, false, _]| Path]):- write('flag2a.1 '), currentDesselection(E, Path, false), write('flag2a.2 '), !.
 flagAsIncomplete([]):- write('flag0').
-   
-isSelected(E,Path) :-
-    currentSelection(E,Path, _), 
-    !.
-   
-isSelected(E,[Head|Path]) :-
-    not currentSelection(E,[Head|Path], _),  
-    isSelected(E,Path).
-   
-isDesselected(E,Path) :-
-    currentDesselection(E,Path, _),
-    !.
-   
-isDesselected(E,[Head|Path]) :-
-    not currentDesselection(E,[Head|Path], _),
-    isDesselected(E,Path).
-   
-rule(Path) :- write('rule1 '),
-    (abstractWorkflow('B1') ; isSelected('B1',Path)) -> (add_to_queue([['E1', true], Path]) , add_to_queue([['D1', true], Path])). 
-rule(Path) :- write('rule2 '),
-    (abstractWorkflow('D1') ; isSelected('D1',Path)) -> add_to_queue([['F1', true], Path]).
-rule(Path) :- write('rule3 '),
-    (abstractWorkflow('F1') ; isSelected('F1',Path)) -> add_to_queue([['B1', false], Path]).
-rule(Path).
 
-%queue([]).
-queue([[['B1', true], []]]).
-
-add_to_queue(E) :- write('adicionando '), write(E), retract(queue(Queue)), add_to_queue2(E, Queue, NewQueue), assertz(queue(NewQueue)), !.
-add_to_queue2(E, [], [E]).
-add_to_queue2(E, [H|T], [H|Tnew]) :- add_to_queue2(E, T, Tnew). 
-   
-next_from_queue(E) :- write('proximo '), retract(queue(Queue)), next_from_queue2(E, Queue, NewQueue), write(E), assertz(queue(NewQueue)), !.
+isSelected(E, [[E, true, _]|_]) :- !.
+isSelected(E,[Head|Path]) :- isSelected(E,Path). 
+ 
+isDesselected(E, [[E, false, _]|_]) :- !.
+isDesselected(E,[Head|Path]) :- isDesselected(E,Path).
        
-next_from_queue2(E, [E|T], T).            
-processImplications(_) :- write('BeforeQueue1 '), next_from_queue(Next), write('AfterQueue '), selectElement(Next).
-processImplications(_). 
+ruleAlreadyUsed(Rule, [[_, _, Rule]|_]) :- !.
+ruleAlreadyUsed(Rule,[Head|Path]) :- ruleAlreadyUsed(Rule,Path).
+   
+processResults(_) :- currentSelection(A, B1, true),
+        findall(B2, currentSelection(A, B2, true),B2s),
+        length(B2s, Length),
+        Length > 1,
+        maxLength(B2s, BMax),
+        append([[A, true, '']], BMax, C),
+        not option(C),
+        assertz(option(C)).
+       
+processResults(_) :- currentSelection(A, B1, true),
+        findall(B2, currentSelection(A, B2, true),B2s),
+        length(B2s, Length),
+        Length = 1,
+        append([[A, true, '']], B1, C),
+        assertz(option(C)).
+processResults(_) :- currentDesselection(A, B1, true),
+        findall(B2, currentDesselection(A, B2, true),B2s),
+        length(B2s, Length),
+        Length > 1,
+        maxLength(B2s, BMax),
+        append([[A, false, '']], BMax, C),
+        not option(C),
+        assertz(option(C)). 
+processResults(_) :- currentDesselection(A, B1, true),
+        findall(B2, currentDesselection(A, B2, true),B2s),
+        length(B2s, Length),
+        Length = 1,
+        append([[A, false, '']], B1, C),
+        assertz(option(C)).
+       
+removeRedundants(_) :-   option(Path),
+            option(Path2),
+            not (Path = Path2),
+            length(Path, Length),
+            length(Path2, Length),
+            isEqual(Path, Path2),
+            retract(option(Path)).
 
+rule(Path) :-
+    (not ruleAlreadyUsed('R1', Path), isSelected('B1',Path)) -> (selectElement([['E1', true, 'R1'], Path]), selectElement([['D1', true, 'R1'], Path])).
+rule(Path) :-
+    (not ruleAlreadyUsed('R2', Path), isSelected('D1',Path)) -> (selectElement([['F1', true, 'R2'], Path])).
+rule(Path) :-
+    (not ruleAlreadyUsed('R3', Path), isSelected('F1',Path)) -> (selectElement([['C1', true, 'R3'], Path])).
+rule(Path) :-
+    (not ruleAlreadyUsed('R4', Path), isSelected('C1',Path)) -> (selectElement([['C2', true, 'R4'], Path])).
+
+rule(Path). 
+ 

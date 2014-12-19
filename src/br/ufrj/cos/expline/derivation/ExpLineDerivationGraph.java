@@ -161,18 +161,7 @@ public class ExpLineDerivationGraph extends mxGraph
 		
 		if (cell instanceof Activity ){
 			
-			mxICell cell_ = (mxICell) cell;
-			
-//			if(cell_.getStyle().contains(";opacity=20")){
-//				cell_.setStyle(cell_.getStyle().replace(";opacity=20", ""));
-//			}
-//			else
-//				cell_.setStyle(cell_.getStyle()+";opacity=20");
-			
-//			JOptionPane.showMessageDialog(editor,
-//					"ok");
-			
-			
+			mxICell cell_ = (mxICell) cell;		
 			
 			Activity actv = (Activity) cell_;
 			
@@ -183,25 +172,12 @@ public class ExpLineDerivationGraph extends mxGraph
 			
 			boolean selected = derivation.isActivitySelected(actv);
 			
-//			if(cell_.getStyle().contains(";opacity=20")){
-//				activitySelectionChangeList.put(actv, true);
-//			}
-//			else
-//				activitySelectionChangeList.put(actv, false);
+			if(actv.getType() != Activity.VARIATION_POINT_TYPE && actv.getType() != Activity.INVARIANT_TYPE){
+				
+				derivation.selectActivity(actv, !selected);
+				
+			}
 			
-			
-			if(selected)
-				derivation.simulateDesselection(actv);
-			else
-				derivation.simulateSelection(actv);
-			
-			
-//			if(derivation.generatesValidState(activitySelectionChangeList)){
-//				
-//				derivation.setActivitySelectionChangeList(activitySelectionChangeList);
-//				
-//				updateExpLineDerivationGraph(activitySelectionChangeList);
-//			}
 			
 			this.refresh();
 			

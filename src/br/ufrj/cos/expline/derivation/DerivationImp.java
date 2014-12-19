@@ -35,10 +35,6 @@ public class DerivationImp implements Derivation {
 	private String query;
 	
 	private Map<String, Activity> currentState;
-	
-	Map<String, List<Map<String, Object>>> selectedOptions;
-	
-	Map<String, List<Map<String, Object>>> desselectedOptions;
 
 		
 	public DerivationImp(mxGraphComponent derivationGraphComponent) {
@@ -62,26 +58,14 @@ public class DerivationImp implements Derivation {
 			String rules = createRules(model.getRules());
 			
 			
-			charon = new Charon(theory+"\n"+rules);
+//			charon = new Charon(theory+"\n"+rules);
+			charon = new Charon(theory);
 			
 			startDerivation();
 			
-			listValidConfigurations();
+			listImplications("B1", true);
 			
-//			Object solution = charon.getCharonAPI().listValidConfigurations(query, "26", true);
-			
-			
-			
-//			System.out.println("passei");
-//
-//			charon.getCharonAPI().selectElement("26");
-//			
-//			charon.getCharonAPI().listValidConfigurations(query, "26", true);
-//			
-//			System.out.println("passei");
-//			
-//			charon.getCharonAPI().listValidConfigurations(query, "26", true);
-			
+		
 		} catch (CharonException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -103,12 +87,12 @@ public class DerivationImp implements Derivation {
 
 		List<Map<String, Object>> solutions = null;
 		
-		try {
-			solutions = charon.getCharonAPI().listValidConfigurations(query, "26", true);
-		} catch (CharonException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			solutions = charon.getCharonAPI().listValidConfigurations(query, "26", true);
+//		} catch (CharonException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
 		Map<String, List<Map<String, Object>>> selectedOptions = new HashMap<String, List<Map<String, Object>>>();
 		Map<String, List<Map<String, Object>>> desselectedOptions = new HashMap<String, List<Map<String, Object>>>();
@@ -170,9 +154,6 @@ public class DerivationImp implements Derivation {
 						
 						if(actv.getType() == Activity.INVARIANT_TYPE){
 							charonAPI.insertMandatory(actv.getId());
-							
-							selectActivity(actv);
-						
 						}
 						else
 						if(actv.getType() == Activity.OPTIONAL_INVARIANT_TYPE){
@@ -209,8 +190,6 @@ public class DerivationImp implements Derivation {
 						else
 						if(actv.getType() == Activity.VARIATION_POINT_TYPE){
 							charonAPI.insertVariationPoint(actv.getId(), true);
-							
-							selectActivity(actv);
 
 						}	
 						
@@ -222,12 +201,6 @@ public class DerivationImp implements Derivation {
 				e.printStackTrace();
 			}
 		}
-		
-		
-
-//		ExpLine model = (ExpLine) derivationGraphComponent.getGraph().getModel();
-//		
-//		insertRules(model.getRules());
 		
 	}
 
@@ -493,12 +466,12 @@ public class DerivationImp implements Derivation {
 		
 		System.out.println(expression);
 		
-		try {
-			System.out.println(charonAPI.insertRules(expression));
-		} catch (CharonException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			System.out.println(charonAPI.insertRules(expression));
+//		} catch (CharonException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
 		
 //		for (Rule rule : rules) {
@@ -535,13 +508,6 @@ public class DerivationImp implements Derivation {
 	public boolean generatesValidState(
 			HashMap<Activity, Boolean> activitySelectionChangeList) {
 		
-		return true;
-	}
-
-	@Override
-	public boolean setActivitySelectionChangeList(
-			HashMap<Activity, Boolean> activitySelectionChangeList) {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
@@ -623,69 +589,49 @@ public class DerivationImp implements Derivation {
 
 
 	@Override
-	public boolean selectActivity(Activity activity) {
+	public boolean selectActivity(Activity activity, boolean selected) {
 		
 		CharonAPI charonAPI = charon.getCharonAPI();
-		
-		boolean result = false;
-		
+					
+		List<Map<String, Object>> selectImplications = null;
 		try {
-			result = charonAPI.selectElement(activity.getId());
-		} catch (CharonException e) {
+			selectImplications = listImplications(activity, selected);
+		} catch (CharonException e1) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e1.printStackTrace();
 		}
 		
-		if(result){
-			activity.setStyle(activity.getStyle().replace(";opacity=20", ""));
-			activity.setSelected(true);
-		}	
-		
-		return result;
-	}
-	
-	@Override
-	public void simulateSelection(Activity activity) {
-		
-		CharonAPI charonAPI = charon.getCharonAPI();
-		
-		try {
+		if(selectImplications != null){
 			
-			List<Map<String, Object>> selectImplications = null;
-			
-			if(activity.getType() != Activity.INVARIANT_TYPE && activity.getType() != Activity.VARIATION_POINT_TYPE){
+			if(!selectImplications.isEmpty()){
 				
-				if(!charonAPI.isValidPreliminaryDerivedWorkflow(query, activity.getId(), true))
-					selectImplications = listImplications(activity);
-				else
-					selectImplications = new ArrayList<Map<String, Object>>();
-			}
-			
-			System.out.println("passei");
-			if(selectImplications != null){
-				
-				if(!selectImplications.isEmpty()){
-					
-					//abrir tela que lista op��es de sele��o
+				//abrir tela que lista op��es de sele��o
 //					List<Map<String, Boolean>> processedImplications = processImplications(selectImplications);
 //					
 //					System.out.println(processedImplications);
-					
-					JOptionPane.showMessageDialog(derivationGraphComponent,
-							"Derivation Status: Selection is Valid");
-				}
-				else{
-					charonAPI.selectElement(activity.getId());
-					activity.setStyle(activity.getStyle().replace(";opacity=20", ""));
-				}
 				
+				JOptionPane.showMessageDialog(derivationGraphComponent,
+						"Derivation Status: Selection is Valid");
 			}
-				
+			else{
+				try {
+					charonAPI.selectElement(activity.getId());
+				} catch (CharonException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if(selected)
+					activity.setStyle(activity.getStyle().replace(";opacity=20", ""));
+				else
+					activity.setStyle(activity.getStyle() + ";opacity=20");
+			}
 			
-		} catch (CharonException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return true;
+			
 		}
+		else
+			return false;
+				
 
 	}
 	
@@ -714,38 +660,38 @@ public class DerivationImp implements Derivation {
 		return processedImplications;
 	}
 	
-	public List<Map<String, String>> processImplications2(Activity actv, boolean selected){
+//	public List<Map<String, String>> processImplications2(Activity actv, boolean selected){
+//	
+//		Map<String, List<Map<String, Object>>> options;
+//		
+//		List<Map<String, String>> implications = new ArrayList<Map<String,String>>();
+//
+//		
+//		if(selected)
+//			options = selectedOptions;
+//		else
+//			options = desselectedOptions;
+//		
+//					
+//		for (Map<String, Object> option : options.get(actv.getId())) {
+//			
+//			Map<String, String> implication = new HashMap<String, String>();
+//			
+//			
+//			for (String elementId : option.keySet()) {
+//				
+//				if(!option.get(elementId).equals(String.valueOf(currentState.get(elementId).isSelected())) && !elementId.equals(actv.getId()))
+//					implication.put(elementId, String.valueOf(currentState.get(elementId).isSelected()));	
+//			}
+//			
+//			implications.add(implication);
+//		}
+//		
+//		
+//		return implications;
+//	}
 	
-		Map<String, List<Map<String, Object>>> options;
-		
-		List<Map<String, String>> implications = new ArrayList<Map<String,String>>();
-
-		
-		if(selected)
-			options = selectedOptions;
-		else
-			options = desselectedOptions;
-		
-					
-		for (Map<String, Object> option : options.get(actv.getId())) {
-			
-			Map<String, String> implication = new HashMap<String, String>();
-			
-			
-			for (String elementId : option.keySet()) {
-				
-				if(!option.get(elementId).equals(String.valueOf(currentState.get(elementId).isSelected())) && !elementId.equals(actv.getId()))
-					implication.put(elementId, String.valueOf(currentState.get(elementId).isSelected()));	
-			}
-			
-			implications.add(implication);
-		}
-		
-		
-		return implications;
-	}
-	
-	private List<Map<String, Object>> listImplications(Activity activity) throws CharonException {
+	private List<Map<String, Object>> listImplications(Activity activity, boolean selected) throws CharonException {
 		// TODO Auto-generated method stub
 		
 		//verifico se essa configura��o � valida
@@ -753,122 +699,27 @@ public class DerivationImp implements Derivation {
 		//se n�o �, verifico se exista  eu coleto as implica��es necess�rias
 		
 		CharonAPI charonAPI = charon.getCharonAPI();
-		List<Map<String, Object>> solutions = charonAPI.listValidConfigurations(query, activity.getId(), true);
+		charonAPI.listImplications(activity.getId(), selected);
+//		List<Map<String, Object>> solutions = charonAPI.listValidConfigurations(query, activity.getId(), true);
 		
-		return solutions;
+//		return solutions;
+		return null;
 		
 	}
-
-
-	@Override
-	public void simulateDesselection(Activity activity) {
-		
-		CharonAPI charonAPI = charon.getCharonAPI();
-		
-		try {
-			
-			List<Map<String, Object>> results = null;
-			
-			if(activity.getType() != activity.INVARIANT_TYPE || activity.getType() != activity.VARIATION_POINT_TYPE){
-//				results = charonAPI
-				charonAPI.selectElement(activity.getId());
-			}
-			
-			
-			if(results != null){
-				
-				if(!results.isEmpty()){
-					
-					//abrir tela que lista op��es de sele��o
-					
-					JOptionPane.showMessageDialog(derivationGraphComponent,
-							"Derivation Status: Selection is Valid");	
-				}
-				else{
-					activity.setStyle(activity.getStyle() + ";opacity=20");
-				}
-				
-			}
-				
-			
-		} catch (CharonException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
-
-
-	@Override
-	public boolean unselectActivity(Activity activity) {
-		CharonAPI charonAPI = charon.getCharonAPI();
-		
-		boolean result = false;
-		
-		try {
-			result = charonAPI.unselectElement(activity.getId());
-		} catch (CharonException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		
-		if(result){
-			activity.setStyle(activity.getStyle() + ";opacity=20");
-		}
-		
-		
-		return result;
-	}
-
-
-
-
-
-	@Override
-	public void beginSelection() {
+	
+	private List<Map<String, Object>> listImplications(String id, boolean selected) throws CharonException {
 		// TODO Auto-generated method stub
 		
-		CharonAPI charonAPI = charon.getCharonAPI();
-		
-		try {
-			charonAPI.beginSelection();
-		} catch (CharonException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-
-
-
-
-	@Override
-	public void commitSelection() {
-		// TODO Auto-generated method stub
+		//verifico se essa configura��o � valida
+		//se sim, retorno uma lista vazia
+		//se n�o �, verifico se exista  eu coleto as implica��es necess�rias
 		
 		CharonAPI charonAPI = charon.getCharonAPI();
+		List<Map<String, Object>> solutions = charonAPI.listImplications(id, selected);
+//		List<Map<String, Object>> solutions = charonAPI.listValidConfigurations(query, activity.getId(), true);
 		
-		try {
-			charonAPI.commitSelection();
-		} catch (CharonException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
-
-	@Override
-	public void rollbackSelection() {
-
-		CharonAPI charonAPI = charon.getCharonAPI();
-		
-		try {
-			charonAPI.rollbackSelection();
-		} catch (CharonException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		return solutions;
+		return null;
 		
 	}
 
