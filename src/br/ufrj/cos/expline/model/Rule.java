@@ -1,8 +1,8 @@
 package br.ufrj.cos.expline.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Rule implements Cloneable, Serializable{
 	
@@ -11,54 +11,35 @@ public class Rule implements Cloneable, Serializable{
 	 */
 	private static final long serialVersionUID = 334751913464640344L;
 	
+	public final static int OPERATION_OR = 0;
+	
+	public final static int OPERATION_AND = 1;
+	
 	private String name;
 	
-	private List<Expression> conditions;
+	private Activity conditionElement;
 	
-	private List<Expression> implications;
+	private boolean conditionElementOperationSelection;
+	
+	private int implicationOperation;
+	
+	private Map<Activity, Boolean> implicationElements;
+	
 	
 	public Rule(){
-		name = "";
-		conditions = new ArrayList<Expression>();
-		implications = new ArrayList<Expression>();
+		name = "";	
+		implicationElements = new HashMap<Activity, Boolean>();
 	}
 	
-	public List<Expression> getConditions() {
-		return conditions;
-	}
-
-	public void setConditions(List<Expression> conditions) {
-		this.conditions = conditions;
-	}
-
-	public List<Expression> getImplications() {
-		return implications;
-	}
-
-	public void setImplications(List<Expression> implications) {
-		this.implications = implications;
-	}
-	
-	public boolean addCondition(Expression expression){
-		return conditions.add(expression);
-	}
-	
-	public boolean addImplication(Expression expression){
-		return implications.add(expression);
-	}
-	
-	public void clearConditions(){
-		conditions.clear();
+	public void addImplicationElement(Activity actv, boolean selected){
 		
+		implicationElements.put(actv, selected);
 	}
 	
-	public void clearImplications(){
-		implications.clear();
-	}
-
-	@Override
-	public String toString() {
-		return name;
+	public void addConditionElement(Activity actv, boolean selected){
+		
+		conditionElement = actv;
+		conditionElementOperationSelection = selected;
 	}
 
 	public String getName() {
@@ -68,9 +49,36 @@ public class Rule implements Cloneable, Serializable{
 	public void setName(String name) {
 		this.name = name;
 	}
-	
-	
-	
-	
 
+	public int getImplicationOperation() {
+		return implicationOperation;
+	}
+
+	public void setImplicationOperation(int implicationOperation) {
+		this.implicationOperation = implicationOperation;
+	}
+
+	public Activity getConditionElement() {
+		return conditionElement;
+	}
+
+	public void setConditionElement(Activity conditionElement) {
+		this.conditionElement = conditionElement;
+	}
+
+	public boolean isConditionElementOperationSelection() {
+		return conditionElementOperationSelection;
+	}
+
+	public void setConditionElementOperationSelection(
+			boolean conditionElementOperationSelection) {
+		this.conditionElementOperationSelection = conditionElementOperationSelection;
+	}
+
+	public Map<Activity, Boolean> getImplicationElements() {
+		return implicationElements;
+	}
+	
+	
+	
 }
