@@ -55,7 +55,35 @@ public class DerivationImp implements Derivation {
 			
 			
 			ExpLine model = (ExpLine) derivationGraphComponent.getGraph().getModel();
+			
+			List<Rule> rules_ = new ArrayList<Rule>();
+            Rule rule = new Rule();
+            rules_.add(rule);
+            rule.setName("");
+            Activity actv = new Activity();
+            actv.setId("34");
+            rule.setConditionElement(actv);
+            rule.setConditionElementOperationSelection(false);
+            
+            actv = new Activity();
+            actv.setId("28");
+    
+            rule.addImplicationElement(actv, true);
+            
+            
+            actv = new Activity();
+            actv.setId("42");
+    
+            rule.addImplicationElement(actv, false);
+            
+            rule.setImplicationOperation(Rule.OPERATION_OR);
+            
+            model.setRules(rules_);
+
+			
 			String rules = createRules(model.getRules());
+			
+			System.out.println(rules);
 			
 			
 //			charon = new Charon(theory+"\n"+rules);
@@ -63,7 +91,7 @@ public class DerivationImp implements Derivation {
 			
 			startDerivation();
 			
-			listImplications("B1", true);
+			listImplications("A39", true);
 			
 		
 		} catch (CharonException e) {
@@ -209,11 +237,8 @@ public class DerivationImp implements Derivation {
 		mxCell root =  (mxCell) derivationGraphComponent.getGraph().getModel().getRoot();
 		root = (mxCell) root.getChildAt(0);
 		
-		List<String> expressionList = new ArrayList<String>();
-		
-		String variableList = "";
-		String variableInstantiation = "";
-		String assertzBooleanValues = "";
+		String rulesExpression="";
+		int ruleNumber = 1;
 		
 		for (int i = 0; i < root.getChildCount(); i++) {
 			
@@ -227,130 +252,129 @@ public class DerivationImp implements Derivation {
 
 						if(actv.getType() == Activity.OPTIONAL_VARIATION_POINT_TYPE || actv.getType() == Activity.VARIATION_POINT_TYPE){
 							
-							Object[] edges = derivationGraphComponent.getGraph().getEdges(actv, null);
+							List<Activity> variants = getVariants(actv);
 							
-							String variationPointExp1 = "";
-							String variationPointExp2 = "";
-							
-							
-							if(edges.length>1){
-								
-								Activity temp = (Activity)((Edge)edges[0]).getSource();
-								
-								Activity variant1 = null;
-								
-								if(temp.getType() == Activity.VARIANT_TYPE)
-									variant1 = temp;
-								else
-									variant1 = (Activity)((Edge)edges[0]).getTarget();
-								
-								
-								temp = (Activity)((Edge)edges[1]).getSource();
-								
-								Activity variant2 = null;
-								
-								if(temp.getType() == Activity.VARIANT_TYPE)
-									variant2 = temp;
-								else
-									variant2 = (Activity)((Edge)edges[1]).getTarget();
-								
-								variationPointExp1 = "xor(A"+variant1.getId()+", A" + variant2.getId() +")";
-								variationPointExp2 = "or(A"+variant1.getId()+", A" + variant2.getId() +")";
-								
-								
-								variableList = variableList + "A"+variant1.getId() + ", A"+variant2.getId()+", ";
-								
-								variableInstantiation = variableInstantiation + "boolean"+variant1.getId()+"(A"+variant1.getId() + "), boolean"+variant2.getId()+"(A"+variant2.getId()+"), ";
-								
-								assertzBooleanValues = assertzBooleanValues + "boolean"+variant1.getId()+"(true).\nboolean"+variant1.getId()+"(false).\nboolean"+variant2.getId()+"(true).\nboolean"+variant2.getId()+"(false).\n";
+							for (Activity variant1 : variants) {
+								for (Activity variant2 : variants) {
+									if(variant2 != variant1){
+										rulesExpression += "\n\nrule(Path) :-"
+																+"(not ruleAlreadyUsed('R"+ruleNumber+"', Path), isSelected('A"+variant1.getId()+"',Path)) -> (selectElement([['A"+variant2.getId()+"', false, 'R"+ruleNumber+"'], Path])).";
+										ruleNumber++;
+									}
+								}
+								rulesExpression += "\n\nrule(Path) :-"
+										+"(not ruleAlreadyUsed('R"+ruleNumber+"', Path), isSelected('A"+variant1.getId()+"',Path)) -> (selectElement([['A"+actv.getId()+"', true, 'R"+ruleNumber+"'], Path])).";
+								ruleNumber++;
 							}
-							else{
-								variationPointExp1 = "false";
-								variationPointExp2 = "false";
-							}
-								
-							for (int j=2; j<edges.length; j++) {
-								
-								Activity temp = (Activity)((Edge)edges[j]).getSource();
-								
-								Activity variant = null;
-								
-								if(temp.getType() == Activity.VARIANT_TYPE)
-									variant = temp;
-								else
-									variant = (Activity)((Edge)edges[j]).getTarget();
-								
-								variationPointExp1 = "xor(" +variationPointExp1 + ", A"+variant.getId()+")";
-								variationPointExp2 = "or(" +variationPointExp2 + ", A"+variant.getId()+")";
-								
-								variableList = variableList +"A" + variant.getId() +", ";
-								
-								variableInstantiation = variableInstantiation+ "boolean"+variant.getId()+"(A"+variant.getId() + "), ";
-								
-								assertzBooleanValues = assertzBooleanValues+ "boolean"+variant.getId()+"(true).\nboolean"+variant.getId()+"(false).\n";
-								
-							}
-							
-							
-							expressionList.add("or("+variationPointExp1+", not "+variationPointExp2+")");
 							
 						}
-	
 						
 					}
 	
 				}		
 		}
 		
-		query = "";
+		for (Rule rule : rules) {
+	            
+	            Activity conditionActvElement = rule.getConditionElement();
+	            
+	            if(rule.getImplicationOperation() == Rule.OPERATION_OR){
+	                
+	                if(rule.isConditionElementOperationSelection()){
+	                
+	                	rulesExpression += "\n\nrule(Path) :- "+
+	                             "(not ruleAlreadyUsed('"+rule.getName()+"', Path), isSelected(A'"+conditionActvElement.getId()+"',Path)) -> (";
+	                }
+	                else{
+	                
+	                	rulesExpression += "\n\nrule(Path) :- "+
+	                             "(not ruleAlreadyUsed('"+rule.getName()+"', Path), isDesselected(A'"+conditionActvElement.getId()+"',Path)) -> (";
+	                }
+	                
+	                
+	                if(rule.getImplicationElements().keySet().size() > 1){
+	                            
+	                    for (Activity activity : rule.getImplicationElements().keySet()){
+	                        
+	                    	rulesExpression += "selectElement([['A"+activity.getId()+"', "+rule.getImplicationElements().get(activity).toString()+", '"+rule.getName()+"'], Path]), ";
+	                        
+	                    }
+	                    
+	                    rulesExpression = rulesExpression.substring(0, rulesExpression.length()-2) + ").";
+	                            
+	                }
+	                else{
+	                    
+	                    Activity activity = rule.getImplicationElements().keySet().iterator().next();
+	                    
+	                    rulesExpression += "selectElement([['A"+activity.getId()+"', "+rule.getImplicationElements().get(activity).toString()+", '"+rule.getName()+"'], Path])).";
+	                    
+	                }
+	                
+	            }
+	            else{
+	                
+	                if(rule.isConditionElementOperationSelection()){
+	                    
+	                    for (Activity activity : rule.getImplicationElements().keySet()){
+
+	                        
+	                        rulesExpression += "\n\nrule(Path) :- "+
+	                                 "(not ruleAlreadyUsed('"+rule.getName()+"_"+ruleNumber+"', Path), isSelected('A"+conditionActvElement.getId()+"',Path)) -> (";
+	                        
+	                        rulesExpression += "selectElement([['A"+activity.getId()+"', "+rule.getImplicationElements().get(activity).toString()+", '"+rule.getName()+"_"+ruleNumber+"'], Path])). ";
+	                        
+	                        ruleNumber++;
+	                        
+	                    }
+	                }
+	                else{
+	                    
+	                    for (Activity activity : rule.getImplicationElements().keySet()){
+
+	                        
+	                        rulesExpression += "\n\nrule(Path) :- "+
+	                                 "(not ruleAlreadyUsed('"+rule.getName()+ruleNumber+"', Path), isDesselected('A"+conditionActvElement.getId()+"',Path)) -> (";
+	                        
+	                        rulesExpression += "selectElement([['A"+activity.getId()+"', "+rule.getImplicationElements().get(activity).toString()+", '"+rule.getName()+ruleNumber+"'], Path])). ";
+	                        
+	                        ruleNumber++;
+	                    }
+	                }
+	                
+	            }
+	            
+	    }
+	        
+		rulesExpression += "\n\nrule(Path).";
 		
-		if(expressionList.size()>0){
-			if(expressionList.size()>1){
-				query = "and("+expressionList.get(0)+", " + expressionList.get(1) +")";
-				
-				for (int j=2; j<expressionList.size(); j++) {
-					
-					query = "and("+ query + ", "+expressionList.get(j)+")";
-					
-				}
-				
-				
-			}
-			else
-				query = expressionList.get(0);
-		}
-		
-		String expression = assertzBooleanValues+ "\nevaluateState(" + variableList +"E) :- "+ variableInstantiation + " evaluate(E, Result).";
-		
-		query = "evaluateState(" + variableList +query+").";
-		
-		System.out.println(expression);
-		
-		System.out.println(query);
-		
-		
-		return expression;
-		
-//		for (Rule rule : rules) {
-//			
-//			for (Expression exp : rule.getConditions()){
-//			
-//				
-//				List<String> activityIds = new ArrayList<>();
-//				
-//				for (Activity activity : exp.getActivities()) {
-//					
-//					activityIds.add(activity.getId());
-//				}
-//				
-////				charon.getCharonAPI().insertRule(exp.getOperation(),   exp.getModifier(), activityIds);
-//				
-//			}
-//		}
+		return rulesExpression;
 		
 	}
 	
 	
+	private List<Activity> getVariants(Activity actv) {
+		
+		Object[] edges = derivationGraphComponent.getGraph().getEdges(actv, null);
+		
+		List<Activity> variants = new ArrayList<Activity>();
+		
+		for (int i = 0; i < edges.length; i++) {
+			Activity temp = (Activity)((Edge)edges[i]).getSource();
+						
+			if(temp.getType() == Activity.VARIANT_TYPE)
+				variants.add(temp);
+			else
+				variants.add((Activity)((Edge)edges[i]).getTarget());
+		}
+		
+		return variants;
+	}
+
+
+
+
+
 	private void insertRules2(List<Rule> rules) {
 		
 		CharonAPI charonAPI = charon.getCharonAPI();
