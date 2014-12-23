@@ -78,6 +78,11 @@ public class Rule implements Cloneable, Serializable{
 	public Map<Activity, Boolean> getImplicationElements() {
 		return implicationElements;
 	}
+
+	public void setImplicationElements(Map<Activity, Boolean> implicationElements) {
+		this.implicationElements = implicationElements;
+	}
+	
 	
 	
 	

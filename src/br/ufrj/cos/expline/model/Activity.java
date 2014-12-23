@@ -248,4 +248,12 @@ public class Activity extends mxCell implements Cloneable, Serializable{
 		// TODO Auto-generated method stub
 		return selected;
 	}
+
+	@Override
+	public String toString() {
+		
+		return (String) this.getValue();
+	}
+	
+	
 }

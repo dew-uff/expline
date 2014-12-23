@@ -4,22 +4,32 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dialog;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ListModel;
+import javax.swing.event.ListDataListener;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
 
 import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.model.Expression;
@@ -27,7 +37,9 @@ import br.ufrj.cos.expline.model.Rule;
 import br.ufrj.cos.expline.swing.jgraphx.ExpLineGraph;
 import br.ufrj.cos.expline.swing.jgraphx.ExpLineGraphComponent;
 
+import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGraphModel;
+import com.mxgraph.model.mxICell;
 import com.mxgraph.util.mxResources;
 
 public class EditRuleFrame extends JDialog
@@ -52,6 +64,10 @@ public class EditRuleFrame extends JDialog
 	JPanel implicationPanelHolder;
 	
 	JTextField ruleNameField;
+
+	private ImplicationTableModel implicationTablemodel;
+
+	private JComboBox<Activity> implicationActivitiesCombo;
 	
 
 	/**
@@ -66,85 +82,115 @@ public class EditRuleFrame extends JDialog
 		
 		this.rule = rule;
 		
-		conditionExpressions = new ArrayList<FilterPanel>();
-		implicationExpressions = new ArrayList<FilterPanel>();
-		
 		setTitle(mxResources.get("rule"));
 		setLayout(new BorderLayout());
 
 
-	    JPanel centerPanel = new JPanel(new GridLayout(2,0));
-	    
-		JPanel conditionPanel1 = new JPanel();
-		conditionPanel1.setPreferredSize(new Dimension(600, 450));
-		conditionPanelHolder = new JPanel(new GridLayout(0, 1));
-		   
-		   
-	    JPanel borderLayoutPanel = new JPanel(new BorderLayout());
-	    borderLayoutPanel.add(conditionPanelHolder, BorderLayout.NORTH);
-	    JScrollPane scrollPane = new JScrollPane(borderLayoutPanel);
-	    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-	    
-	    if(rule.getConditions().isEmpty())
-	    	conditionPanelHolder.add(new FilterPanel(this, FilterPanel.CONDITION_TYPE, new Expression()));
-	    
-	    for (Expression exp : rule.getConditions()) {
-	    	conditionPanelHolder.add(new FilterPanel(this, FilterPanel.CONDITION_TYPE, exp));
-		}
+		List<Activity> allVariants = getAllVariants();
+		
+		JComboBox<Activity> activitiesConditionComboBox = new JComboBox<Activity>(allVariants.toArray(new Activity[]{}));
+		
+		activitiesConditionComboBox.setSelectedItem(rule.getConditionElement());
 
-	    conditionPanel1.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-	    conditionPanel1.setLayout(new BorderLayout());
-	    conditionPanel1.add(scrollPane, BorderLayout.CENTER);
 
-	    conditionPanel1.setBorder(BorderFactory.createTitledBorder(mxResources.get("conditions")));
+	    JPanel ruleNamePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 	    
-	    
-	    JPanel conditionPanel2 = new JPanel();
-		conditionPanel2.setPreferredSize(new Dimension(600, 450));
-		implicationPanelHolder  = new JPanel(new GridLayout(0, 1));
-		   
-		   
-	    borderLayoutPanel = new JPanel(new BorderLayout());
-	    borderLayoutPanel.add(implicationPanelHolder, BorderLayout.NORTH);
-	    scrollPane = new JScrollPane(borderLayoutPanel);
-	    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-	      
-	    if(rule.getImplications().isEmpty())
-	    	implicationPanelHolder.add(new FilterPanel(this, FilterPanel.IMPLICATION_TYPE, new Expression()));
-	    
-	    for (Expression exp : rule.getImplications()) {
-	    	implicationPanelHolder.add(new FilterPanel(this, FilterPanel.IMPLICATION_TYPE, exp));
-		}
-
-	    conditionPanel2.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-	    conditionPanel2.setLayout(new BorderLayout());
-	    conditionPanel2.add(scrollPane, BorderLayout.CENTER);
-
-	    conditionPanel2.setBorder(BorderFactory.createTitledBorder(mxResources.get("implications")));
-	    
-	    JPanel cp1 = new JPanel(new BorderLayout());
-	    //cp1.add(panel, BorderLayout.NORTH);
-	    cp1.add(conditionPanel1, BorderLayout.CENTER);
-	    
-	    JPanel cp2 = new JPanel(new BorderLayout());
-	    //cp2.add(panel2, BorderLayout.NORTH);
-	    cp2.add(conditionPanel2, BorderLayout.CENTER);
-	    
-	    centerPanel.add(cp1);
-	    centerPanel.add(cp2);
-	    
-	    
-	    JPanel namePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-	    
-	    namePanel.add(new JLabel(mxResources.get("name")));
+	    ruleNamePanel.add(new JLabel(mxResources.get("name")));
 	    ruleNameField = new JTextField();
 	    ruleNameField.setColumns(13);
 	    ruleNameField.setText(rule.getName());
-	    namePanel.add(ruleNameField);	    
+	    ruleNamePanel.add(ruleNameField);	    
 
-	    getContentPane().add(namePanel, BorderLayout.NORTH);
-	    getContentPane().add(centerPanel, BorderLayout.CENTER);
 	    
+	    JPanel conditionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+	    
+	    conditionPanel.add(new JLabel("Activity"));
+	    conditionPanel.add(activitiesConditionComboBox);
+	    conditionPanel.add(new JLabel("Selected"));
+	    conditionPanel.add(new JCheckBox());
+	    
+	    conditionPanel.setBorder(BorderFactory.createTitledBorder("Condition"));
+	    
+	    JPanel topPanel = new JPanel(new BorderLayout());
+	    
+	    topPanel.add(ruleNamePanel, BorderLayout.NORTH);
+	    topPanel.add(conditionPanel, BorderLayout.CENTER);
+	    
+	    
+	    JPanel implicationPanel = new JPanel(new BorderLayout());
+	    implicationPanel.setBorder(BorderFactory.createTitledBorder("Implication"));
+	    
+
+	    
+	    getContentPane().add(topPanel, BorderLayout.NORTH);
+	    getContentPane().add(implicationPanel, BorderLayout.CENTER);
+	   
+	    
+	    implicationTablemodel = new ImplicationTableModel();
+	    JTable table = new JTable(implicationTablemodel);
+	    implicationPanel.add(new JScrollPane(
+				table), BorderLayout.CENTER);
+	    
+//	    Activity actv = new Activity();
+//	    actv.setValue("actv2");
+//	    model.insertElement(actv, true);
+//	    
+//	    actv = new Activity();
+//	    actv.setValue("actv3");
+//	    model.insertElement(actv, true);
+	    
+	    JPanel implicationTopPanel1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+	    
+	    implicationTopPanel1.add(new JLabel("Activity"));
+	    
+	    implicationActivitiesCombo = new JComboBox<Activity>(allVariants.toArray(new Activity[]{}));
+	    
+	    implicationTopPanel1.add(implicationActivitiesCombo);
+	    
+	    JButton addButton = new JButton("Add");
+	    
+	    implicationTopPanel1.add(addButton);
+	    
+	    addButton.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{	 
+				 insertImplicationElement();
+			}
+		});
+	    
+	    JButton removeButton = new JButton("Remove");
+	    
+	    implicationTopPanel1.add(removeButton);
+	    
+	    removeButton.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{	 
+				 removeImplicationElement();
+			}
+		});
+	    
+	    JPanel implicationTopPanel2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+	    
+	    JRadioButton ORButton = new JRadioButton("OR Operation");
+	    JRadioButton ANDButton = new JRadioButton("AND Operation");
+	    ORButton.setSelected(true);
+	    
+	    ButtonGroup operationGroup = new ButtonGroup();
+	    operationGroup.add(ORButton);
+	    operationGroup.add(ANDButton);
+	    
+	    
+	    implicationTopPanel2.add(ORButton);
+	    implicationTopPanel2.add(ANDButton);
+	    
+	    JPanel gridPanel = new JPanel(new GridLayout(2, 0));
+
+	    gridPanel.add(implicationTopPanel2);
+	    gridPanel.add(implicationTopPanel1);
+	    
+	    implicationPanel.add(gridPanel, BorderLayout.NORTH);
 
 
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -186,131 +232,133 @@ public class EditRuleFrame extends JDialog
 		setLocationRelativeTo(owner);
 	}
 	
+	protected void insertImplicationElement() {
+		implicationTablemodel.insertElement((Activity)implicationActivitiesCombo.getSelectedItem(), false);
+		implicationTablemodel.fireTableDataChanged();
+	}
+	
+	protected void removeImplicationElement() {
+		implicationTablemodel.removeElement((Activity)implicationActivitiesCombo.getSelectedItem());
+		implicationTablemodel.fireTableDataChanged();
+	}
+
+	private List<Activity> getAllVariants() {
+		
+		mxCell root =  (mxCell) expLineGraphComponent.getGraph().getModel().getRoot();
+		root = (mxCell) root.getChildAt(0);
+		
+		List<Activity> activities = new ArrayList<Activity>();
+		
+		
+		for (int i = 0; i < root.getChildCount(); i++) {
+			
+			mxICell cell = root.getChildAt(i);
+			if(cell.isVertex()){	
+				if (cell instanceof Activity) {
+					Activity actv = (Activity) cell;
+					
+					if(actv.getType() != Activity.INVARIANT_TYPE && actv.getType() != Activity.VARIATION_POINT_TYPE){
+						
+						activities.add(actv);
+					}
+				}
+			}
+		}
+		
+		return activities;
+	}
+
 	public void saveData(){
-		
-		//salva do zero todas as expressões pra não dar problema de duplicata ou sujeira 
-		
-		List<Expression> conditions = new ArrayList<Expression>();
-		List<Expression> implications = new ArrayList<Expression>();
-		
-		rule.setConditions(conditions);
-		rule.setImplications(implications);
 		
 		rule.setName(ruleNameField.getText());
 		
-		for (FilterPanel conditionPanel : conditionExpressions) {
-			
-			Expression exp = new Expression();
-			
-			conditions.add(exp);
-			
-			String operator = (String) conditionPanel.selectOperatorJComboBox.getSelectedItem();
-			
-			if(operator.equals("Selected")){
-				exp.setOperation(Expression.OPERATION_SELECTED);
-			}
-			else{
-				exp.setOperation(Expression.OPERATION_NOT_SELECTED);
-			}
-			
-			
-			
-			String modifier = (String) conditionPanel.modifierJComboBox.getSelectedItem();
-			
-			if(modifier.contains(mxResources.get("all"))){
-				exp.setModifier(Expression.MODIFIER_ALL);
-			}
-			else
-			if(modifier.contains(mxResources.get("any"))){
-				exp.setModifier(Expression.MODIFIER_ANY);
-			}
-			
-			
-			if(modifier.contains(mxResources.get("optional"))){
-				exp.setFilter(Expression.FILTER_OPTIONAL);
-			}
-			else
-			if(modifier.contains(mxResources.get("variant"))){
-				exp.setFilter(Expression.FILTER_VARIANT);
-			}
-			else
-				exp.setFilter(Expression.FILTER_NONE);
-			
-			
-			
-			for (Component component : conditionPanel.menu.getComponents()){
-				JCheckBox jchBox = (JCheckBox) component;
-				
-				if(jchBox.isSelected()){
-					String id = jchBox.getActionCommand();
-					
-					Activity activity = (Activity) ((mxGraphModel)expLineGraph.getModel()).getCell(id);
-					exp.addActivity(activity);
-					
-				}
-				
-			}
-			
-		}
+		//rule.setImplicationOperation(implicationOperation);
 		
-		
-		
-		for (FilterPanel implicationPanel : implicationExpressions) {
-			
-			Expression exp = new Expression();
-			
-			implications.add(exp);
-			
-			String operator = (String) implicationPanel.selectOperatorJComboBox.getSelectedItem();
-			
-			if(operator.equals(mxResources.get("selected"))){
-				exp.setOperation(Expression.OPERATION_SELECTED);
-			}
-			else{
-				exp.setOperation(Expression.OPERATION_NOT_SELECTED);
-			}
-			
-			
-			
-			String modifier = (String) implicationPanel.modifierJComboBox.getSelectedItem();
-			
-			if(modifier.contains(mxResources.get("all"))){
-				exp.setModifier(Expression.MODIFIER_ALL);
-			}
-			else
-			if(modifier.contains(mxResources.get("any"))){
-				exp.setModifier(Expression.MODIFIER_ANY);
-			}
-			
-			
-			if(modifier.contains(mxResources.get("optional"))){
-				exp.setFilter(Expression.FILTER_OPTIONAL);
-			}
-			else
-			if(modifier.contains(mxResources.get("variant"))){
-				exp.setFilter(Expression.FILTER_VARIANT);
-			}
-			else
-				exp.setFilter(Expression.FILTER_NONE);
-			
-			
-			
-			for (Component component : implicationPanel.menu.getComponents()){
-				JCheckBox jchBox = (JCheckBox) component;
-				
-				if(jchBox.isSelected()){
-					String id = jchBox.getActionCommand();
-					
-					Activity activity = (Activity) ((mxGraphModel)expLineGraph.getModel()).getCell(id);
-					exp.addActivity(activity);
-				}
-				
-			}
-			
-		}
-		
+		rule.setImplicationElements(implicationTablemodel.getElements());
 		
 	}
 
 
+	class ImplicationTableModel extends AbstractTableModel {
+		
+		  Map<Activity, Boolean> elements;
+		  
+		  List<Activity> index;
+		
+		  String columnNames[] = { "Activities", "Select" };
+		  
+		  public ImplicationTableModel(){
+			  super();
+			  
+			  elements = new HashMap<Activity, Boolean>();
+			  index = new ArrayList<Activity>();
+		  }
+		
+		  public void insertElement(Activity actv, boolean selected){
+			  
+			  if(!hasElement(actv)){
+				  index.add(actv);
+				  elements.put(actv, selected);
+			  }
+		  }
+		  
+		  public boolean hasElement(Activity actv){
+			  for (Activity element : index) {
+				   if(actv.equals(element))
+					   return true;
+			  }
+			  
+			  return false;
+		  }
+		  
+		  public void removeElement(Activity actv){
+			  index.remove(actv);
+			  elements.remove(actv);
+		  }
+		  
+		  public int getColumnCount() {
+		    return columnNames.length;
+		  }
+		
+		  public String getColumnName(int column) {
+		    return columnNames[column];
+		  }
+		
+		  public int getRowCount() {
+		    return index.size();
+		  }
+		
+		  public Object getValueAt(int row, int column) {
+			  Activity actv = index.get(row);
+			  if(column == 0)
+				  return (String) actv.getValue();
+			  else
+				  return elements.get(actv);
+		  }
+		
+		  public Class getColumnClass(int column) {
+		    return (getValueAt(0, column).getClass());
+		  }
+		
+		  public void setValueAt(Object value, int row, int column) {
+			  Activity actv = index.get(row);
+
+			  if(column == 1){
+				  elements.remove(actv);
+				  elements.put(actv, (Boolean) value);
+			  }
+		  }
+		
+		  public boolean isCellEditable(int row, int column) {
+			  if(column == 1)
+				  return true;
+			  else
+				  return false;
+		  }
+		  
+		  public Map<Activity, Boolean> getElements(){
+			  return elements;
+		  }
+	}
+	
 }
