@@ -56,29 +56,29 @@ public class DerivationImp implements Derivation {
 			
 			ExpLine model = (ExpLine) derivationGraphComponent.getGraph().getModel();
 			
-			List<Rule> rules_ = new ArrayList<Rule>();
-            Rule rule = new Rule();
-            rules_.add(rule);
-            rule.setName("");
-            Activity actv = new Activity();
-            actv.setId("34");
-            rule.setConditionElement(actv);
-            rule.setConditionElementOperationSelection(false);
-            
-            actv = new Activity();
-            actv.setId("28");
-    
-            rule.addImplicationElement(actv, true);
-            
-            
-            actv = new Activity();
-            actv.setId("42");
-    
-            rule.addImplicationElement(actv, false);
-            
-            rule.setImplicationOperation(Rule.OPERATION_OR);
-            
-            model.setRules(rules_);
+//			List<Rule> rules_ = new ArrayList<Rule>();
+//            Rule rule = new Rule();
+//            rules_.add(rule);
+//            rule.setName("");
+//            Activity actv = new Activity();
+//            actv.setId("B1");
+//            rule.setConditionElement(actv);
+//            rule.setConditionElementOperationSelection(false);
+//            
+//            actv = new Activity();
+//            actv.setId("28");
+//    
+//            rule.addImplicationElement(actv, true);
+//            
+//            
+//            actv = new Activity();
+//            actv.setId("42");
+//    
+//            rule.addImplicationElement(actv, false);
+//            
+//            rule.setImplicationOperation(Rule.OPERATION_OR);
+//            
+//            model.setRules(rules_);
 
 			
 			String rules = createRules(model.getRules());
@@ -86,12 +86,12 @@ public class DerivationImp implements Derivation {
 			System.out.println(rules);
 			
 			
-//			charon = new Charon(theory+"\n"+rules);
-			charon = new Charon(theory);
-			
+			charon = new Charon(theory+"\n"+rules);
+//			charon = new Charon(theory);
+//			
 			startDerivation();
-			
-			listImplications("A39", true);
+//			
+//			listImplications(actv, true);
 			
 		
 		} catch (CharonException e) {
@@ -250,7 +250,7 @@ public class DerivationImp implements Derivation {
 						Activity actv = (Activity) cell;
 						
 
-						if(actv.getType() == Activity.OPTIONAL_VARIATION_POINT_TYPE || actv.getType() == Activity.VARIATION_POINT_TYPE){
+						if(actv.getType() == Activity.OPTIONAL_VARIATION_POINT_TYPE){
 							
 							List<Activity> variants = getVariants(actv);
 							
@@ -265,6 +265,22 @@ public class DerivationImp implements Derivation {
 								rulesExpression += "\n\nrule(Path) :-"
 										+"(not ruleAlreadyUsed('R"+ruleNumber+"', Path), isSelected('A"+variant1.getId()+"',Path)) -> (selectElement([['A"+actv.getId()+"', true, 'R"+ruleNumber+"'], Path])).";
 								ruleNumber++;
+							}
+							
+						}
+						else
+						if(actv.getType() == Activity.VARIATION_POINT_TYPE){
+							
+							List<Activity> variants = getVariants(actv);
+							
+							for (Activity variant1 : variants) {
+								for (Activity variant2 : variants) {
+									if(variant2 != variant1){
+										rulesExpression += "\n\nrule(Path) :-"
+																+"(not ruleAlreadyUsed('R"+ruleNumber+"', Path), isSelected('A"+variant1.getId()+"',Path)) -> (selectElement([['A"+variant2.getId()+"', false, 'R"+ruleNumber+"'], Path])).";
+										ruleNumber++;
+									}
+								}
 							}
 							
 						}
@@ -283,12 +299,12 @@ public class DerivationImp implements Derivation {
 	                if(rule.isConditionElementOperationSelection()){
 	                
 	                	rulesExpression += "\n\nrule(Path) :- "+
-	                             "(not ruleAlreadyUsed('"+rule.getName()+"', Path), isSelected(A'"+conditionActvElement.getId()+"',Path)) -> (";
+	                             "(not ruleAlreadyUsed('"+rule.getName()+"', Path), isSelected('A"+conditionActvElement.getId()+"',Path)) -> (";
 	                }
 	                else{
 	                
 	                	rulesExpression += "\n\nrule(Path) :- "+
-	                             "(not ruleAlreadyUsed('"+rule.getName()+"', Path), isDesselected(A'"+conditionActvElement.getId()+"',Path)) -> (";
+	                             "(not ruleAlreadyUsed('"+rule.getName()+"', Path), isDesselected('A"+conditionActvElement.getId()+"',Path)) -> (";
 	                }
 	                
 	                
@@ -636,6 +652,23 @@ public class DerivationImp implements Derivation {
 				
 				JOptionPane.showMessageDialog(derivationGraphComponent,
 						"Derivation Status: Selection is Valid");
+				
+//				ArrayList<List> elements = (ArrayList) ((Map<String, Object>)selectImplications.get(0)).get("A");
+//				
+//				for (int i = 0; i < elements.size(); i++) {
+//					
+//					ArrayList<String> element = (ArrayList) elements.get(i);
+//					
+//					String activityId = element.get(0).substring(1);
+//					
+//					currentState.get(key)
+//					
+//					String select = element.get(0).substring(2);
+//					 
+//				}
+//				
+//				currentState.get("id");
+				
 			}
 			else{
 				try {
@@ -684,37 +717,6 @@ public class DerivationImp implements Derivation {
 		return processedImplications;
 	}
 	
-//	public List<Map<String, String>> processImplications2(Activity actv, boolean selected){
-//	
-//		Map<String, List<Map<String, Object>>> options;
-//		
-//		List<Map<String, String>> implications = new ArrayList<Map<String,String>>();
-//
-//		
-//		if(selected)
-//			options = selectedOptions;
-//		else
-//			options = desselectedOptions;
-//		
-//					
-//		for (Map<String, Object> option : options.get(actv.getId())) {
-//			
-//			Map<String, String> implication = new HashMap<String, String>();
-//			
-//			
-//			for (String elementId : option.keySet()) {
-//				
-//				if(!option.get(elementId).equals(String.valueOf(currentState.get(elementId).isSelected())) && !elementId.equals(actv.getId()))
-//					implication.put(elementId, String.valueOf(currentState.get(elementId).isSelected()));	
-//			}
-//			
-//			implications.add(implication);
-//		}
-//		
-//		
-//		return implications;
-//	}
-	
 	private List<Map<String, Object>> listImplications(Activity activity, boolean selected) throws CharonException {
 		// TODO Auto-generated method stub
 		
@@ -723,30 +725,16 @@ public class DerivationImp implements Derivation {
 		//se n�o �, verifico se exista  eu coleto as implica��es necess�rias
 		
 		CharonAPI charonAPI = charon.getCharonAPI();
-		charonAPI.listImplications(activity.getId(), selected);
-//		List<Map<String, Object>> solutions = charonAPI.listValidConfigurations(query, activity.getId(), true);
+		List<Map<String, Object>> solutions = charonAPI.listImplications(activity.getId(), selected);
 		
-//		return solutions;
-		return null;
-		
-	}
-	
-	private List<Map<String, Object>> listImplications(String id, boolean selected) throws CharonException {
-		// TODO Auto-generated method stub
-		
-		//verifico se essa configura��o � valida
-		//se sim, retorno uma lista vazia
-		//se n�o �, verifico se exista  eu coleto as implica��es necess�rias
-		
-		CharonAPI charonAPI = charon.getCharonAPI();
-		List<Map<String, Object>> solutions = charonAPI.listImplications(id, selected);
-//		List<Map<String, Object>> solutions = charonAPI.listValidConfigurations(query, activity.getId(), true);
-		
-//		return solutions;
-		return null;
-		
-	}
+		for(Map<String, Object> solution : solutions){
+			if(((ArrayList)solution.get("A")).size()>1)
+				return solutions;
+		}
 
+		return new ArrayList<Map<String, Object>>();
+		
+	}
 	
 	public Workflow derive() {
 		

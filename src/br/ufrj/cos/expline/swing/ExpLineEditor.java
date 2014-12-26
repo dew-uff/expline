@@ -45,6 +45,7 @@ import br.ufrj.cos.expline.io.ExpLineCodec;
 import br.ufrj.cos.expline.io.ExpressionCodec;
 import br.ufrj.cos.expline.io.WorkflowCodec;
 import br.ufrj.cos.expline.model.Activity;
+import br.ufrj.cos.expline.model.ExpLine;
 import br.ufrj.cos.expline.model.Expression;
 import br.ufrj.cos.expline.model.Port;
 import br.ufrj.cos.expline.model.RelationSchema;
@@ -707,6 +708,8 @@ protected void changeToDerivationView(){
 		ExpLineDerivationGraph expLineDer = new ExpLineDerivationGraph(this);
 		
 		expLineDer.getModel().setRoot(graphCopy.getModel().getRoot());
+		
+		((ExpLine)expLineDer.getModel()).setRules(((ExpLine)model).getRules());
 		
 		
 		derivationGraphComponent = new ExpLineDerivationGraphComponent(expLineDer);

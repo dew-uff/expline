@@ -29,6 +29,7 @@ public class Rule implements Cloneable, Serializable{
 	public Rule(){
 		name = "";	
 		implicationElements = new HashMap<Activity, Boolean>();
+		implicationOperation = OPERATION_AND;
 	}
 	
 	public void addImplicationElement(Activity actv, boolean selected){
@@ -81,6 +82,18 @@ public class Rule implements Cloneable, Serializable{
 
 	public void setImplicationElements(Map<Activity, Boolean> implicationElements) {
 		this.implicationElements = implicationElements;
+	}
+
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		// TODO Auto-generated method stub
+		return super.clone();
+	}
+
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return name;
 	}
 	
 	

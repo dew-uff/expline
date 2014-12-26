@@ -21,6 +21,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -32,6 +33,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
 import br.ufrj.cos.expline.model.Activity;
+import br.ufrj.cos.expline.model.ExpLine;
 import br.ufrj.cos.expline.model.Expression;
 import br.ufrj.cos.expline.model.Rule;
 import br.ufrj.cos.expline.swing.jgraphx.ExpLineGraph;
@@ -50,7 +52,7 @@ public class EditRuleFrame extends JDialog
 	 */
 	private static final long serialVersionUID = -3378029138434324390L;
 	
-	protected ExpLineGraphComponent expLineGraphComponent;
+	protected final ExpLineGraphComponent expLineGraphComponent;
 	protected ExpLineGraph expLineGraph;
 	
 	protected Rule rule;
@@ -68,12 +70,20 @@ public class EditRuleFrame extends JDialog
 	private ImplicationTableModel implicationTablemodel;
 
 	private JComboBox<Activity> implicationActivitiesCombo;
+
+	private JComboBox<Activity> activitiesConditionComboBox;
+
+	private JCheckBox conditionSelectedCheckBox;
+
+	private JRadioButton oRButton;
+
+	private JRadioButton aNDButton;
 	
 
 	/**
 	 * 
 	 */
-	public EditRuleFrame(final Dialog owner, ExpLineGraphComponent expLinegraphComponent, Rule rule)
+	public EditRuleFrame(final Dialog owner, final ExpLineGraphComponent expLinegraphComponent, Rule rule)
 	{
 		super(owner);
 		
@@ -88,7 +98,7 @@ public class EditRuleFrame extends JDialog
 
 		List<Activity> allVariants = getAllVariants();
 		
-		JComboBox<Activity> activitiesConditionComboBox = new JComboBox<Activity>(allVariants.toArray(new Activity[]{}));
+		activitiesConditionComboBox = new JComboBox<Activity>(allVariants.toArray(new Activity[]{}));
 		
 		activitiesConditionComboBox.setSelectedItem(rule.getConditionElement());
 
@@ -107,7 +117,10 @@ public class EditRuleFrame extends JDialog
 	    conditionPanel.add(new JLabel("Activity"));
 	    conditionPanel.add(activitiesConditionComboBox);
 	    conditionPanel.add(new JLabel("Selected"));
-	    conditionPanel.add(new JCheckBox());
+	    
+	    conditionSelectedCheckBox = new JCheckBox();
+	    
+	    conditionPanel.add(conditionSelectedCheckBox);
 	    
 	    conditionPanel.setBorder(BorderFactory.createTitledBorder("Condition"));
 	    
@@ -130,14 +143,7 @@ public class EditRuleFrame extends JDialog
 	    JTable table = new JTable(implicationTablemodel);
 	    implicationPanel.add(new JScrollPane(
 				table), BorderLayout.CENTER);
-	    
-//	    Activity actv = new Activity();
-//	    actv.setValue("actv2");
-//	    model.insertElement(actv, true);
-//	    
-//	    actv = new Activity();
-//	    actv.setValue("actv3");
-//	    model.insertElement(actv, true);
+	   
 	    
 	    JPanel implicationTopPanel1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
 	    
@@ -173,17 +179,17 @@ public class EditRuleFrame extends JDialog
 	    
 	    JPanel implicationTopPanel2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
 	    
-	    JRadioButton ORButton = new JRadioButton("OR Operation");
-	    JRadioButton ANDButton = new JRadioButton("AND Operation");
-	    ORButton.setSelected(true);
+	    oRButton = new JRadioButton("OR Operation");
+	    aNDButton = new JRadioButton("AND Operation");
+	    oRButton.setSelected(true);
 	    
 	    ButtonGroup operationGroup = new ButtonGroup();
-	    operationGroup.add(ORButton);
-	    operationGroup.add(ANDButton);
+	    operationGroup.add(oRButton);
+	    operationGroup.add(aNDButton);
 	    
 	    
-	    implicationTopPanel2.add(ORButton);
-	    implicationTopPanel2.add(ANDButton);
+	    implicationTopPanel2.add(oRButton);
+	    implicationTopPanel2.add(aNDButton);
 	    
 	    JPanel gridPanel = new JPanel(new GridLayout(2, 0));
 
@@ -217,12 +223,19 @@ public class EditRuleFrame extends JDialog
 		{
 			public void actionPerformed(ActionEvent e)
 			{	
-				saveData();
-				setVisible(false);
+				if(saveData())
+					setVisible(false);
+				else
+					JOptionPane.showMessageDialog(expLinegraphComponent,
+							"The rule name already exists.");
+				
 			}
 		});
 		
 		buttonPanel.add(okButton);
+		
+		
+		loadData();
 		
 		// Sets default button for enter key
 		getRootPane().setDefaultButton(okButton);
@@ -268,14 +281,58 @@ public class EditRuleFrame extends JDialog
 		return activities;
 	}
 
-	public void saveData(){
+	public boolean saveData(){
 		
-		rule.setName(ruleNameField.getText());
+		if(isUniqueRuleName(rule, ruleNameField.getText()))
+			rule.setName(ruleNameField.getText());
+		else
+			return false;
 		
-		//rule.setImplicationOperation(implicationOperation);
+		rule.addConditionElement((Activity) activitiesConditionComboBox.getSelectedItem(), conditionSelectedCheckBox.isSelected());
+		
+		if(oRButton.isSelected())
+			rule.setImplicationOperation(Rule.OPERATION_OR);
+		else
+			rule.setImplicationOperation(Rule.OPERATION_OR);
 		
 		rule.setImplicationElements(implicationTablemodel.getElements());
 		
+		return true;
+		
+	}
+	
+	public boolean isUniqueRuleName(Rule rule, String name){
+		ExpLine model = (ExpLine) expLineGraph.getModel();
+		
+		for(Rule rule2: model.getRules()){
+			
+			if(rule2.getName().equals(name) && rule != rule2)
+				return false;
+		
+		}
+		
+		return true;
+		
+	}
+	
+	
+	public void loadData(){
+		
+		ruleNameField.setText(rule.getName());
+		
+		conditionSelectedCheckBox.setSelected(rule.isConditionElementOperationSelection());
+		
+		activitiesConditionComboBox.setSelectedItem(rule.getConditionElement());
+		
+		if(rule.getImplicationOperation() == Rule.OPERATION_AND)
+			aNDButton.setSelected(true);
+		else
+			oRButton.setSelected(true);
+		
+		
+		implicationTablemodel.setElements(rule.getImplicationElements());
+		
+		implicationTablemodel.fireTableDataChanged();
 	}
 
 
@@ -358,6 +415,11 @@ public class EditRuleFrame extends JDialog
 		  
 		  public Map<Activity, Boolean> getElements(){
 			  return elements;
+		  }
+		  
+		  public void setElements(Map<Activity, Boolean> elements){
+			  this.elements = elements;
+			  index.addAll(elements.keySet());
 		  }
 	}
 	
