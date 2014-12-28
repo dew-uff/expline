@@ -29,7 +29,6 @@
 	<classpathentry kind="lib" path="lib/tuprolog-extensions.jar"/>
 	<classpathentry kind="lib" path="lib/tuprolog-ide.jar"/>
 	<classpathentry kind="lib" path="lib/tuprolog.jar"/>
-	<classpathentry kind="lib" path="lib/charon.jar" sourcepath="/Charon"/>
 	<classpathentry kind="lib" path="lib/jmi-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/jmi-spem-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/mdrapi-200507110943.jar"/>

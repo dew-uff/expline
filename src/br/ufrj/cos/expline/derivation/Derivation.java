@@ -1,7 +1,6 @@
 package br.ufrj.cos.expline.derivation;
 
 import java.io.File;
-import java.util.HashMap;
 
 import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.model.Workflow;
@@ -10,70 +9,17 @@ public interface Derivation {
 
 	
 	/*
-	 * Inicia/reseta o processo de derivação e retorna uma seleção inicial da linha de experimento.
+	 * Inicia/reseta o processo de derivaï¿½ï¿½o e retorna uma seleï¿½ï¿½o inicial da linha de experimento.
 	 * 
 	 */
 	public void startDerivation();
 	
 	/*
-	 * Retorna as implicações na seleção do workflow baseado nas atividades selecionadas e desselecionadas.
+	 * Verifica se a configuraï¿½ï¿½o atual ï¿½ um workflow derivado.
 	 * 
 	 */
-	public HashMap<Activity, Boolean> getImpliedSteps(HashMap<Activity, Boolean> activitySelectionChangeList);
+	public boolean validatesDerivedWorkflow();
 	
-	/*
-	 * Valida se as atividades selecionadas e desselecionadas geram um estado válido.
-	 * 
-	 */
-	public boolean generatesValidState(HashMap<Activity, Boolean> activitySelectionChangeList);
-	
-	/*
-	 * Lista as atividades conflitantes baseado nas atividades selecionadas e desselecionadas. 
-	 * 
-	 */
-	public Activity[] getActivityConflictList(HashMap<Activity, Boolean> activitySelectionChangeList);
-	
-	/*
-	 * Lista as atividades conflitantes de acordo com o estado atual de seleção.  
-	 * 
-	 */
-	public String[] getActivityConflictList();
-	
-	/*
-	 * Lista as possíveis atividades a serem selecionadas de acordo com o estado atual de seleção.  
-	 * 
-	 */
-	public String[] getPossibleActivitySelections();
-	
-	/*
-	 * Lista as atividades selecionadas do estado atual de seleção.  
-	 * 
-	 */
-	public String[] getSelectedActivities();
-	
-	/*
-	 * Verifica se o workflow derivado é válido.
-	 * 
-	 */
-	public boolean validatesDerivedWorklfow(File derivedWorkflow);
-	
-	/*
-	 * Verifica se a configuração atual é um workflow derivado.
-	 * 
-	 */
-	public boolean validatesDerivedWorklfow();
-	
-	/*
-	 * Retorna o workflow derivado.  
-	 * 
-	 */
-	public boolean getDerivedWorkflow();
-	
-	
-	/*
-	 * Retorna o workflow derivado.  
-	 * 
-	 */
 	public boolean isActivitySelected(Activity activity);
 	
 	public boolean selectActivity(Activity activity, boolean selected);

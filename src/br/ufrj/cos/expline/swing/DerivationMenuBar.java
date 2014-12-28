@@ -37,7 +37,7 @@ public class DerivationMenuBar extends JMenuBar
 			 */
 			public void actionPerformed(ActionEvent e)
 			{
-				boolean result = editor.getDerivation().validatesDerivedWorklfow();
+				boolean result = editor.getDerivation().validatesDerivedWorkflow();
 				
 				if(result)
 					JOptionPane.showMessageDialog(graphComponent,

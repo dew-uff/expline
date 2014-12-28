@@ -507,7 +507,7 @@ public class Actions
 			
 			Derivation derivation = editor.getDerivation();
 			
-			if(!derivation.validatesDerivedWorklfow()){
+			if(!derivation.validatesDerivedWorkflow()){
 				
 				JOptionPane.showMessageDialog(editor,
 						"Derivation Status: Selection is not Valid");

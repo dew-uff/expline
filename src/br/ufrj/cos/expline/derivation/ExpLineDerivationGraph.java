@@ -3,7 +3,6 @@ package br.ufrj.cos.expline.derivation;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Shape;
-import java.util.HashMap;
 
 import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.model.Edge;
@@ -186,53 +185,6 @@ public class ExpLineDerivationGraph extends mxGraph
 		return false;
 	}
 	
-	private void updateExpLineDerivationGraph(
-			HashMap<Activity, Boolean> activitySelectionChangeList) {
-		// TODO Auto-generated method stub
-		
-		for (Activity activity : activitySelectionChangeList.keySet()) {
-			if(activitySelectionChangeList.get(activity)){
-				
-				activity.setStyle(activity.getStyle().replace(";opacity=20", ""));
-				
-				editor.status((String)activity.getValue()+" is selected");
-			
-			}
-			else{
-				if(!activity.getStyle().contains(";opacity=20"))
-					activity.setStyle(activity.getStyle()+";opacity=20");
-			}
-				
-				
-		}
-		
-		
-		Derivation derivation = editor.getDerivation();
-		
-		HashMap<Activity, Boolean> impliedSteps = derivation.getImpliedSteps(activitySelectionChangeList);
-		
-		
-		for (Activity activity : impliedSteps.keySet()) {
-			if(impliedSteps.get(activity)){
-				
-				activity.setStyle(activity.getStyle().replace(";opacity=20", ""));
-			
-			}
-			else{
-				if(!activity.getStyle().contains(";opacity=20"))
-					activity.setStyle(activity.getStyle()+";opacity=20");
-			}
-				
-				
-		}
-		
-		Activity[] conflictActivities  = derivation.getActivityConflictList(activitySelectionChangeList);
-		
-		for (Activity activity : conflictActivities) {
-			activity.setStyle(activity.getStyle().replace(";strokeColor=#000000", ";strokeColor=#CC0000"));
-		}
-		
-	}
 
 	/**
 	 * Draws the cell state with the given label onto the canvas. No
