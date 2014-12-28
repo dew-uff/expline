@@ -352,6 +352,30 @@ public class DerivationImp implements Derivation {
 
 	@Override
 	public boolean validatesDerivedWorkflow() {
+		
+		for (String activityId : explineActivities.keySet()) {
+			
+			 Activity actv = explineActivities.get(activityId);
+			 
+			 if(actv.getType() == Activity.VARIATION_POINT_TYPE || (actv.getType() == Activity.OPTIONAL_VARIATION_POINT_TYPE && currentState.get(activityId).equals(true))){
+				 
+					Object[] edges = derivationGraphComponent.getGraph().getEdges(actv, null);
+					
+					Activity temp = (Activity)((Edge)edges[0]).getSource();
+					
+					Activity actv2 = null;
+					
+					if(temp.getType() == Activity.VARIATION_POINT_TYPE)
+						actv2 = temp;
+					else
+						actv2 = (Activity)((Edge)edges[0]).getTarget();
+
+				 
+				 
+			 }
+		}
+		
+		
 		return true;
 	}
 
