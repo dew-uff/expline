@@ -31,22 +31,22 @@ public class DerivationImp implements Derivation {
 	private mxGraphComponent derivationGraphComponent;
 	
 	private Charon charon;
+		
+	private Map<String, Activity> explineActivities;
 	
-	private String query;
-	
-	private Map<String, Activity> currentState;
+	private Map<String, Boolean> currentState;
 
 		
 	public DerivationImp(mxGraphComponent derivationGraphComponent) {
 		// TODO Auto-generated constructor stub
 		this.derivationGraphComponent = derivationGraphComponent;
 		
-		currentState = new HashMap<String, Activity>();
+		explineActivities = new HashMap<String, Activity>();
+		
+		currentState = new HashMap<String, Boolean>();
 		
 		try {
 			
-			//query = "evaluateState(A34, A35, A36, A37, A38, A39, A40, A41, A42, A43, A26, A27, A28, or(xor(xor(xor(xor(A34, A35), A36), A37), A38), not or(or(or(or(A34, A35), A36), A37), A38))).";
-
 			InputStream is = new FileInputStream(new File("doc/ExpLine.pl"));
 			
 	        byte[] info = new byte[is.available()];
@@ -55,30 +55,6 @@ public class DerivationImp implements Derivation {
 			
 			
 			ExpLine model = (ExpLine) derivationGraphComponent.getGraph().getModel();
-			
-//			List<Rule> rules_ = new ArrayList<Rule>();
-//            Rule rule = new Rule();
-//            rules_.add(rule);
-//            rule.setName("");
-//            Activity actv = new Activity();
-//            actv.setId("B1");
-//            rule.setConditionElement(actv);
-//            rule.setConditionElementOperationSelection(false);
-//            
-//            actv = new Activity();
-//            actv.setId("28");
-//    
-//            rule.addImplicationElement(actv, true);
-//            
-//            
-//            actv = new Activity();
-//            actv.setId("42");
-//    
-//            rule.addImplicationElement(actv, false);
-//            
-//            rule.setImplicationOperation(Rule.OPERATION_OR);
-//            
-//            model.setRules(rules_);
 
 			
 			String rules = createRules(model.getRules());
@@ -90,8 +66,6 @@ public class DerivationImp implements Derivation {
 //			charon = new Charon(theory);
 //			
 			startDerivation();
-//			
-//			listImplications(actv, true);
 			
 		
 		} catch (CharonException e) {
@@ -125,9 +99,9 @@ public class DerivationImp implements Derivation {
 		Map<String, List<Map<String, Object>>> selectedOptions = new HashMap<String, List<Map<String, Object>>>();
 		Map<String, List<Map<String, Object>>> desselectedOptions = new HashMap<String, List<Map<String, Object>>>();
 		
-		for (String id : currentState.keySet()) {
+		for (String id : explineActivities.keySet()) {
 			
-			Activity actv = currentState.get(id);
+			Activity actv = explineActivities.get(id);
 			
 			if(actv.getType() != Activity.INVARIANT_TYPE && actv.getType() != actv.VARIANT_TYPE){
 				selectedOptions.put(id, new ArrayList<Map<String,Object>>());
@@ -178,14 +152,18 @@ public class DerivationImp implements Derivation {
 				
 					if (cell instanceof Activity) {
 						Activity actv = (Activity) cell;
-						currentState.put(actv.getId(), actv);
+						explineActivities.put(actv.getId(), actv);
 						
 						if(actv.getType() == Activity.INVARIANT_TYPE){
 							charonAPI.insertMandatory(actv.getId());
+							currentState.put(actv.getId(), true);
 						}
 						else
 						if(actv.getType() == Activity.OPTIONAL_INVARIANT_TYPE){
 							charonAPI.insertOptional(actv.getId());
+							
+							currentState.put(actv.getId(), false);
+
 							
 							root.getChildAt(i).setStyle(root.getChildAt(i).getStyle() + ";opacity=20");
 						}
@@ -193,6 +171,9 @@ public class DerivationImp implements Derivation {
 							charonAPI.insertVariationPoint(actv.getId(), false);
 							
 							root.getChildAt(i).setStyle(root.getChildAt(i).getStyle() + ";opacity=20");
+							
+							currentState.put(actv.getId(), false);
+
 						}
 						else
 						if(actv.getType() == Activity.VARIANT_TYPE){
@@ -214,11 +195,14 @@ public class DerivationImp implements Derivation {
 							actv2.getValue();
 							
 							root.getChildAt(i).setStyle(root.getChildAt(i).getStyle() + ";opacity=20");
+							
+							currentState.put(actv.getId(), false);
 						}
 						else
 						if(actv.getType() == Activity.VARIATION_POINT_TYPE){
 							charonAPI.insertVariationPoint(actv.getId(), true);
 
+							currentState.put(actv.getId(), true);
 						}	
 						
 					}
@@ -229,7 +213,7 @@ public class DerivationImp implements Derivation {
 				e.printStackTrace();
 			}
 		}
-		
+				
 	}
 
 	private String createRules(List<Rule> rules) {
@@ -650,25 +634,29 @@ public class DerivationImp implements Derivation {
 //					
 //					System.out.println(processedImplications);
 				
-				JOptionPane.showMessageDialog(derivationGraphComponent,
-						"Derivation Status: Selection is Valid");
+//				JOptionPane.showMessageDialog(derivationGraphComponent,
+//						"Derivation Status: Selection is Valid");
 				
-//				ArrayList<List> elements = (ArrayList) ((Map<String, Object>)selectImplications.get(0)).get("A");
-//				
-//				for (int i = 0; i < elements.size(); i++) {
-//					
-//					ArrayList<String> element = (ArrayList) elements.get(i);
-//					
-//					String activityId = element.get(0).substring(1);
-//					
-//					currentState.get(key)
-//					
-//					String select = element.get(0).substring(2);
-//					 
-//				}
-//				
-//				currentState.get("id");
+				ArrayList<List> elements = (ArrayList) ((Map<String, Object>)selectImplications.get(0)).get("A");
 				
+				for (int i = 0; i < elements.size(); i++) {
+					
+					ArrayList<String> element = (ArrayList) elements.get(i);
+					
+					String activityId = element.get(0).substring(2, element.get(0).length()-1);
+					
+					Boolean activitySelect =  Boolean.valueOf(element.get(1));
+					
+					if(!currentState.get(activityId).equals(activitySelect)){
+						currentState.put(activityId, activitySelect);
+						if(activitySelect)
+							explineActivities.get(activityId).setStyle(activity.getStyle().replace(";opacity=20", ""));
+						else
+							explineActivities.get(activityId).setStyle(activity.getStyle() + ";opacity=20");
+					}
+										 
+				}
+								
 			}
 			else{
 				try {
@@ -706,8 +694,8 @@ public class DerivationImp implements Derivation {
 				
 				String id = elementId.substring(1, elementId.length());
 				
-				if(!implication.get(elementId).equals(currentState.get(id).isSelected()))
-					processedImplication.put(elementId, currentState.get(id).isSelected());	
+				if(!implication.get(elementId).equals(explineActivities.get(id).isSelected()))
+					processedImplication.put(elementId, explineActivities.get(id).isSelected());	
 			}
 			
 			processedImplications.add(processedImplication);
