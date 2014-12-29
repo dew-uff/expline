@@ -147,11 +147,11 @@ public class DerivationImp implements Derivation {
 					explineActivities.put(actv.getId(), actv);
 					
 					if(actv.getType() == Activity.INVARIANT_TYPE){
-						currentState.put(actv.getId(), true);
+						setActivitySelection(actv, true);
 					}
 					else
 					if(actv.getType() == Activity.OPTIONAL_INVARIANT_TYPE){							
-						currentState.put(actv.getId(), false);
+						setActivitySelection(actv, false);
 
 						
 						root.getChildAt(i).setStyle(root.getChildAt(i).getStyle() + ";opacity=20");
@@ -159,7 +159,7 @@ public class DerivationImp implements Derivation {
 					if(actv.getType() == Activity.OPTIONAL_VARIATION_POINT_TYPE){							
 						root.getChildAt(i).setStyle(root.getChildAt(i).getStyle() + ";opacity=20");
 						
-						currentState.put(actv.getId(), false);
+						setActivitySelection(actv, false);
 
 					}
 					else
@@ -181,11 +181,11 @@ public class DerivationImp implements Derivation {
 						
 						root.getChildAt(i).setStyle(root.getChildAt(i).getStyle() + ";opacity=20");
 						
-						currentState.put(actv.getId(), false);
+						setActivitySelection(actv, false);
 					}
 					else
 					if(actv.getType() == Activity.VARIATION_POINT_TYPE){
-						currentState.put(actv.getId(), true);
+						setActivitySelection(actv, true);
 					}	
 					
 				}
@@ -357,7 +357,7 @@ public class DerivationImp implements Derivation {
 			
 			 Activity actv = explineActivities.get(activityId);
 			 
-			 if(actv.getType() == Activity.VARIATION_POINT_TYPE || (actv.getType() == Activity.OPTIONAL_VARIATION_POINT_TYPE && currentState.get(activityId).equals(true))){
+			 if(actv.getType() == Activity.VARIATION_POINT_TYPE || (actv.getType() == Activity.OPTIONAL_VARIATION_POINT_TYPE && isActivitySelected(actv) == true)){
 				 
 					Object[] edges = derivationGraphComponent.getGraph().getEdges(actv, null);
 					
@@ -374,7 +374,7 @@ public class DerivationImp implements Derivation {
 							variant = (Activity)((Edge)edges[i]).getTarget();
 						
 						if(variant.getType() == Activity.VARIANT_TYPE){
-							if(currentState.get(variant.getId()).equals(true)){
+							if(isActivitySelected(variant) == true){
 								hasVariantSelected = true;
 								break;
 							}
@@ -395,6 +395,10 @@ public class DerivationImp implements Derivation {
 		return currentState.get(activity.getId());
 	}
 
+	@Override
+	public void setActivitySelection(Activity activity, boolean selected) {
+		currentState.put(activity.getId(), selected);
+	}
 
 	@Override
 	public boolean selectActivity(Activity activity, boolean selected) {
@@ -422,11 +426,12 @@ public class DerivationImp implements Derivation {
 					ArrayList<String> element = (ArrayList) elements.get(i);
 					
 					String activityId = element.get(0).substring(2, element.get(0).length()-1);
+					Activity actv = explineActivities.get(activityId);
 					
 					Boolean activitySelect =  Boolean.valueOf(element.get(1));
 					
-					if(!currentState.get(activityId).equals(activitySelect)){
-						currentState.put(activityId, activitySelect);
+					if(isActivitySelected(actv) != activitySelect){
+						setActivitySelection(actv, activitySelect);
 						if(activitySelect)
 							explineActivities.get(activityId).setStyle(activity.getStyle().replace(";opacity=20", ""));
 						else
@@ -437,7 +442,7 @@ public class DerivationImp implements Derivation {
 								
 			}
 			else{
-				currentState.put(activity.getId(), selected);
+				setActivitySelection(activity, selected);
 				if(selected)
 					activity.setStyle(activity.getStyle().replace(";opacity=20", ""));
 				else
@@ -539,7 +544,7 @@ public class DerivationImp implements Derivation {
 
 						if(actv.getType() == Activity.OPTIONAL_INVARIANT_TYPE){
 															
-							if(!currentState.get(actv.getId())){
+							if(!isActivitySelected(actv)){
 								
 								if(!actv.getAlgebraicOperator().equals("Join")){
 									
@@ -598,7 +603,7 @@ public class DerivationImp implements Derivation {
 						}
 						if(actv.getType() == Activity.OPTIONAL_VARIATION_POINT_TYPE){
 															
-							if(!currentState.get(actv.getId())){
+							if(!isActivitySelected(actv)){
 								
 								if(!actv.getAlgebraicOperator().equals("Join")){
 									
@@ -667,7 +672,7 @@ public class DerivationImp implements Derivation {
 										if(variant.getType() != Activity.VARIANT_TYPE)
 											variant = (Activity) edge.getTarget();
 																					
-										if(currentState.get(variant.getId())){
+										if(isActivitySelected(variant)){
 											
 											actv.setValue(((String)actv.getValue())+" ("+((String)variant.getValue()) +")");
 											
@@ -697,7 +702,7 @@ public class DerivationImp implements Derivation {
 									if(variant.getType() != Activity.VARIANT_TYPE)
 										variant = (Activity) edge.getTarget();
 									
-									if(currentState.get(variant.getId())){
+									if(isActivitySelected(variant)){
 																				
 										actv.setValue(((String)actv.getValue())+" ("+((String)variant.getValue()) +")");
 										
@@ -724,3 +729,4 @@ public class DerivationImp implements Derivation {
 
 	
 }
+

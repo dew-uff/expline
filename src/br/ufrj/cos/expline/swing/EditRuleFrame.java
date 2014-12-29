@@ -2,7 +2,6 @@ package br.ufrj.cos.expline.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -15,7 +14,6 @@ import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
-import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -27,20 +25,15 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.ListModel;
-import javax.swing.event.ListDataListener;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableModel;
 
 import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.model.ExpLine;
-import br.ufrj.cos.expline.model.Expression;
 import br.ufrj.cos.expline.model.Rule;
 import br.ufrj.cos.expline.swing.jgraphx.ExpLineGraph;
 import br.ufrj.cos.expline.swing.jgraphx.ExpLineGraphComponent;
 
 import com.mxgraph.model.mxCell;
-import com.mxgraph.model.mxGraphModel;
 import com.mxgraph.model.mxICell;
 import com.mxgraph.util.mxResources;
 
@@ -114,13 +107,13 @@ public class EditRuleFrame extends JDialog
 	    
 	    JPanel conditionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 	    
-	    conditionPanel.add(new JLabel("Activity"));
+	    conditionPanel.add(new JLabel("Selected Activity"));
 	    conditionPanel.add(activitiesConditionComboBox);
-	    conditionPanel.add(new JLabel("Selected"));
+	    //conditionPanel.add(new JLabel("Selected"));
 	    
 	    conditionSelectedCheckBox = new JCheckBox();
 	    
-	    conditionPanel.add(conditionSelectedCheckBox);
+	    //conditionPanel.add(conditionSelectedCheckBox);
 	    
 	    conditionPanel.setBorder(BorderFactory.createTitledBorder("Condition"));
 	    

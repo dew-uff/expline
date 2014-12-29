@@ -1,7 +1,5 @@
 package br.ufrj.cos.expline.derivation;
 
-import java.io.File;
-
 import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.model.Workflow;
 
@@ -21,6 +19,8 @@ public interface Derivation {
 	public boolean validatesDerivedWorkflow();
 	
 	public boolean isActivitySelected(Activity activity);
+	
+	public void setActivitySelection(Activity activity, boolean selected);
 	
 	public boolean selectActivity(Activity activity, boolean selected);
 

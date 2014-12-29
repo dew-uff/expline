@@ -30,6 +30,7 @@ public class Rule implements Cloneable, Serializable{
 		name = "";	
 		implicationElements = new HashMap<Activity, Boolean>();
 		implicationOperation = OPERATION_AND;
+		conditionElementOperationSelection = true;
 	}
 	
 	public void addImplicationElement(Activity actv, boolean selected){

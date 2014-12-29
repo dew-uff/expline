@@ -600,8 +600,6 @@ public class Actions
 						
 						derivation = editor.getDerivation();
 						
-						derivation.derive();
-						
 						Workflow workflow = derivation.derive();	
 						
 						
