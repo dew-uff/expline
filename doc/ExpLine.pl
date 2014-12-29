@@ -44,32 +44,10 @@ ruleAlreadyUsed(Rule, [[_, _, Rule]|_]) :- !.
 ruleAlreadyUsed(Rule,[Head|Path]) :- ruleAlreadyUsed(Rule,Path).
    
 processResults(_) :- currentSelection(A, B1, true),
-        findall(B2, currentSelection(A, B2, true),B2s),
-        length(B2s, Length),
-        Length > 1,
-        maxLength(B2s, BMax),
-        append([[A, true, '']], BMax, C),
-        not option(C),
-        assertz(option(C)).
-       
-processResults(_) :- currentSelection(A, B1, true),
-        findall(B2, currentSelection(A, B2, true),B2s),
-        length(B2s, Length),
-        Length = 1,
         append([[A, true, '']], B1, C),
         assertz(option(C)).
+
 processResults(_) :- currentDesselection(A, B1, true),
-        findall(B2, currentDesselection(A, B2, true),B2s),
-        length(B2s, Length),
-        Length > 1,
-        maxLength(B2s, BMax),
-        append([[A, false, '']], BMax, C),
-        not option(C),
-        assertz(option(C)). 
-processResults(_) :- currentDesselection(A, B1, true),
-        findall(B2, currentDesselection(A, B2, true),B2s),
-        length(B2s, Length),
-        Length = 1,
         append([[A, false, '']], B1, C),
         assertz(option(C)).
        
@@ -80,4 +58,7 @@ removeRedundants(_) :-   option(Path),
             length(Path2, Length),
             isEqual(Path, Path2),
             retract(option(Path)).
+
+isEqual([], _).
+isEqual([[A, B, _]|List], List2) :- member([A, B, _], List2), isEqual(List, List2).
   

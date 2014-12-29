@@ -361,20 +361,31 @@ public class DerivationImp implements Derivation {
 				 
 					Object[] edges = derivationGraphComponent.getGraph().getEdges(actv, null);
 					
-					Activity temp = (Activity)((Edge)edges[0]).getSource();
+					boolean hasVariantSelected = false;
 					
-					Activity actv2 = null;
+					for (int i = 0; i < edges.length; i++) {
+						Activity temp = (Activity)((Edge)edges[i]).getSource();
+						
+						Activity variant = null;
+						
+						if(temp.getType() == Activity.VARIANT_TYPE)
+							variant = temp;
+						else
+							variant = (Activity)((Edge)edges[i]).getTarget();
+						
+						if(variant.getType() == Activity.VARIANT_TYPE){
+							if(currentState.get(variant.getId()).equals(true)){
+								hasVariantSelected = true;
+								break;
+							}
+						}
+						
+					}
 					
-					if(temp.getType() == Activity.VARIATION_POINT_TYPE)
-						actv2 = temp;
-					else
-						actv2 = (Activity)((Edge)edges[0]).getTarget();
-
-				 
-				 
+					if(!hasVariantSelected)
+						return false; 
 			 }
 		}
-		
 		
 		return true;
 	}
@@ -480,8 +491,8 @@ public class DerivationImp implements Derivation {
 		inferenceMachine.getAllSolutions("retract(option(_)).");
 		
 		inferenceMachine.getAllSolutions("selectElement([['A"+activity.getId()+"', "+selected+", 'R0'], []]).");
-		
 		inferenceMachine.getAllSolutions("processResults(_).");
+		inferenceMachine.getAllSolutions("removeRedundants(_).");
 		
 		List<Map<String, Object>> solutions = inferenceMachine.getAllSolutions("option(A).");
 		
