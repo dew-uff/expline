@@ -20,8 +20,11 @@ import br.ufrj.cos.expline.model.Rule;
 import br.ufrj.cos.expline.model.Workflow;
 
 import com.mxgraph.model.mxCell;
+import com.mxgraph.model.mxGraphModel;
 import com.mxgraph.model.mxICell;
+import com.mxgraph.model.mxIGraphModel;
 import com.mxgraph.swing.mxGraphComponent;
+import com.mxgraph.view.mxGraph;
 
 public class DerivationImp implements Derivation {
 
@@ -514,9 +517,18 @@ public class DerivationImp implements Derivation {
 	
 		//Creating temporary graph structure to derivate the workflow to not propagate to the original one that is being manipulated by the user on the screen.
 		//
+		
+		mxGraph graph = derivationGraphComponent.getGraph();
+		mxIGraphModel model = graph.getModel();
+		Object[] cells = model.cloneCells(graph.getChildCells(graph.getDefaultParent(), true, true), true);
+		
+		mxGraphModel modelCopy = new mxGraphModel();
+		mxGraph graphCopy = new mxGraph(modelCopy);
+		graphCopy.addCells(cells);
+		
 		ExpLineDerivationGraph expLineDerGraphTemp = new ExpLineDerivationGraph(null);
 		
-		expLineDerGraphTemp.getModel().setRoot(derivationGraphComponent.getGraph().getModel().getRoot());
+		expLineDerGraphTemp.getModel().setRoot(modelCopy.getRoot());
 		
 		
 		ExpLine expline = (ExpLine)  expLineDerGraphTemp.getModel();
