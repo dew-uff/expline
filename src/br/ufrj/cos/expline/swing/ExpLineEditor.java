@@ -717,7 +717,7 @@ protected void changeToDerivationView(){
 		currentGraphComponent = derivationGraphComponent;
 		
 		
-		derivation = new DerivationImp(derivationGraphComponent);
+		derivation = new DerivationImp(this, derivationGraphComponent);
 		
 		this.remove(this.outer);
 		this.add(derivationGraphComponent, BorderLayout.CENTER);
@@ -752,7 +752,7 @@ protected void changeToDerivationView(){
 		currentGraphComponent = derivationGraphComponent;
 		
 		
-		derivation = new DerivationImp(derivationGraphComponent);
+		derivation = new DerivationImp(this, derivationGraphComponent);
 		
 		this.remove(this.outer);
 		this.add(derivationGraphComponent, BorderLayout.CENTER);

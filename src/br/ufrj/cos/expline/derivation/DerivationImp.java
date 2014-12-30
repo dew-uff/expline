@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+
 import alice.tuprolog.InvalidTheoryException;
 import br.ufrj.cos.expline.derivation.inference.InferenceMachine;
 import br.ufrj.cos.expline.model.Activity;
@@ -18,6 +21,9 @@ import br.ufrj.cos.expline.model.ExpLine;
 import br.ufrj.cos.expline.model.Port;
 import br.ufrj.cos.expline.model.Rule;
 import br.ufrj.cos.expline.model.Workflow;
+import br.ufrj.cos.expline.swing.ActivityOptionsSelectionFrame;
+import br.ufrj.cos.expline.swing.ExpLineEditor;
+import br.ufrj.cos.expline.swing.jgraphx.ExpLineGraphComponent;
 
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGraphModel;
@@ -35,11 +41,15 @@ public class DerivationImp implements Derivation {
 	private Map<String, Activity> explineActivities;
 	
 	private Map<String, Boolean> currentState;
+	
+	private ExpLineEditor expLineEditor;
 
 		
-	public DerivationImp(mxGraphComponent derivationGraphComponent) {
+	public DerivationImp(ExpLineEditor expLineEditor, mxGraphComponent derivationGraphComponent) {
 		// TODO Auto-generated constructor stub
 		this.derivationGraphComponent = derivationGraphComponent;
+		
+		this.expLineEditor = expLineEditor;
 		
 		explineActivities = new HashMap<String, Activity>();
 		
@@ -406,7 +416,7 @@ public class DerivationImp implements Derivation {
 	@Override
 	public boolean selectActivity(Activity activity, boolean selected) {
 							
-		List<Map<String, Boolean>> selectImplications = null;
+		List<Map<Activity, Boolean>> selectImplications = null;
 		
 		selectImplications = listImplications(activity, selected);
 		
@@ -423,18 +433,18 @@ public class DerivationImp implements Derivation {
 //						"Derivation Status: Selection is Valid");
 				
 				
-				Map<String, Boolean> solution = selectImplications.get(0);
+				Map<Activity, Boolean> solution = selectImplications.get(0);
 				
-				for (String activityId : solution.keySet()) {
+				selectOptions(selectImplications);
+				
+				for (Activity actv : solution.keySet()) {
 					
-					Activity actv = explineActivities.get(activityId);
+					setActivitySelection(actv, solution.get(actv.getId()));
 					
-					setActivitySelection(actv, solution.get(activityId));
-					
-					if(solution.get(activityId))
-						explineActivities.get(activityId).setStyle(activity.getStyle().replace(";opacity=20", ""));
+					if(solution.get(actv.getId()))
+						explineActivities.get(actv.getId()).setStyle(activity.getStyle().replace(";opacity=20", ""));
 					else
-						explineActivities.get(activityId).setStyle(activity.getStyle() + ";opacity=20");
+						explineActivities.get(actv.getId()).setStyle(activity.getStyle() + ";opacity=20");
 										 
 				}
 								
@@ -456,14 +466,39 @@ public class DerivationImp implements Derivation {
 
 	}
 	
-	public List<Map<String, Boolean>> processImplications(List<Map<String, Object>> selectImplications){
+	private void selectOptions(List<Map<Activity, Boolean>> options) {
 		
-		List<Map<String, Boolean>> processedImplications = new ArrayList<Map<String, Boolean>>();
+		
+		JFrame frame = (JFrame) SwingUtilities.windowForComponent(expLineEditor);
+
+		if (frame != null)
+		{
+			ActivityOptionsSelectionFrame about = new ActivityOptionsSelectionFrame(frame, (ExpLineDerivationGraphComponent) derivationGraphComponent, options);
+			about.setModal(true);
+
+			// Centers inside the application frame
+			int x = frame.getX() + (frame.getWidth() - about.getWidth()) / 2;
+			int y = frame.getY() + (frame.getHeight() - about.getHeight()) / 2;
+			about.setLocation(x, y);
+
+			// Shows the modal dialog and waits
+			about.setVisible(true);
+		}
+		
+	}
+
+
+
+
+
+	public List<Map<Activity, Boolean>> processImplications(List<Map<String, Object>> selectImplications){
+		
+		List<Map<Activity, Boolean>> processedImplications = new ArrayList<Map<Activity, Boolean>>();
 		
 		for(Map<String, Object> selectImplication: selectImplications){
 			ArrayList<List> elements = (ArrayList) selectImplication.get("A");
 			
-			Map<String, Boolean> solution = new HashMap<String, Boolean>();
+			Map<Activity, Boolean> solution = new HashMap<Activity, Boolean>();
 			
 			for (int i = 0; i < elements.size(); i++) {
 				
@@ -475,7 +510,7 @@ public class DerivationImp implements Derivation {
 				Boolean activitySelect =  Boolean.valueOf(element.get(1));
 				
 				if(isActivitySelected(actv) != activitySelect){
-					solution.put(activityId, activitySelect);
+					solution.put(actv, activitySelect);
 				}
 									 
 			}
@@ -497,7 +532,7 @@ public class DerivationImp implements Derivation {
 		return processedImplications;
 	}
 	
-	private List<Map<String, Boolean>> listImplications(Activity activity, boolean selected) {
+	private List<Map<Activity, Boolean>> listImplications(Activity activity, boolean selected) {
 		// TODO Auto-generated method stub
 		
 		//verifico se essa configura��o � valida
@@ -520,7 +555,7 @@ public class DerivationImp implements Derivation {
 				return processImplications(solutions);
 		}
 
-		return new ArrayList<Map<String, Boolean>>();
+		return new ArrayList<Map<Activity, Boolean>>();
 		
 	}
 	
