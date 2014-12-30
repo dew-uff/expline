@@ -406,7 +406,7 @@ public class DerivationImp implements Derivation {
 	@Override
 	public boolean selectActivity(Activity activity, boolean selected) {
 							
-		List<Map<String, Object>> selectImplications = null;
+		List<Map<String, Boolean>> selectImplications = null;
 		
 		selectImplications = listImplications(activity, selected);
 		
@@ -422,24 +422,19 @@ public class DerivationImp implements Derivation {
 //				JOptionPane.showMessageDialog(derivationGraphComponent,
 //						"Derivation Status: Selection is Valid");
 				
-				ArrayList<List> elements = (ArrayList) ((Map<String, Object>)selectImplications.get(0)).get("A");
 				
-				for (int i = 0; i < elements.size(); i++) {
+				Map<String, Boolean> solution = selectImplications.get(0);
+				
+				for (String activityId : solution.keySet()) {
 					
-					ArrayList<String> element = (ArrayList) elements.get(i);
-					
-					String activityId = element.get(0).substring(2, element.get(0).length()-1);
 					Activity actv = explineActivities.get(activityId);
 					
-					Boolean activitySelect =  Boolean.valueOf(element.get(1));
+					setActivitySelection(actv, solution.get(activityId));
 					
-					if(isActivitySelected(actv) != activitySelect){
-						setActivitySelection(actv, activitySelect);
-						if(activitySelect)
-							explineActivities.get(activityId).setStyle(activity.getStyle().replace(";opacity=20", ""));
-						else
-							explineActivities.get(activityId).setStyle(activity.getStyle() + ";opacity=20");
-					}
+					if(solution.get(activityId))
+						explineActivities.get(activityId).setStyle(activity.getStyle().replace(";opacity=20", ""));
+					else
+						explineActivities.get(activityId).setStyle(activity.getStyle() + ";opacity=20");
 										 
 				}
 								
@@ -465,28 +460,44 @@ public class DerivationImp implements Derivation {
 		
 		List<Map<String, Boolean>> processedImplications = new ArrayList<Map<String, Boolean>>();
 		
-				
-		for (Map<String, Object> implication : selectImplications) {
+		for(Map<String, Object> selectImplication: selectImplications){
+			ArrayList<List> elements = (ArrayList) selectImplication.get("A");
 			
-			Map<String, Boolean> processedImplication = new HashMap<String, Boolean>();
+			Map<String, Boolean> solution = new HashMap<String, Boolean>();
 			
-			
-			for (String elementId : implication.keySet()) {
+			for (int i = 0; i < elements.size(); i++) {
 				
-				String id = elementId.substring(1, elementId.length());
+				ArrayList<String> element = (ArrayList) elements.get(i);
 				
-				if(!implication.get(elementId).equals(explineActivities.get(id).isSelected()))
-					processedImplication.put(elementId, explineActivities.get(id).isSelected());	
+				String activityId = element.get(0).substring(2, element.get(0).length()-1);
+				Activity actv = explineActivities.get(activityId);
+				
+				Boolean activitySelect =  Boolean.valueOf(element.get(1));
+				
+				if(isActivitySelected(actv) != activitySelect){
+					solution.put(activityId, activitySelect);
+				}
+									 
 			}
 			
-			processedImplications.add(processedImplication);
+			boolean insertedbefore = false;
+			for(int i=0; i<processedImplications.size(); i++){
+				if(solution.size()<=processedImplications.get(i).size()){
+					processedImplications.add(i, solution);
+					insertedbefore = true;
+					break;
+				}
+			}
+			if(!insertedbefore)
+				processedImplications.add(solution);
+				
+			
 		}
-		
 		
 		return processedImplications;
 	}
 	
-	private List<Map<String, Object>> listImplications(Activity activity, boolean selected) {
+	private List<Map<String, Boolean>> listImplications(Activity activity, boolean selected) {
 		// TODO Auto-generated method stub
 		
 		//verifico se essa configura��o � valida
@@ -506,10 +517,10 @@ public class DerivationImp implements Derivation {
 		
 		for(Map<String, Object> solution : solutions){
 			if(((ArrayList)solution.get("A")).size()>1)
-				return solutions;
+				return processImplications(solutions);
 		}
 
-		return new ArrayList<Map<String, Object>>();
+		return new ArrayList<Map<String, Boolean>>();
 		
 	}
 	
