@@ -3,10 +3,12 @@ package br.ufrj.cos.expline.swing;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,19 +19,23 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
-import br.ufrj.cos.expline.derivation.ExpLineDerivationGraph;
-import br.ufrj.cos.expline.derivation.ExpLineDerivationGraphComponent;
+import br.ufrj.cos.expline.derivation.DerivationImp;
 import br.ufrj.cos.expline.model.Activity;
 
+import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxResources;
+import com.mxgraph.view.mxGraph;
 
 public class ActivityOptionsSelectionFrame extends JDialog
 {
@@ -39,9 +45,11 @@ public class ActivityOptionsSelectionFrame extends JDialog
 	 */
 	private static final long serialVersionUID = -3378029138434324390L;
 	
-	protected final ExpLineDerivationGraphComponent derivationGraphComponent;
+	protected final mxGraphComponent derivationGraphComponent;
 	
-	protected ExpLineDerivationGraph expLineDerivationGraph;
+	protected mxGraph expLineDerivationGraph;
+	
+	protected final DerivationImp derivationImp;
 
 	private ImplicationTableModel implicationTablemodel;
 
@@ -50,48 +58,102 @@ public class ActivityOptionsSelectionFrame extends JDialog
 	private JTable implicationTable;
 
 	private JList<String> optionList;
+	
+	private Activity selectedActivity;
 
 	/**
 	 * 
 	 */
-	public ActivityOptionsSelectionFrame(final JFrame frame, final ExpLineDerivationGraphComponent derivationGraphComponent, final List<Map<Activity, Boolean>> selectOptions)
+	public ActivityOptionsSelectionFrame(final JFrame frame, final DerivationImp derivationImp, final List<Map<Activity, Boolean>> selectOptions, final Activity selectedActivity)
 	{
 		super(frame);
 		
-		this.derivationGraphComponent = derivationGraphComponent;
-		this.expLineDerivationGraph = (ExpLineDerivationGraph) derivationGraphComponent.getGraph();
+		this.derivationImp = derivationImp;
+		this.derivationGraphComponent = derivationImp.getDerivationGraphComponent();
+		this.expLineDerivationGraph = this.derivationGraphComponent.getGraph();
 		
-		setTitle(mxResources.get("rule"));
+		this.selectedActivity = selectedActivity;
+		
+		setTitle("Selection Implication Options");
 		setLayout(new BorderLayout());
+		
+		// Creates the gradient panel
+		JPanel panel = new JPanel(new BorderLayout())
+		{
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -5062895855016210947L;
+
+			/**
+			 * 
+			 */
+			public void paintComponent(Graphics g)
+			{
+				super.paintComponent(g);
+
+				// Paint gradient background
+				Graphics2D g2d = (Graphics2D) g;
+				g2d.setPaint(new GradientPaint(0, 0, Color.WHITE, getWidth(),
+						0, getBackground()));
+				g2d.fillRect(0, 0, getWidth(), getHeight());
+			}
+
+		};
+
+		panel.setBorder(BorderFactory.createCompoundBorder(BorderFactory
+				.createMatteBorder(0, 0, 1, 0, Color.GRAY), BorderFactory
+				.createEmptyBorder(8, 8, 12, 8)));
+
+		// Adds title
+		JLabel titleLabel = new JLabel("Choose one of the implication options for the selected activity");
+		titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
+		titleLabel.setBorder(BorderFactory.createEmptyBorder(4, 18, 0, 0));
+		titleLabel.setOpaque(false);
+		panel.add(titleLabel, BorderLayout.CENTER);
+
+		getContentPane().add(panel, BorderLayout.NORTH);
+		
+		
+		
 	    
 
 	    implicationTablemodel = new ImplicationTableModel();
 	    implicationTable = new JTable(implicationTablemodel);
-
-	    getContentPane().add(new JScrollPane(
-				implicationTable), BorderLayout.CENTER);
 	    
+	    implicationTable.setFocusable(false);
+	    implicationTable.setRowSelectionAllowed(false);	    
 	    
 	    
 	    String[] optionsLabel = new String[selectOptions.size()];
 	    
 	    for(int i=0; i<selectOptions.size(); i++){
-	    	optionsLabel[i] = "Option "+i;
+	    	optionsLabel[i] = "Option "+(i+1);
 	    }
 	    
 	    optionList = new JList<String>(optionsLabel);
+	    optionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+	    optionList.setSelectedIndex(0);
 	    
 	    optionList.addListSelectionListener(new ListSelectionListener()
 	    {
 	    	  public void valueChanged(ListSelectionEvent ev)
 	    	  {
-	    	       implicationTablemodel.setElements(selectOptions.get(ev.getFirstIndex()));
+	    	       implicationTablemodel.setElements(selectOptions.get(optionList.getSelectedIndex()));
 	    	       implicationTablemodel.fireTableDataChanged();
 	    	  } 
 	    	});
 	    
 	    
-	    getContentPane().add(new JScrollPane(optionList), BorderLayout.WEST);
+		JSplitPane inner = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+				new JScrollPane(optionList), new JScrollPane(implicationTable));
+		inner.setDividerLocation(60);
+		inner.setResizeWeight(1);
+		inner.setDividerSize(3);
+		inner.setBorder(null);
+		
+	    getContentPane().add(inner, BorderLayout.CENTER);
 	    
 	    
 	    implicationTablemodel.setElements(selectOptions.get(0));
@@ -122,6 +184,23 @@ public class ActivityOptionsSelectionFrame extends JDialog
 			public void actionPerformed(ActionEvent e)
 			{	
 
+				Map<Activity, Boolean> solution = selectOptions.get(optionList.getSelectedIndex());
+				
+				
+				for (Activity actv : solution.keySet()) {
+					
+					derivationImp.setActivitySelection(actv, solution.get(actv));
+					
+					if(solution.get(actv))
+						actv.setStyle(actv.getStyle().replace(";opacity=20", ""));
+					else
+						actv.setStyle(actv.getStyle() + ";opacity=20");
+										 
+				}
+				
+				selectedActivity.setStyle(selectedActivity.getStyle().replace(";opacity=20", ""));
+				
+				setVisible(false);
 				
 			}
 		});
@@ -132,18 +211,8 @@ public class ActivityOptionsSelectionFrame extends JDialog
 		getRootPane().setDefaultButton(okButton);
 
 		setResizable(true);
-		setSize(600, 500);
+		setSize(420, 300);
 		setLocationRelativeTo(frame);
-	}
-	
-	protected void insertImplicationElement() {
-		implicationTablemodel.insertElement((Activity)implicationActivitiesCombo.getSelectedItem(), false);
-		implicationTablemodel.fireTableDataChanged();
-	}
-	
-	protected void removeImplicationElement() {
-		implicationTablemodel.removeElement((Activity)implicationActivitiesCombo.getSelectedItem());
-		implicationTablemodel.fireTableDataChanged();
 	}
 
 	public void executeOption(){

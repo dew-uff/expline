@@ -23,7 +23,6 @@ import br.ufrj.cos.expline.model.Rule;
 import br.ufrj.cos.expline.model.Workflow;
 import br.ufrj.cos.expline.swing.ActivityOptionsSelectionFrame;
 import br.ufrj.cos.expline.swing.ExpLineEditor;
-import br.ufrj.cos.expline.swing.jgraphx.ExpLineGraphComponent;
 
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGraphModel;
@@ -423,30 +422,10 @@ public class DerivationImp implements Derivation {
 		if(selectImplications != null){
 			
 			if(!selectImplications.isEmpty()){
-				
-				//abrir tela que lista op��es de sele��o
-//					List<Map<String, Boolean>> processedImplications = processImplications(selectImplications);
-//					
-//					System.out.println(processedImplications);
-				
-//				JOptionPane.showMessageDialog(derivationGraphComponent,
-//						"Derivation Status: Selection is Valid");
-				
-				
+
 				Map<Activity, Boolean> solution = selectImplications.get(0);
 				
-				selectOptions(selectImplications);
-				
-				for (Activity actv : solution.keySet()) {
-					
-					setActivitySelection(actv, solution.get(actv.getId()));
-					
-					if(solution.get(actv.getId()))
-						explineActivities.get(actv.getId()).setStyle(activity.getStyle().replace(";opacity=20", ""));
-					else
-						explineActivities.get(actv.getId()).setStyle(activity.getStyle() + ";opacity=20");
-										 
-				}
+				selectOptions(selectImplications, activity);
 								
 			}
 			else{
@@ -466,23 +445,23 @@ public class DerivationImp implements Derivation {
 
 	}
 	
-	private void selectOptions(List<Map<Activity, Boolean>> options) {
+	private void selectOptions(List<Map<Activity, Boolean>> options, Activity selectedActivity) {
 		
 		
 		JFrame frame = (JFrame) SwingUtilities.windowForComponent(expLineEditor);
 
 		if (frame != null)
 		{
-			ActivityOptionsSelectionFrame about = new ActivityOptionsSelectionFrame(frame, (ExpLineDerivationGraphComponent) derivationGraphComponent, options);
-			about.setModal(true);
+			ActivityOptionsSelectionFrame optionsSelectionFrame = new ActivityOptionsSelectionFrame(frame, this, options, selectedActivity);
+			optionsSelectionFrame.setModal(true);
 
 			// Centers inside the application frame
-			int x = frame.getX() + (frame.getWidth() - about.getWidth()) / 2;
-			int y = frame.getY() + (frame.getHeight() - about.getHeight()) / 2;
-			about.setLocation(x, y);
+			int x = frame.getX() + (frame.getWidth() - optionsSelectionFrame.getWidth()) / 2;
+			int y = frame.getY() + (frame.getHeight() - optionsSelectionFrame.getHeight()) / 2;
+			optionsSelectionFrame.setLocation(x, y);
 
 			// Shows the modal dialog and waits
-			about.setVisible(true);
+			optionsSelectionFrame.setVisible(true);
 		}
 		
 	}
@@ -491,12 +470,13 @@ public class DerivationImp implements Derivation {
 
 
 
-	public List<Map<Activity, Boolean>> processImplications(List<Map<String, Object>> selectImplications){
+	public List<Map<Activity, Boolean>> processImplications(List<Map<String, Object>> selectImplications, Activity selectedActivity){
 		
 		List<Map<Activity, Boolean>> processedImplications = new ArrayList<Map<Activity, Boolean>>();
 		
 		for(Map<String, Object> selectImplication: selectImplications){
 			ArrayList<List> elements = (ArrayList) selectImplication.get("A");
+			elements.remove(selectedActivity.getId());
 			
 			Map<Activity, Boolean> solution = new HashMap<Activity, Boolean>();
 			
@@ -515,18 +495,22 @@ public class DerivationImp implements Derivation {
 									 
 			}
 			
-			boolean insertedbefore = false;
-			for(int i=0; i<processedImplications.size(); i++){
-				if(solution.size()<=processedImplications.get(i).size()){
-					processedImplications.add(i, solution);
-					insertedbefore = true;
-					break;
-				}
-			}
-			if(!insertedbefore)
-				processedImplications.add(solution);
-				
+			solution.remove(selectedActivity);
 			
+			if(!solution.isEmpty()){
+			
+				boolean insertedbefore = false;
+				for(int i=0; i<processedImplications.size(); i++){
+					if(solution.size()<=processedImplications.get(i).size()){
+						processedImplications.add(i, solution);
+						insertedbefore = true;
+						break;
+					}
+				}
+				if(!insertedbefore)
+					processedImplications.add(solution);
+				
+			}
 		}
 		
 		return processedImplications;
@@ -549,13 +533,11 @@ public class DerivationImp implements Derivation {
 		inferenceMachine.getAllSolutions("removeRedundants(_).");
 		
 		List<Map<String, Object>> solutions = inferenceMachine.getAllSolutions("option(A).");
-		
-		for(Map<String, Object> solution : solutions){
-			if(((ArrayList)solution.get("A")).size()>1)
-				return processImplications(solutions);
-		}
 
-		return new ArrayList<Map<Activity, Boolean>>();
+		if(!solutions.isEmpty())
+			return processImplications(solutions, activity);
+		else
+			return null;
 		
 	}
 	
@@ -785,6 +767,10 @@ public class DerivationImp implements Derivation {
 			return null;
 	}
 
+
+	public mxGraphComponent getDerivationGraphComponent() {
+		return derivationGraphComponent;
+	}	
 	
 }
 
