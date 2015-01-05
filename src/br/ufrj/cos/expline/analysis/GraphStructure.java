@@ -66,18 +66,21 @@ public class GraphStructure extends mxGraphStructure
 			if(temp instanceof Edge){
 				Edge edge_temp = (Edge) temp;
 				
-				Port port1 = (Port) edge_temp.getSource();
-				Port port2 = (Port) edge_temp.getTarget();
+				if(!(edge_temp.getSource() instanceof Activity) && !(edge_temp.getTarget() instanceof Activity)){
 				
-				Activity actv1 = (Activity) port1.getParent();
-				Activity actv2 = (Activity) port2.getParent();
-				
-				Object new_edge = graph.createEdge(parent, null, "", actv1, actv2, "");
-				
-				((mxCell)new_edge).setSource(actv1);
-				((mxCell)new_edge).setTarget(actv2);
-				
-				cellList.add(new_edge);
+					Port port1 = (Port) edge_temp.getSource();
+					Port port2 = (Port) edge_temp.getTarget();
+					
+					Activity actv1 = (Activity) port1.getParent();
+					Activity actv2 = (Activity) port2.getParent();
+					
+					Object new_edge = graph.createEdge(parent, null, "", actv1, actv2, "");
+					
+					((mxCell)new_edge).setSource(actv1);
+					((mxCell)new_edge).setTarget(actv2);
+					
+					cellList.add(new_edge);
+				}
 			}
 			
 		}
