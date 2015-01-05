@@ -15,6 +15,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -230,7 +231,10 @@ public class ExpLineEditor extends JPanel
 		mxCodecRegistry.register(new mxObjectCodec(new ArrayList<Port>()));
 		mxCodecRegistry.register(new mxObjectCodec(new RelationSchema()));
 		
-		mxCodecRegistry.register(new mxObjectCodec(new Rule()));
+//		mxCodecRegistry.register(new mxObjectCodec(new Rule()));
+		mxCodecRegistry.register(new mxObjectCodec(new Rule(), new String[] { "implicationElements" }, new String[] { "conditionElement" },
+				null));
+		mxCodecRegistry.register(new mxObjectCodec(new HashMap<String, Boolean>()));
 		mxCodecRegistry.register(new ExpressionCodec());
 		mxCodecRegistry.register(new mxObjectCodec(new ArrayList<Rule>()));
 		mxCodecRegistry.register(new mxObjectCodec(new ArrayList<Expression>()));

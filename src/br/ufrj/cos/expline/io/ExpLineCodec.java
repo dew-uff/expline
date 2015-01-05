@@ -5,6 +5,7 @@
 package br.ufrj.cos.expline.io;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +21,7 @@ import br.ufrj.cos.expline.model.Port;
 import br.ufrj.cos.expline.model.Rule;
 
 import com.mxgraph.io.mxCodec;
+import com.mxgraph.io.mxCodecRegistry;
 import com.mxgraph.io.mxObjectCodec;
 import com.mxgraph.model.mxGraphModel;
 import com.mxgraph.model.mxICell;
@@ -106,11 +108,27 @@ public class ExpLineCodec extends mxObjectCodec
 		for (Rule rule : model.getRules()) {
 			Node ruleNode = enc.encode(rule);
 			rootNode.appendChild(ruleNode);
+			
+			Node implicationElemNode = enc.encode(convertMap(rule.getImplicationElements()));
+			
+			ruleNode.appendChild(implicationElemNode);
 		}
 		
 		node.appendChild(rootNode);
 
 		return node;
+	}
+	
+	private Map<String, Boolean> convertMap(Map<Activity, Boolean> map){
+		
+		Map<String, Boolean> convertedMap = new HashMap<String, Boolean>();
+		
+		for (Activity actv : map.keySet()) {
+			
+			convertedMap.put(actv.getId(), map.get(actv));
+		}
+		
+		return convertedMap;
 	}
 	
 	public Node beforeDecode(mxCodec dec, Node node, Object into)
@@ -194,17 +212,44 @@ public class ExpLineCodec extends mxObjectCodec
 		
 		Node ruleNode = node.getLastChild();
 		
-		NodeList rulesList = ruleNode.getChildNodes();
+		NodeList rulesList = ruleNode.getChildNodes(); 
 		
 		for (int i = 0; i < rulesList.getLength(); i++) {
 			Rule rule = (Rule) dec.decode(rulesList.item(i));
 			rules.add(rule);
+			
+			Node implicationNode = rulesList.item(i).getLastChild();
+			
+			Map<Activity, Boolean> implicationElements = decodeImplicationNode(dec, implicationNode);
+			rule.setImplicationElements(implicationElements);
 		}
 		
 		ExpLine expline = (ExpLine) obj;
 		expline.setRules(rules);
 		
 		return obj;
+	}
+
+	private Map<Activity, Boolean> decodeImplicationNode(mxCodec dec, Node implicationNode) {
+		
+		NodeList implicationList = implicationNode.getChildNodes();
+		
+		Map<Activity, Boolean> implicationMap = new HashMap<>();
+		
+		for (int i = 0; i < implicationList.getLength(); i++) {
+			
+			Activity actv = (Activity) dec.getObject(implicationList.item(i).getAttributes().item(0).getNodeValue());
+			
+			String booleanValue = implicationList.item(i).getAttributes().item(1).getNodeValue();
+			
+			if(booleanValue.equals("1"))
+				implicationMap.put(actv, true);
+			else
+				implicationMap.put(actv, false);
+			
+		}
+		
+		return implicationMap;
 	}
 
 }
