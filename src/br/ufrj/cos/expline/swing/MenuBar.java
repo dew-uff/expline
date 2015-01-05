@@ -9,6 +9,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.TransferHandler;
 
+import br.ufrj.cos.expline.analysis.GraphStructure;
 import br.ufrj.cos.expline.swing.Actions.AlignCellsAction;
 import br.ufrj.cos.expline.swing.Actions.ExitAction;
 import br.ufrj.cos.expline.swing.Actions.HistoryAction;
@@ -19,6 +20,7 @@ import br.ufrj.cos.expline.swing.Actions.PrintAction;
 import br.ufrj.cos.expline.swing.Actions.SaveAction;
 import br.ufrj.cos.expline.swing.Actions.ScaleAction;
 
+import com.mxgraph.analysis.mxAnalysisGraph;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.swing.util.mxGraphActions;
@@ -226,7 +228,13 @@ public class MenuBar extends JMenuBar
 			 */
 			public void actionPerformed(ActionEvent e)
 			{
-				editor.changeToDerivationView();			
+				mxAnalysisGraph aGraph = new mxAnalysisGraph();
+				aGraph.setGraph(editor.editionGraphComponent.getGraph());
+				if(GraphStructure.isConnected(aGraph))				
+					editor.changeToDerivationView();
+				else
+					JOptionPane.showMessageDialog(graphComponent,
+							"The current experiment line model is not valid to start a derivation process.");	
 			}
 			
 
