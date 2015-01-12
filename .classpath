@@ -32,5 +32,6 @@
 	<classpathentry kind="lib" path="lib/jmi-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/jmi-spem-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/mdrapi-200507110943.jar"/>
+	<classpathentry kind="lib" path="lib/expline-scicumulus-instantiator.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

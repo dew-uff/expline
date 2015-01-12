@@ -9,10 +9,9 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import br.ufrj.cos.expline.swing.Actions.GenerateAbstractWorkflowAction;
-import br.ufrj.cos.expline.swing.Actions.ScaleAction;
+import br.ufrj.cos.expline.swing.Actions.GenerateConcreteWorkflowAction;
 
 import com.mxgraph.swing.mxGraphComponent;
-import com.mxgraph.util.mxResources;
 
 public class DerivationMenuBar extends JMenuBar
 {
@@ -52,9 +51,10 @@ public class DerivationMenuBar extends JMenuBar
 		
 		temp.add(editor.bind("Generate abstract workflow", new GenerateAbstractWorkflowAction(true)));
 		
-		JMenuItem jmenuItemTemp = new JMenuItem("Run");
-		jmenuItemTemp.setEnabled(false);
-		temp.add(jmenuItemTemp);
+		JMenu concreteWorkflowSubmenu = (JMenu) temp.add(new JMenu("Generate concrete workflow"));
+		
+		concreteWorkflowSubmenu.add(new JMenuItem("Scicumulus")).addActionListener(new GenerateConcreteWorkflowAction(true));
+		
 		temp.add(new JMenuItem("Cancel")).addActionListener(new ActionListener()
 		{
 			/*
@@ -68,28 +68,28 @@ public class DerivationMenuBar extends JMenuBar
 		});
 		
 		
-		temp = new JMenu("View");
-		this.add(temp);
-		jmenuItemTemp = new JMenuItem("Show Possibilities");
-		jmenuItemTemp.setEnabled(false);
-		temp.add(jmenuItemTemp);
-		
-		jmenuItemTemp = new JMenuItem("Show Conflicts");
-		jmenuItemTemp.setEnabled(false);
-		temp.add(jmenuItemTemp);
-		
-		jmenuItemTemp = new JMenuItem("Show Legends");
-		jmenuItemTemp.setEnabled(false);
-		temp.add(jmenuItemTemp);
-		
-		JMenu submenu = (JMenu) temp.add(new JMenu(mxResources.get("zoom")));
-
-		submenu.add(editor.bind("400%", new ScaleAction(4)));
-		submenu.add(editor.bind("200%", new ScaleAction(2)));
-		submenu.add(editor.bind("150%", new ScaleAction(1.5)));
-		submenu.add(editor.bind("100%", new ScaleAction(1)));
-		submenu.add(editor.bind("75%", new ScaleAction(0.75)));
-		submenu.add(editor.bind("50%", new ScaleAction(0.5)));
+//		temp = new JMenu("View");
+//		this.add(temp);
+//		jmenuItemTemp = new JMenuItem("Show Possibilities");
+//		jmenuItemTemp.setEnabled(false);
+//		temp.add(jmenuItemTemp);
+//		
+//		jmenuItemTemp = new JMenuItem("Show Conflicts");
+//		jmenuItemTemp.setEnabled(false);
+//		temp.add(jmenuItemTemp);
+//		
+//		jmenuItemTemp = new JMenuItem("Show Legends");
+//		jmenuItemTemp.setEnabled(false);
+//		temp.add(jmenuItemTemp);
+//		
+//		JMenu submenu = (JMenu) temp.add(new JMenu(mxResources.get("zoom")));
+//
+//		submenu.add(editor.bind("400%", new ScaleAction(4)));
+//		submenu.add(editor.bind("200%", new ScaleAction(2)));
+//		submenu.add(editor.bind("150%", new ScaleAction(1.5)));
+//		submenu.add(editor.bind("100%", new ScaleAction(1)));
+//		submenu.add(editor.bind("75%", new ScaleAction(0.75)));
+//		submenu.add(editor.bind("50%", new ScaleAction(0.5)));
 		
 		
 	}

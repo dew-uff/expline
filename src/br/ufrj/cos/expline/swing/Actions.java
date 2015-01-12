@@ -18,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.AbstractAction;
@@ -33,6 +34,7 @@ import br.ufrj.cos.expline.derivation.Derivation;
 import br.ufrj.cos.expline.io.Activity2Codec;
 import br.ufrj.cos.expline.io.ActivityCodec;
 import br.ufrj.cos.expline.io.EdgeCodec;
+import br.ufrj.cos.expline.main.ScicumulusInstantiator;
 import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.model.Edge;
 import br.ufrj.cos.expline.model.ExpLine;
@@ -638,6 +640,194 @@ public class Actions
 		}
 	}
 
+	
+	/**
+	 *
+	 */
+	@SuppressWarnings("serial")
+	public static class GenerateConcreteWorkflowAction extends AbstractAction
+	{
+		/**
+		 * 
+		 */
+		protected boolean showDialog;
+
+		/**
+		 * 
+		 */
+		protected String lastDir = null;
+
+		/**
+		 * 
+		 */
+		public GenerateConcreteWorkflowAction(boolean showDialog)
+		{
+			this.showDialog= showDialog;
+		}
+		
+		public File generateAbstractWorkflow(Derivation derivation){
+			
+			
+			Workflow workflow = derivation.derive();	
+			
+			
+			mxCodecRegistry.register(new Activity2Codec());
+			mxCodecRegistry.register(new mxObjectCodec(new Port(), new String[] { "type", "parent", "geometry" }, new String[] { "parent", "source", "target" },
+					null));
+			mxCodecRegistry.register(new mxObjectCodec(new Edge(), new String[] { "edge", "value", "type", "style", "parent", "geometry", "vertex" }, new String[] { "parent", "source", "target" },
+					null));
+			
+			mxCodec codec = new mxCodec();
+			String xml = mxXmlUtils.getXml(codec.encode(workflow));
+			
+			mxCodecRegistry.register(new ActivityCodec());
+			mxCodecRegistry.register(new mxObjectCodec(new Port(), null, new String[] { "parent", "source", "target" },
+					null));
+			mxCodecRegistry.register(new EdgeCodec());
+			
+
+			File file = null;
+			try {
+				file = File.createTempFile("abstractWorkflow", "xml");
+				mxUtils.writeFile(xml, file.getAbsolutePath());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			return file;		
+		}
+		
+		public void generateConcreteWorkflow(ExpLineEditor editor, File abstractWorkflow){
+			
+
+			mxGraphComponent graphComponent = editor.getGraphComponent();
+			FileFilter selectedFilter = null;
+			DefaultFileFilter mxeFilter = new DefaultFileFilter(".xml",
+					"Scicumulus Workflow File" + mxResources.get("file")
+					+ " (.xml)");
+			String filename = null;
+			boolean dialogShown = false;
+
+			if (showDialog || editor.getCurrentFile() == null)
+			{
+				String wd;
+
+				if (lastDir != null)
+				{
+					wd = lastDir;
+				}
+				else if (editor.getCurrentFile() != null)
+				{
+					wd = editor.getCurrentFile().getParent();
+				}
+				else
+				{
+					wd = System.getProperty("user.dir");
+				}
+
+				JFileChooser fc = new JFileChooser(wd);
+
+				// Adds the default file format
+				FileFilter defaultFilter = mxeFilter;
+				fc.addChoosableFileFilter(defaultFilter);
+
+				fc.setFileFilter(defaultFilter);
+				int rc = fc.showDialog(null, mxResources.get("save"));
+				dialogShown = true;
+
+				if (rc != JFileChooser.APPROVE_OPTION)
+				{
+					return;
+				}
+				else
+				{
+					lastDir = fc.getSelectedFile().getParent();
+				}
+
+				filename = fc.getSelectedFile().getAbsolutePath();
+				selectedFilter = fc.getFileFilter();
+
+				if (selectedFilter instanceof DefaultFileFilter)
+				{
+					String ext = ((DefaultFileFilter) selectedFilter)
+							.getExtension();
+
+					if (!filename.toLowerCase().endsWith(ext))
+					{
+						filename += ext;
+					}
+				}
+
+				if (new File(filename).exists()
+						&& JOptionPane.showConfirmDialog(graphComponent,
+								mxResources.get("overwriteExistingFile")) != JOptionPane.YES_OPTION)
+				{
+					return;
+				}
+			}
+			else
+			{
+				filename = editor.getCurrentFile().getAbsolutePath();
+			}
+
+			try
+			{
+				String ext = filename
+						.substring(filename.lastIndexOf('.') + 1);
+
+				
+				if (ext.equalsIgnoreCase("xml"))
+				{
+					
+					
+					//
+					ScicumulusInstantiator scicumulusInstantiator = new ScicumulusInstantiator(); 
+					
+					Map<String,String> properties = new HashMap<String, String>();
+
+					scicumulusInstantiator.instantiate(new File(filename), abstractWorkflow, properties);
+					
+					JOptionPane.showMessageDialog(editor,
+							"Derivation Status: Workflow Derived Successfully");
+					
+					
+				}
+			}
+			catch (Throwable ex)
+			{
+				ex.printStackTrace();
+				JOptionPane.showMessageDialog(graphComponent,
+						ex.toString(), mxResources.get("error"),
+						JOptionPane.ERROR_MESSAGE);
+			}
+		
+			
+		}
+		
+		public boolean isDerivedWorkflowValid(Derivation derivation){
+			return derivation.validatesDerivedWorkflow();
+		}
+
+		/**
+		 * 
+		 */
+		public void actionPerformed(ActionEvent e)
+		{
+			ExpLineEditor editor = getEditor(e);
+			
+			Derivation derivation = editor.getDerivation();
+			
+			if(isDerivedWorkflowValid(derivation)){
+				
+				File abstractWorkflow = generateAbstractWorkflow(derivation);
+				
+				generateConcreteWorkflow(editor, abstractWorkflow);
+			}
+
+		}
+	}
+	
 	/**
 	 *
 	 */
