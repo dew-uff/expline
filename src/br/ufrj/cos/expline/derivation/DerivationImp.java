@@ -20,7 +20,7 @@ import br.ufrj.cos.expline.model.Edge;
 import br.ufrj.cos.expline.model.ExpLine;
 import br.ufrj.cos.expline.model.Port;
 import br.ufrj.cos.expline.model.Rule;
-import br.ufrj.cos.expline.model.Workflow;
+import br.ufrj.cos.expline.model.AbstractWorkflow;
 import br.ufrj.cos.expline.swing.ActivityOptionsSelectionFrame;
 import br.ufrj.cos.expline.swing.ExpLineEditor;
 
@@ -541,7 +541,7 @@ public class DerivationImp implements Derivation {
 		
 	}
 	
-	public Workflow derive() {
+	public AbstractWorkflow derive() {
 	
 		//Creating temporary graph structure to derivate the workflow to not propagate to the original one that is being manipulated by the user on the screen.
 		//
@@ -561,7 +561,7 @@ public class DerivationImp implements Derivation {
 		
 		ExpLine expline = (ExpLine)  expLineDerGraphTemp.getModel();
 			
-		Workflow workflow = new Workflow();
+		AbstractWorkflow workflow = new AbstractWorkflow();
 		
 		workflow.setRoot(expline.getRoot());
 	
@@ -630,7 +630,7 @@ public class DerivationImp implements Derivation {
 									expLineDerGraphTemp.removeCells(new Object[]{actv}, true);
 									
 									
-									workflow = new Workflow();
+									workflow = new AbstractWorkflow();
 									
 									workflow.setRoot(expline.getRoot());
 									
@@ -689,7 +689,7 @@ public class DerivationImp implements Derivation {
 									expLineDerGraphTemp.removeCells(new Object[]{actv}, true);
 									
 									
-									workflow = new Workflow();
+									workflow = new AbstractWorkflow();
 									
 									workflow.setRoot(expline.getRoot());
 									

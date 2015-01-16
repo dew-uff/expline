@@ -12,7 +12,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 import br.ufrj.cos.expline.model.ExpLine;
-import br.ufrj.cos.expline.model.Workflow;
+import br.ufrj.cos.expline.model.AbstractWorkflow;
 
 import com.mxgraph.io.mxCodec;
 import com.mxgraph.io.mxObjectCodec;
@@ -24,22 +24,22 @@ import com.mxgraph.model.mxICell;
  * dynamically at load time and used implicitly via mxCodec
  * and the mxCodecRegistry.
  */
-public class WorkflowCodec extends mxObjectCodec
+public class AbstractWorkflowCodec extends mxObjectCodec
 {
 
 	/**
 	 * Constructs a new model codec.
 	 */
-	public WorkflowCodec()
+	public AbstractWorkflowCodec()
 	{
-		this(new Workflow(), null, null,
+		this(new AbstractWorkflow(), null, null,
 				null);
 	}
 
 	/**
 	 * Constructs a new model codec for the given template.
 	 */
-	public WorkflowCodec(Object template)
+	public AbstractWorkflowCodec(Object template)
 	{
 		this(template, null, null, null);
 	}
@@ -47,7 +47,7 @@ public class WorkflowCodec extends mxObjectCodec
 	/**
 	 * Constructs a new model codec for the given arguments.
 	 */
-	public WorkflowCodec(Object template, String[] exclude, String[] idrefs,
+	public AbstractWorkflowCodec(Object template, String[] exclude, String[] idrefs,
 			Map<String, String> mapping)
 	{
 		super(template, exclude, idrefs, mapping);
@@ -62,9 +62,9 @@ public class WorkflowCodec extends mxObjectCodec
 	{
 
 		
-		if (obj instanceof Workflow)
+		if (obj instanceof AbstractWorkflow)
 		{
-			mxGraphModel model = (Workflow) obj;
+			mxGraphModel model = (AbstractWorkflow) obj;
 			
 			mxICell root = (mxICell) model.getRoot();
 			root = root.getChildAt(0);
@@ -88,20 +88,20 @@ public class WorkflowCodec extends mxObjectCodec
 		if (node instanceof Element)
 		{
 			Element elt = (Element) node;
-			Workflow model = null;
+			AbstractWorkflow model = null;
 
-			if (into instanceof Workflow)
+			if (into instanceof AbstractWorkflow)
 			{
-				model = (Workflow) into;
+				model = (AbstractWorkflow) into;
 			}
 			else
 			{
-				model = new Workflow();
+				model = new AbstractWorkflow();
 			}
 
 			// Reads the cells into the graph model. All cells
 			// are children of the root element in the node.
-			Node root = elt.getElementsByTagName("Workflow").item(0);
+			Node root = elt.getElementsByTagName("AbstractWorkflow").item(0);
 			mxICell rootCell = null;
 			
 			Node rootEl1 = elt.getOwnerDocument().createElement("mxCell");

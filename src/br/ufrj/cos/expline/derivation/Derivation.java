@@ -1,7 +1,7 @@
 package br.ufrj.cos.expline.derivation;
 
 import br.ufrj.cos.expline.model.Activity;
-import br.ufrj.cos.expline.model.Workflow;
+import br.ufrj.cos.expline.model.AbstractWorkflow;
 
 public interface Derivation {
 
@@ -24,6 +24,6 @@ public interface Derivation {
 	
 	public boolean selectActivity(Activity activity, boolean selected);
 
-	public Workflow derive();
+	public AbstractWorkflow derive();
 
 }

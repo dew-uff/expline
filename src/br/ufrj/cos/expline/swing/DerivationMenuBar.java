@@ -53,7 +53,7 @@ public class DerivationMenuBar extends JMenuBar
 		
 		JMenu concreteWorkflowSubmenu = (JMenu) temp.add(new JMenu("Generate concrete workflow"));
 		
-		concreteWorkflowSubmenu.add(new JMenuItem("Scicumulus")).addActionListener(new GenerateConcreteWorkflowAction(true));
+		concreteWorkflowSubmenu.add(new JMenuItem(editor.bind("Scicumulus", new GenerateConcreteWorkflowAction(true))));
 		
 		temp.add(new JMenuItem("Cancel")).addActionListener(new ActionListener()
 		{

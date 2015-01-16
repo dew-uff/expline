@@ -24,8 +24,10 @@ import java.util.Map;
 import javax.swing.AbstractAction;
 import javax.swing.ButtonGroup;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
 import org.w3c.dom.Document;
@@ -39,7 +41,7 @@ import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.model.Edge;
 import br.ufrj.cos.expline.model.ExpLine;
 import br.ufrj.cos.expline.model.Port;
-import br.ufrj.cos.expline.model.Workflow;
+import br.ufrj.cos.expline.model.AbstractWorkflow;
 
 import com.mxgraph.io.mxCodec;
 import com.mxgraph.io.mxCodecRegistry;
@@ -602,7 +604,7 @@ public class Actions
 						
 						derivation = editor.getDerivation();
 						
-						Workflow workflow = derivation.derive();	
+						AbstractWorkflow workflow = derivation.derive();	
 						
 						
 						mxCodecRegistry.register(new Activity2Codec());
@@ -668,7 +670,7 @@ public class Actions
 		public File generateAbstractWorkflow(Derivation derivation){
 			
 			
-			Workflow workflow = derivation.derive();	
+			AbstractWorkflow workflow = derivation.derive();	
 			
 			
 			mxCodecRegistry.register(new Activity2Codec());
@@ -688,7 +690,7 @@ public class Actions
 
 			File file = null;
 			try {
-				file = File.createTempFile("abstractWorkflow", "xml");
+				file = File.createTempFile("abstractWorkflow", ".xml");
 				mxUtils.writeFile(xml, file.getAbsolutePath());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -784,12 +786,17 @@ public class Actions
 					//
 					ScicumulusInstantiator scicumulusInstantiator = new ScicumulusInstantiator(); 
 					
-					Map<String,String> properties = new HashMap<String, String>();
+//					Map<String,String> properties = new HashMap<String, String>();
 
-					scicumulusInstantiator.instantiate(new File(filename), abstractWorkflow, properties);
+//					scicumulusInstantiator.instantiate(new File(filename), abstractWorkflow, properties);
 					
-					JOptionPane.showMessageDialog(editor,
-							"Derivation Status: Workflow Derived Successfully");
+					
+					JFrame frame = (JFrame) SwingUtilities.windowForComponent(editor);
+					
+					scicumulusInstantiator.instantiate(frame, abstractWorkflow, new File(filename));
+					
+//					JOptionPane.showMessageDialog(editor,
+//							"Derivation Status: Workflow Derived Successfully");
 					
 					
 				}

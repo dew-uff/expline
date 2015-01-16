@@ -44,7 +44,7 @@ import br.ufrj.cos.expline.io.ActivityCodec;
 import br.ufrj.cos.expline.io.EdgeCodec;
 import br.ufrj.cos.expline.io.ExpLineCodec;
 import br.ufrj.cos.expline.io.ExpressionCodec;
-import br.ufrj.cos.expline.io.WorkflowCodec;
+import br.ufrj.cos.expline.io.AbstractWorkflowCodec;
 import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.model.ExpLine;
 import br.ufrj.cos.expline.model.Expression;
@@ -218,7 +218,7 @@ public class ExpLineEditor extends JPanel
 		
 		mxCodecRegistry.addPackage("br.ufrj.cos.expline.model");
 		mxCodecRegistry.register(new ExpLineCodec());
-		mxCodecRegistry.register(new WorkflowCodec());
+		mxCodecRegistry.register(new AbstractWorkflowCodec());
 		mxCodecRegistry.register(new ActivityCodec());
 		mxCodecRegistry.register(new EdgeCodec());
 		mxCodecRegistry.register(new mxObjectCodec(new ArrayList<Activity>()));
