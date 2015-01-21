@@ -68,11 +68,9 @@ public class DerivationImp implements Derivation {
 			
 			String rules = createRules(model.getRules());
 			
-			System.out.println(rules);
-			
 			
 			inferenceMachine = new InferenceMachine(theory+"\n"+rules);
-//			
+
 			startDerivation();
 			
 		
