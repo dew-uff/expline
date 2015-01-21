@@ -425,7 +425,7 @@ public class DerivationImp implements Derivation {
 
 				Map<Activity, Boolean> solution = selectImplications.get(0);
 				
-				selectOptions(selectImplications, activity);
+				selectOptions(selectImplications, activity, selected);
 								
 			}
 			else{
@@ -445,14 +445,14 @@ public class DerivationImp implements Derivation {
 
 	}
 	
-	private void selectOptions(List<Map<Activity, Boolean>> options, Activity selectedActivity) {
+	private void selectOptions(List<Map<Activity, Boolean>> options, Activity selectedActivity, boolean isActivitySelected) {
 		
 		
 		JFrame frame = (JFrame) SwingUtilities.windowForComponent(expLineEditor);
 
 		if (frame != null)
 		{
-			ActivityOptionsSelectionFrame optionsSelectionFrame = new ActivityOptionsSelectionFrame(frame, this, options, selectedActivity);
+			ActivityOptionsSelectionFrame optionsSelectionFrame = new ActivityOptionsSelectionFrame(frame, this, options, selectedActivity, isActivitySelected);
 			optionsSelectionFrame.setModal(true);
 
 			// Centers inside the application frame

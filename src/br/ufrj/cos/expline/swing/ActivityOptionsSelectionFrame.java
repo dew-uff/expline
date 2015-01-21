@@ -61,16 +61,19 @@ public class ActivityOptionsSelectionFrame extends JDialog
 	
 	private Activity selectedActivity;
 
+	private boolean isActivitySelected;
+
 	/**
 	 * 
 	 */
-	public ActivityOptionsSelectionFrame(final JFrame frame, final DerivationImp derivationImp, final List<Map<Activity, Boolean>> selectOptions, final Activity selectedActivity)
+	public ActivityOptionsSelectionFrame(final JFrame frame, final DerivationImp derivationImp, final List<Map<Activity, Boolean>> selectOptions, final Activity selectedActivity, final boolean isActivitySelected)
 	{
 		super(frame);
 		
 		this.derivationImp = derivationImp;
 		this.derivationGraphComponent = derivationImp.getDerivationGraphComponent();
 		this.expLineDerivationGraph = this.derivationGraphComponent.getGraph();
+		this.isActivitySelected = isActivitySelected;
 		
 		this.selectedActivity = selectedActivity;
 		
@@ -197,6 +200,8 @@ public class ActivityOptionsSelectionFrame extends JDialog
 						actv.setStyle(actv.getStyle() + ";opacity=20");
 										 
 				}
+				
+				derivationImp.setActivitySelection(selectedActivity, isActivitySelected);
 				
 				selectedActivity.setStyle(selectedActivity.getStyle().replace(";opacity=20", ""));
 				
