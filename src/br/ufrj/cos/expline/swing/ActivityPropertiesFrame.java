@@ -383,14 +383,14 @@ public class ActivityPropertiesFrame extends JDialog
 		Activity activity = (Activity) graph.getSelectionCell();
 		
 		String selectedAlgebraicOperation = (String) algebraicOperatorsJComboBox.getSelectedItem();
-		String currentAlgebraicOperation = activity.getAlgebraicOperator();
+//		String currentAlgebraicOperation = activity.getAlgebraicOperator();
+		
+//		if(!selectedAlgebraicOperation.equals(mxResources.get("join")) && activity.getInputPorts().size()>1)
+//			checkAffectedPorts(activity.getInputPort(1));
 		
 		AlgebraicOperatorAction action = new AlgebraicOperatorAction((String)selectedAlgebraicOperation);
 		
 		action.actionPerformed(new ActionEvent(graphComponent, 1, ""));
-		
-		if(!selectedAlgebraicOperation.equals(mxResources.get("join")) && currentAlgebraicOperation.equals(mxResources.get("join")))
-			checkAffectedPorts(activity.getInputPort(1));
 		
 		activity.refreshPortsDefinition();
 

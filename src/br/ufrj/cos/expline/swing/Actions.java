@@ -126,12 +126,31 @@ public class Actions
 			
 			Activity activity = (Activity) graph.getSelectionCell();
 			
+			if(!algebraicOperator.equals(mxResources.get("join")) && activity.getInputPorts().size()>1)
+				checkAffectedPorts(editor, activity.getInputPort(1));
+			
+			
 			activity.setAlgebraicOperator(algebraicOperator);
 			
 			activity.refreshPortsDefinition();
 			
 			graph.refresh();
 			
+			
+		}
+		
+		public void checkAffectedPorts(ExpLineEditor editor, Port port){
+			
+			mxGraph graph = editor.getGraphComponent().getGraph();
+			
+			int portNumbers = graph.getModel().getEdgeCount(port);
+			
+			for (int i = 0; i < portNumbers; i++) {
+				
+				Edge edge = (Edge) graph.getModel().getEdgeAt(port, i);
+				
+				graph.getModel().remove(edge);
+			}
 			
 		}
 	}
