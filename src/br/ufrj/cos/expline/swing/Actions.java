@@ -18,7 +18,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.AbstractAction;
@@ -36,12 +35,12 @@ import br.ufrj.cos.expline.derivation.Derivation;
 import br.ufrj.cos.expline.io.Activity2Codec;
 import br.ufrj.cos.expline.io.ActivityCodec;
 import br.ufrj.cos.expline.io.EdgeCodec;
-import br.ufrj.cos.expline.main.ScicumulusInstantiator;
+import br.ufrj.cos.expline.model.AbstractWorkflow;
 import br.ufrj.cos.expline.model.Activity;
 import br.ufrj.cos.expline.model.Edge;
 import br.ufrj.cos.expline.model.ExpLine;
 import br.ufrj.cos.expline.model.Port;
-import br.ufrj.cos.expline.model.AbstractWorkflow;
+import br.ufrj.cos.expline.scicumulus.conversion.mainInterface.ScicumulusInstantiator;
 
 import com.mxgraph.io.mxCodec;
 import com.mxgraph.io.mxCodecRegistry;
